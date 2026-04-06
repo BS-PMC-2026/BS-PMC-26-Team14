@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>הרשמה למערכת - CityFix</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: #edf7fb;
+      min-height: 100vh;
+      color: #0f172a;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 70px 20px 40px;
+    }
+
+    .title {
+      font-size: 42px;
+      font-weight: 800;
+      margin-bottom: 10px;
+      color: #0f172a;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: #475569;
+      margin-bottom: 42px;
+      text-align: center;
+    }
+
+    .cards {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      justify-content: center;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .card {
+      width: 320px;
+      min-height: 403px;
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 34px 34px 28px;
+      text-align: center;
+      box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+      border: 1.5px solid transparent;
+      transition: 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card.worker {
+      border-color: #22c55e;
+      box-shadow: 0 8px 26px rgba(34, 197, 94, 0.12);
+    }
+
+    .icon-circle {
+      width: 108px;
+      height: 108px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 22px;
+    }
+
+    .icon-circle.customer {
+      background: #dbeafe;
+    }
+
+    .icon-circle.worker {
+      background: #d1fae5;
+    }
+
+    .icon-circle svg {
+      width: 58px;
+      height: 58px;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 2.2;
+    }
+
+    .icon-circle.customer svg {
+      stroke: #2563eb;
+    }
+
+    .icon-circle.worker svg {
+      stroke: #16a34a;
+    }
+
+    .card h2 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 14px;
+      color: #0f172a;
+    }
+
+    .desc {
+      font-size: 17px;
+      line-height: 1.8;
+      color: #475569;
+      margin-bottom: 20px;
+    }
+
+    .features {
+      list-style: none;
+      text-align: right;
+      margin-bottom: 24px;
+      padding-right: 6px;
+    }
+
+    .features li {
+      font-size: 16px;
+      color: #475569;
+      margin-bottom: 8px;
+      position: relative;
+      padding-right: 20px;
+    }
+
+    .features li::before {
+      content: "✓";
+      position: absolute;
+      right: 0;
+      top: 0;
+      font-weight: 700;
+    }
+
+    .customer .features li::before {
+      color: #2563eb;
+    }
+
+    .worker .features li::before {
+      color: #16a34a;
+    }
+
+    .start-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      font-size: 22px;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    .card.customer .start-link {
+      color: #2563eb;
+    }
+
+    .card.worker .start-link {
+      color: #16a34a;
+    }
+
+    .start-link:hover {
+      opacity: 0.85;
+    }
+
+    .bottom-links {
+      text-align: center;
+      margin-top: 6px;
+    }
+
+    .bottom-links p {
+      font-size: 18px;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+.card.customer {
+  border-color: #2563eb; /* כחול */
+  box-shadow: 0 8px 26px rgba(37, 99, 235, 0.12);
+}
+    .bottom-links .login-link {
+      color: #4f46e5;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .bottom-links .home-link {
+      color: #475569;
+      text-decoration: none;
+      font-size: 18px;
+    }
+
+    .bottom-links .home-link:hover,
+    .bottom-links .login-link:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .page {
+        padding-top: 50px;
+      }
+
+      .title {
+        font-size: 34px;
+      }
+
+      .subtitle {
+        font-size: 16px;
+        margin-bottom: 30px;
+      }
+
+      .card {
+        width: 100%;
+        max-width: 360px;
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <h1 class="title">הרשמה למערכת</h1>
+    <p class="subtitle">בחרו את סוג החשבון שברצונכם ליצור</p>
+
+    <div class="cards">
+
+      <div class="card customer " onclick="goToCustomer()">
+        <div class="icon-circle customer">
+          <svg viewBox="0 0 24 24">
+            <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
+            <path d="M4 20a8 8 0 0 1 16 0"/>
+          </svg>
+        </div>
+
+        <h2>לקוח</h2>
+
+        <p class="desc">
+          הרשם כלקוח כדי לדווח על בעיות עירוניות,
+          לעקוב אחר הטיפול ולתרום לקהילה שלך
+        </p>
+
+        <ul class="features">
+          <li>דיווח מהיר על בעיות</li>
+          <li>מעקב אחר סטטוס הטיפול</li>
+          <li>היסטוריית דיווחים</li>
+        </ul>
+
+        <a class="start-link" href="citizen-signup.html">
+          התחל עכשיו
+          <span>→</span>
+        </a>
+      </div>
+
+      <div class="card worker" onclick="goToWorker()">
+        <div class="icon-circle worker">
+          <svg viewBox="0 0 24 24">
+            <rect x="5" y="7" width="14" height="12" rx="2"></rect>
+            <path d="M9 7V5a3 3 0 0 1 6 0v2"></path>
+            <path d="M5 11h14"></path>
+          </svg>
+        </div>
+
+        <h2>עובד</h2>
+
+        <p class="desc">
+          הצטרף כעובד כדי לטפל בדיווחים, לנהל
+          משימות ולשפר את איכות השירות העירוני
+        </p>
+
+        <ul class="features">
+          <li>קבלת משימות מהמערכת</li>
+          <li>עדכון סטטוס טיפול</li>
+          <li>דוחות ביצועים</li>
+        </ul>
+
+        <a class="start-link" href="worker-signup.html">
+          התחל עכשיו
+          <span>→</span>
+        </a>
+      </div>
+
+    </div>
+
+    <div class="bottom-links">
+      <p>כבר יש לך חשבון? <a class="login-link" href="login.html">התחבר</a></p>
+      <a class="home-link" href="index.html">← חזרה לדף הבית</a>
+    </div>
+  </div>
+  <script>
+function goToWorker() {
+    window.location.href = "worker-signup.html";
+}
+
+function goToCustomer() {
+    window.location.href = "citizen-signup.html";
+}
+</script>
+</body>
+</html>
