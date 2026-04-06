@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>הרשמת עובד - CityFix</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: linear-gradient(90deg, #eefaf2 0%, #dff5e8 100%);
+      min-height: 100vh;
+      color: #0f172a;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 30px 16px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 760px;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+      padding: 28px 26px 30px;
+    }
+
+    .top-icon {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: #d1fae5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 18px;
+    }
+
+    .top-icon svg {
+      width: 44px;
+      height: 44px;
+      stroke: #16a34a;
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .title {
+      text-align: center;
+      font-size: 34px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #475569;
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .approval-note {
+      max-width: 500px;
+      margin: 0 auto 24px;
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      color: #166534;
+      border-radius: 12px;
+      padding: 12px 14px;
+      text-align: center;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 16px;
+      margin-top: 10px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap input,
+    .input-wrap select {
+      width: 100%;
+      height: 48px;
+      border: 1px solid #d7dee8;
+      border-radius: 12px;
+      background: #ffffff;
+      font-size: 16px;
+      color: #0f172a;
+      outline: none;
+      padding: 0 14px 0 42px;
+      appearance: none;
+    }
+
+    .input-wrap input::placeholder {
+      color: #94a3b8;
+    }
+
+    .input-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      stroke: #94a3b8;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .checkbox-row {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #334155;
+      font-size: 15px;
+      flex-wrap: wrap;
+    }
+
+    .checkbox-row input {
+      width: 16px;
+      height: 16px;
+      accent-color: #16a34a;
+    }
+
+    .checkbox-row a {
+      color: #16a34a;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .checkbox-row a:hover {
+      text-decoration: underline;
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 20px;
+      height: 50px;
+      border: none;
+      border-radius: 12px;
+      background: #08a63b;
+      color: white;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .submit-btn:hover {
+      background: #099134;
+    }
+
+    .bottom-links {
+      text-align: center;
+      margin-top: 22px;
+      line-height: 2;
+    }
+
+    .bottom-links a {
+      text-decoration: none;
+    }
+
+    .login-link {
+      color: #16a34a;
+      font-weight: 700;
+    }
+
+    .back-link {
+      color: #334155;
+      font-size: 17px;
+    }
+
+    .success-box {
+      display: none;
+      margin-top: 20px;
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      color: #166534;
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+      line-height: 1.8;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    @media (max-width: 700px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .title {
+        font-size: 28px;
+      }
+
+      .subtitle {
+        font-size: 16px;
+      }
+
+      .card {
+        padding: 22px 16px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card">
+      <div class="top-icon">
+        <svg viewBox="0 0 24 24">
+          <rect x="5" y="7" width="14" height="12" rx="2"></rect>
+          <path d="M9 7V5a3 3 0 0 1 6 0v2"></path>
+          <path d="M5 11h14"></path>
+        </svg>
+      </div>
+
+      <h1 class="title">הרשמת עובד</h1>
+      <p class="subtitle">הצטרף לצוות והתחל לטפל בדיווחים</p>
+
+      <div class="approval-note">
+        לאחר שליחת הטופס, החשבון לא יופעל מיד.  
+        בקשת ההרשמה שלך תישלח לבדיקה ומחכה לאישור מנהל המערכת.
+      </div>
+
+      <form id="workerForm">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label>תעודת זהות *</label>
+            <div class="input-wrap">
+              <input type="text" placeholder="123456789" required>
+              <svg viewBox="0 0 24 24">
+                <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                <path d="M7 9h4"></path>
+                <path d="M7 13h3"></path>
+                <circle cx="16" cy="12" r="2"></circle>
+              </svg>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>שם מלא *</label>
+            <div class="input-wrap">
+              <input type="text" placeholder="דני לוי" required>
+              <svg viewBox="0 0 24 24">
+                <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
+                <path d="M4 20a8 8 0 0 1 16 0"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>טלפון *</label>
+            <div class="input-wrap">
+              <input type="text" placeholder="050-1234567" required>
+              <svg viewBox="0 0 24 24">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.46-1.29a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>אימייל *</label>
+            <div class="input-wrap">
+              <input type="email" placeholder="worker@cityfix.com" required>
+              <svg viewBox="0 0 24 24">
+                <path d="M4 6h16v12H4z"/>
+                <path d="m4 7 8 6 8-6"/>
+              </svg>
+            </div>
+          </div>
+
+        <div class="form-group">
+  <label>עירייה / רשות מקומית *</label>
+  <div class="input-wrap">
+    <select id="municipality" required>
+      <option value="">בחר רשות מקומית</option>
+    </select>
+    <svg viewBox="0 0 24 24">
+      <path d="M7 10l5 5 5-5"></path>
+    </svg>
+  </div>
+</div>
+          <div class="form-group">
+            <label>מחלקה *</label>
+            <div class="input-wrap">
+              <select required>
+                <option value="">בחר מחלקה</option>
+                <option>כבישים</option>
+                <option>תאורה</option>
+                <option>תברואה</option>
+                <option>גינון</option>
+                <option>תחזוקה כללית</option>
+              </select>
+              <svg viewBox="0 0 24 24">
+                <path d="M7 10l5 5 5-5"></path>
+              </svg>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>אימות סיסמה *</label>
+            <div class="input-wrap">
+              <input type="password" placeholder="••••••••" required>
+              <svg viewBox="0 0 24 24">
+                <rect x="5" y="11" width="14" height="10" rx="2"/>
+                <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>סיסמה *</label>
+            <div class="input-wrap">
+              <input type="password" placeholder="••••••••" required>
+              <svg viewBox="0 0 24 24">
+                <rect x="5" y="11" width="14" height="10" rx="2"/>
+                <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+              </svg>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="agree" required>
+          <label for="agree">
+            אני מסכים ל<a href="#">תנאי השימוש</a> ול<a href="#">מדיניות הפרטיות</a>
+          </label>
+        </div>
+
+        <button type="submit" class="submit-btn">הרשם עכשיו</button>
+
+        <div class="success-box" id="successBox">
+          בקשת ההרשמה נשלחה בהצלחה.  
+          החשבון שלך ממתין כעת לאישור מנהל המערכת.
+        </div>
+      </form>
+
+      <div class="bottom-links">
+        <div>כבר יש לך חשבון? <a class="login-link" href="login.html">התחבר</a></div>
+        <div><a class="back-link" href="signup-choice.html">← חזרה לבחירת סוג הרשמה</a></div>
+      </div>
+    </div>
+  </div>
+
+ <script>
+  const form = document.getElementById("workerForm");
+  const successBox = document.getElementById("successBox");
+
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const inputs = form.querySelectorAll("input, select");
+
+    const data = {
+      nationalId: inputs[0].value,
+      fullName: inputs[1].value,
+      phone: inputs[2].value,
+      email: inputs[3].value,
+      municipality: document.getElementById("municipality").value,
+      department: inputs[5].value,
+      password: inputs[7].value
+    };
+
+    try {
+      const response = await fetch("/api/auth/register-worker", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        successBox.style.display = "block";
+        successBox.innerText = "בקשת ההרשמה נשלחה בהצלחה. החשבון ממתין לאישור מנהל.";
+        form.reset();
+      } else {
+        alert(result.message || "שגיאה בהרשמה");
+      }
+    } catch (error) {
+      alert("בעיה בחיבור לשרת");
+      console.error(error);
+    }
+
+    
+  });
+
+    const municipalities = [
+    "אבו גוש",
+    "אבו סנאן",
+    "אבן יהודה",
+    "אום אל-פחם",
+    "אופקים",
+    "אור יהודה",
+    "אור עקיבא",
+    "אילת",
+    "אלעד",
+    "אריאל",
+    "אשדוד",
+    "אשקלון",
+    "באקה אל-גרבייה",
+    "באר יעקב",
+    "באר שבע",
+    "בית שאן",
+    "בית שמש",
+    "בני ברק",
+    "בת ים",
+    "גבעתיים",
+    "דימונה",
+    "הוד השרון",
+    "הרצליה",
+    "חדרה",
+    "חולון",
+    "חיפה",
+    "טבריה",
+    "טירה",
+    "טירת כרמל",
+    "יבנה",
+    "יהוד-מונוסון",
+    "יקנעם עילית",
+    "ירושלים",
+    "כפר יונה",
+    "כפר סבא",
+    "כרמיאל",
+    "לוד",
+    "מגדל העמק",
+    "מודיעין-מכבים-רעות",
+    "מעלה אדומים",
+    "נהריה",
+    "נס ציונה",
+    "נצרת",
+    "נשר",
+    "נתיבות",
+    "נתניה",
+    "עכו",
+    "עפולה",
+    "פתח תקווה",
+    "צפת",
+    "קריית אתא",
+    "קריית ביאליק",
+    "קריית גת",
+    "קריית ים",
+    "קריית מוצקין",
+    "קריית מלאכי",
+    "קריית אונו",
+    "קריית שמונה",
+    "ראש העין",
+    "ראשון לציון",
+    "רחובות",
+    "רמלה",
+    "רמת גן",
+    "רמת השרון",
+    "רעננה",
+    "שדרות",
+    "תל אביב-יפו"
+  ];
+
+  const municipalitySelect = document.getElementById("municipality");
+
+  municipalities
+    .sort((a, b) => a.localeCompare(b, "he"))
+    .forEach(name => {
+      const option = document.createElement("option");
+      option.value = name;
+      option.textContent = name;
+      municipalitySelect.appendChild(option);
+    });
+</script>
+</body>
+</html>
