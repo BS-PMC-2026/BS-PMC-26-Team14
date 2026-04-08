@@ -178,6 +178,30 @@
       word-break: break-word;
     }
 
+    .admin-section {
+      display: none;
+      margin-top: 30px;
+      padding-top: 30px;
+      border-top: 2px solid #e5e7eb;
+    }
+
+    .admin-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #8b2cf5;
+      margin-bottom: 14px;
+    }
+
+    .approve-btn {
+      background: #8b2cf5;
+      color: white;
+      box-shadow: 0 8px 18px rgba(139, 44, 245, 0.22);
+    }
+
+    .approve-btn:hover {
+      background: #7c1fc9;
+    }
+
     @media (max-width: 760px) {
       .topbar {
         padding: 16px;
@@ -252,6 +276,11 @@
             <div class="info-value" id="userRole">-</div>
           </div>
         </div>
+
+        <div class="admin-section" id="adminSection">
+          <h3 class="admin-title">ניהול המערכת</h3>
+          <button class="btn approve-btn" onclick="goToApproveWorkers()">אישור בקשות עובדים</button>
+        </div>
       </div>
     </div>
   </div>
@@ -261,13 +290,32 @@
     const userEmail = localStorage.getItem("userEmail") || "-";
     const userRole = localStorage.getItem("userRole") || "-";
 
+    if (userRole === "-" || !localStorage.getItem("userEmail")) {
+      window.location.href = "login.html";
+    }
+
     document.getElementById("welcomeTitle").textContent = `ברוך הבא, ${userName}`;
     document.getElementById("userName").textContent = userName;
     document.getElementById("userEmail").textContent = userEmail;
     document.getElementById("userRole").textContent = userRole;
 
+    if (userRole === "Admin") {
+      document.getElementById("adminSection").style.display = "block";
+    }
+
     function goToProfile() {
       window.location.href = "profile.html";
+    }
+
+    function goToApproveWorkers() {
+      window.location.href = "approve-workers.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userEmail");
+      window.location.href = "login.html";
     }
 
   </script>

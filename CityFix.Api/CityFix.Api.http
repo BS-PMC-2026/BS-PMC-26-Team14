@@ -4,3 +4,24 @@ GET {{CityFix.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+POST {{CityFix.Api_HostAddress}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "user@example.com"
+}
+
+###
+
+POST {{CityFix.Api_HostAddress}}/api/auth/reset-password
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "code": "123456",
+  "newPassword": "newPassword123"
+}
+
+###
+

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>אישור עובדים - CityFix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: #f0efff;
+      min-height: 100vh;
+      padding: 20px;
+      color: #0f172a;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+    }
+    h1 { text-align: center; font-size: 32px; color: #8b2cf5; margin-bottom: 30px; }
+    .table-wrapper { overflow-x: auto; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th {
+      background: #f3f4f6;
+      padding: 12px;
+      text-align: right;
+      font-weight: 700;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    tr:hover { background: #f9fafb; }
+    .actions { display: flex; gap: 8px; }
+    .btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn-approve {
+      background: #16a34a;
+      color: #fff;
+    }
+    .btn-approve:hover { background: #15803d; }
+    .btn-reject {
+      background: #dc2626;
+      color: #fff;
+    }
+    .btn-reject:hover { background: #b91c1c; }
+    .message { text-align: center; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
+    .message.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+    .message.success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .empty { text-align: center; padding: 40px; color: #9ca3af; }
+    .back-link { display: inline-block; margin-top: 20px; color: #8b2cf5; text-decoration: none; }
+    .back-link:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>אישור בקשות עובדים</h1>
+    <div id="messageBox" class="message"></div>
+    <div class="table-wrapper" id="tableContainer">
+      <p class="empty">טוען...</p>
+    </div>
+    <a href="home.html" class="back-link">← חזרה</a>
+    <a href="#" class="back-link" onclick="logout(); return false;">התנתקות</a>
+  </div>
+
+  <script>
+    const BASE_URL = "/api/auth";
+
+    const userRole = localStorage.getItem("userRole");
+    if (userRole !== "Admin") {
+      window.location.href = "login.html";
+    }
+
+    async function loadPendingWorkers() {
+      try {
+        const response = await fetch(`${BASE_URL}/pending-workers`);
+        const workers = await response.json();
+
+        const container = document.getElementById("tableContainer");
+        
+        if (!Array.isArray(workers) || workers.length === 0) {
+          container.innerHTML = '<p class="empty">אין בקשות ממתינות</p>';
+          return;
+        }
+
+        let html = `
+          <table>
+            <thead>
+              <tr>
+                <th>שם מלא</th>
+                <th>אימייל</th>
+                <th>טלפון</th>
+                <th>מחלקה</th>
+                <th>עיר</th>
+                <th>תעודה</th>
+                <th>פעולות</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+
+        workers.forEach(worker => {
+          html += `
+            <tr>
+              <td>${worker.fullName}</td>
+              <td>${worker.email}</td>
+              <td>${worker.phone}</td>
+              <td>${worker.department}</td>
+              <td>${worker.municipality}</td>
+              <td>${worker.nationalId}</td>
+              <td class="actions">
+                <button class="btn btn-approve" onclick="approveWorker(${worker.id})">אישור</button>
+                <button class="btn btn-reject" onclick="rejectWorker(${worker.id})">דחייה</button>
+              </td>
+            </tr>
+          `;
+        });
+
+        html += `</tbody></table>`;
+        container.innerHTML = html;
+      } catch (error) {
+        document.getElementById("messageBox").innerHTML = `<div class="error">שגיאה בטעינת הנתונים</div>`;
+      }
+    }
+
+    async function approveWorker(workerId) {
+      try {
+        const response = await fetch(`${BASE_URL}/approve-worker/${workerId}`, { method: "POST" });
+        const data = await response.json();
+
+        if (response.ok) {
+          showMessage(data.message, "success");
+          setTimeout(loadPendingWorkers, 1000);
+        } else {
+          showMessage(data.message, "error");
+        }
+      } catch (error) {
+        showMessage("שגיאה בשמירה", "error");
+      }
+    }
+
+    async function rejectWorker(workerId) {
+      try {
+        const response = await fetch(`${BASE_URL}/reject-worker/${workerId}`, { method: "POST" });
+        const data = await response.json();
+
+        if (response.ok) {
+          showMessage(data.message, "success");
+          setTimeout(loadPendingWorkers, 1000);
+        } else {
+          showMessage(data.message, "error");
+        }
+      } catch (error) {
+        showMessage("שגיאה בשמירה", "error");
+      }
+    }
+
+    function showMessage(text, type) {
+      const box = document.getElementById("messageBox");
+      box.className = `message ${type}`;
+      box.textContent = text;
+    }
+
+    function logout() {
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userEmail");
+      window.location.href = "login.html";
+    }
+
+    loadPendingWorkers();
+  </script>
+</body>
+</html>
+
