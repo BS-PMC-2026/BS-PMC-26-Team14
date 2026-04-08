@@ -1,1 +1,32 @@
+name: CI
 
+on:
+  push:
+    branches:
+      - main
+      - Develop
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore API dependencies
+        run: dotnet restore CityFix.Api/CityFix.Api.csproj
+
+      - name: Restore test dependencies
+        run: dotnet restore tests/CityFix.Api.Tests/CityFix.Api.Tests.csproj
+
+      - name: Build API
+        run: dotnet build CityFix.Api/CityFix.Api.csproj --configuration Release --no-restore
+
+      - name: Run tests (tests folder)
+        run: dotnet test tests/CityFix.Api.Tests/CityFix.Api.Tests.csproj --configuration Release --no-restore
