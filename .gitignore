@@ -1,5 +1,8 @@
-/CityFix.Api/bin
-/CityFix.Api/bin/Debug/net10.0
-/CityFix.Api/bin/Debug
-/CityFix.Api/bin
-/CityFix.Api/obj
+.DS_Store
+
+# .NET build output
+bin/
+obj/
+.idea/.idea.BS-PMC-26-Team14.dir/.idea/encodings.xml
+.idea/.idea.BS-PMC-26-Team14.dir/.idea/indexLayout.xml
+.idea/.idea.BS-PMC-26-Team14.dir/.idea/vcs.xml
