@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>התחברות עובד - CityFix</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      min-height: 100vh;
+      background: #e4f8ea;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0f172a;
+      padding: 24px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 22px 45px rgba(15, 23, 42, 0.14);
+      padding: 34px 34px 28px;
+    }
+
+    .top-icon {
+      width: 86px;
+      height: 86px;
+      border-radius: 50%;
+      background: #d1fae5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 18px;
+    }
+
+    .top-icon svg {
+      width: 42px;
+      height: 42px;
+      stroke: #16a34a;
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .title {
+      text-align: center;
+      font-size: 30px;
+      font-weight: 800;
+      color: #0f2341;
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 18px;
+      color: #475569;
+      margin-bottom: 28px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      height: 54px;
+      border: 1px solid #d7dee8;
+      border-radius: 12px;
+      background: #fff;
+      padding: 0 16px 0 48px;
+      font-size: 16px;
+      color: #0f172a;
+      outline: none;
+    }
+
+    .input-wrap input::placeholder {
+      color: #94a3b8;
+    }
+
+    .input-wrap svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      stroke: #94a3b8;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      pointer-events: none;
+    }
+
+    .options-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 0 20px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #1e293b;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .remember input {
+      width: 16px;
+      height: 16px;
+      accent-color: #16a34a;
+    }
+
+    .forgot-link {
+      color: #16a34a;
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .forgot-link:hover {
+      text-decoration: underline;
+    }
+
+    .submit-btn {
+      width: 100%;
+      height: 54px;
+      border: none;
+      border-radius: 12px;
+      background: #08a63b;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 22px rgba(8, 166, 59, 0.24);
+      transition: 0.2s ease;
+    }
+
+    .submit-btn:hover {
+      background: #099134;
+    }
+
+    .message-box {
+      display: none;
+      margin-top: 16px;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 15px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .message-box.error {
+      display: block;
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .message-box.success {
+      display: block;
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .bottom-links {
+      text-align: center;
+      margin-top: 22px;
+      line-height: 2;
+      font-size: 17px;
+      color: #475569;
+    }
+
+    .bottom-links a {
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .signup-link {
+      color: #16a34a;
+    }
+
+    .back-link {
+      color: #334155;
+      font-weight: 500;
+    }
+
+    @media (max-width: 600px) {
+      .card {
+        padding: 24px 18px 22px;
+      }
+
+      .title {
+        font-size: 26px;
+      }
+
+      .subtitle {
+        font-size: 16px;
+      }
+
+      .options-row {
+        align-items: flex-start;
+        flex-direction: column-reverse;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="top-icon">
+      <svg viewBox="0 0 24 24">
+        <rect x="3" y="7" width="18" height="12" rx="2"></rect>
+        <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+      </svg>
+    </div>
+
+    <h1 class="title">התחברות עובד</h1>
+    <p class="subtitle">טיפול בדיווחים ומשימות שטח</p>
+
+    <form id="workerLoginForm">
+      <div class="form-group">
+        <label for="email">אימייל</label>
+        <div class="input-wrap">
+          <input type="email" id="email" placeholder="worker@cityfix.com" required />
+          <svg viewBox="0 0 24 24">
+            <path d="M4 6h16v12H4z"></path>
+            <path d="m4 7 8 6 8-6"></path>
+          </svg>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">סיסמה</label>
+        <div class="input-wrap">
+          <input type="password" id="password" placeholder="••••••••" required />
+          <svg viewBox="0 0 24 24">
+            <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+            <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+          </svg>
+        </div>
+      </div>
+
+      <div class="options-row">
+        <a href="#" class="forgot-link">שכחתי סיסמה</a>
+
+        <label class="remember">
+          <input type="checkbox" id="rememberMe" />
+          <span>זכור אותי</span>
+        </label>
+      </div>
+
+      <button type="submit" class="submit-btn">התחבר</button>
+
+      <div id="messageBox" class="message-box"></div>
+    </form>
+
+    <div class="bottom-links">
+      <div>עדיין לא רשום? <a class="signup-link" href="../signUp/worker-signup.html">הרשם עכשיו</a></div>
+      <div><a class="back-link" href="login.html">← חזרה לבחירת סוג משתמש</a></div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("workerLoginForm");
+    const messageBox = document.getElementById("messageBox");
+
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      messageBox.className = "message-box";
+      messageBox.style.display = "none";
+      messageBox.textContent = "";
+
+      const data = {
+        email: document.getElementById("email").value.trim(),
+        password: document.getElementById("password").value
+      };
+
+      try {
+        const response = await fetch("/api/Auth/login-worker", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          messageBox.className = "message-box error";
+          messageBox.textContent = result.message || "שגיאה בהתחברות";
+          return;
+        }
+
+        if (document.getElementById("rememberMe").checked) {
+          localStorage.setItem("workerEmail", data.email);
+        } else {
+          localStorage.removeItem("workerEmail");
+        }
+
+        localStorage.setItem("userRole", "Worker");
+        localStorage.setItem("userName", result.fullName || "");
+        localStorage.setItem("userEmail", data.email);
+
+        messageBox.className = "message-box success";
+        messageBox.textContent = result.message || "התחברת בהצלחה";
+
+        setTimeout(() => {
+window.location.href = "home.html";
+        }, 1000);
+
+      } catch (error) {
+        messageBox.className = "message-box error";
+        messageBox.textContent = "בעיה בחיבור לשרת";
+        console.error(error);
+      }
+    });
+
+    const savedEmail = localStorage.getItem("workerEmail");
+    if (savedEmail) {
+      document.getElementById("email").value = savedEmail;
+      document.getElementById("rememberMe").checked = true;
+    }
+  </script>
+</body>
+</html>
