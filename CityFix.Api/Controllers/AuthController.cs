@@ -2,6 +2,7 @@ using System.Security.Cryptography;
 using System.Text;
 using CityFix.Api.Data;
 using CityFix.Api.Models;
+using CityFix.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,15 +13,19 @@ namespace CityFix.Api.Controllers
     public class AuthController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IEmailSender _emailSender;
+        private readonly ILogger<AuthController> _logger;
 
         // Admin זמני קבוע בקוד
         private const string AdminEmail = "admin@cityfix.com";
         private const string AdminPassword = "1234";
         private const string AdminFullName = "מנהל מערכת";
 
-        public AuthController(ApplicationDbContext context)
+        public AuthController(ApplicationDbContext context, IEmailSender emailSender, ILogger<AuthController> logger)
         {
             _context = context;
+            _emailSender = emailSender;
+            _logger = logger;
         }
 
         [HttpPost("register-customer")]
@@ -93,53 +98,259 @@ namespace CityFix.Api.Controllers
             });
         }
 
-       [HttpPost("login-worker")]
-public async Task<IActionResult> LoginWorker([FromBody] LoginDto dto)
-{
-    var worker = await _context.Workers
-        .FirstOrDefaultAsync(x => x.Email == dto.Email);
+        [HttpPost("login-worker")]
+        public async Task<IActionResult> LoginWorker([FromBody] LoginDto dto)
+        {
+            var worker = await _context.Workers
+                .FirstOrDefaultAsync(x => x.Email == dto.Email);
 
-    if (worker == null)
-        return NotFound(new { message = "האימייל לא קיים במערכת" });
+            if (worker == null)
+                return NotFound(new { message = "האימייל לא קיים במערכת" });
 
-    if (!VerifyPassword(dto.Password, worker.PasswordHash))
-        return Unauthorized(new { message = "הסיסמה שגויה" });
+            if (!VerifyPassword(dto.Password, worker.PasswordHash))
+                return Unauthorized(new { message = "הסיסמה שגויה" });
 
-    if (worker.ApprovalStatus == "Pending")
-        return BadRequest(new { message = "החשבון עדיין ממתין לאישור מנהל" });
+            if (worker.ApprovalStatus == "Pending")
+                return BadRequest(new { message = "החשבון עדיין ממתין לאישור מנהל" });
 
-    if (worker.ApprovalStatus == "Rejected")
-        return BadRequest(new { message = "בקשת ההרשמה נדחתה" });
+            if (worker.ApprovalStatus == "Rejected")
+                return BadRequest(new { message = "בקשת ההרשמה נדחתה" });
 
-    return Ok(new
-    {
-        message = "התחברת בהצלחה",
-        role = "Worker",
-        fullName = worker.FullName,
-        email = worker.Email
-    });
-}
+            return Ok(new
+            {
+                message = "התחברת בהצלחה",
+                role = "Worker",
+                fullName = worker.FullName,
+                email = worker.Email
+            });
+        }
 
         [HttpPost("login-admin")]
-public async Task<IActionResult> LoginAdmin([FromBody] LoginDto dto)
-{
-    var admin = await _context.Admins
-        .FirstOrDefaultAsync(x => x.Email == dto.Email);
+        public async Task<IActionResult> LoginAdmin([FromBody] LoginDto dto)
+        {
+            var admin = await _context.Admins
+                .FirstOrDefaultAsync(x => x.Email == dto.Email);
 
-    if (admin == null)
-        return NotFound(new { message = "האימייל לא קיים במערכת" });
+            if (admin == null)
+                return NotFound(new { message = "האימייל לא קיים במערכת" });
 
-    if (!VerifyPassword(dto.Password, admin.PasswordHash))
-        return Unauthorized(new { message = "הסיסמה שגויה" });
+            if (!VerifyPassword(dto.Password, admin.PasswordHash))
+                return Unauthorized(new { message = "הסיסמה שגויה" });
 
-    return Ok(new
-    {
-        message = "התחברת בהצלחה",
-        role = "Admin",
-        fullName = admin.FullName,
-        email = admin.Email
-    });
-}
+            return Ok(new
+            {
+                message = "התחברת בהצלחה",
+                role = "Admin",
+                fullName = admin.FullName,
+                email = admin.Email
+            });
+        }
+
+        [HttpGet("pending-workers")]
+        public async Task<IActionResult> GetPendingWorkers()
+        {
+            var pendingWorkers = await _context.Workers
+                .Where(w => w.ApprovalStatus == "Pending")
+                .Select(w => new
+                {
+                    w.Id,
+                    w.FullName,
+                    w.Email,
+                    w.Phone,
+                    w.Department,
+                    w.Municipality,
+                    w.NationalId,
+                    w.CreatedAt
+                })
+                .ToListAsync();
+
+            return Ok(pendingWorkers);
+        }
+
+        [HttpPost("approve-worker/{workerId}")]
+        public async Task<IActionResult> ApproveWorker(int workerId)
+        {
+            var worker = await _context.Workers.FindAsync(workerId);
+
+            if (worker == null)
+                return NotFound(new { message = "Worker not found" });
+
+            worker.ApprovalStatus = "Approved";
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Worker approved successfully" });
+        }
+
+        [HttpPost("reject-worker/{workerId}")]
+        public async Task<IActionResult> RejectWorker(int workerId)
+        {
+            var worker = await _context.Workers.FindAsync(workerId);
+
+            if (worker == null)
+                return NotFound(new { message = "Worker not found" });
+
+            worker.ApprovalStatus = "Rejected";
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Worker rejected" });
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto dto)
+        {
+            var email = dto.Email.Trim().ToLowerInvariant();
+            var user = await FindUserByEmailAsync(email);
+
+            if (user == null)
+            {
+                return Ok(new { message = "אם כתובת האימייל קיימת במערכת, נשלח קוד איפוס." });
+            }
+
+            var now = DateTime.UtcNow;
+            var code = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
+            var expiresAt = now.AddMinutes(10);
+
+            var activeCodes = await _context.PasswordResetCodes
+                .Where(x => x.UserType == user.Value.UserType && x.UserId == user.Value.UserId && !x.IsUsed && x.ExpiresAt > now)
+                .ToListAsync();
+
+            foreach (var activeCode in activeCodes)
+            {
+                activeCode.IsUsed = true;
+                activeCode.UsedAt = now;
+            }
+
+            var passwordResetCode = new PasswordResetCode
+            {
+                UserType = user.Value.UserType,
+                UserId = user.Value.UserId,
+                CodeHash = HashPassword(code),
+                ExpiresAt = expiresAt,
+                CreatedAt = now,
+                FailedAttempts = 0,
+                IsUsed = false
+            };
+
+            _context.PasswordResetCodes.Add(passwordResetCode);
+            await _context.SaveChangesAsync();
+
+            var subject = "CityFix - קוד לאיפוס סיסמה";
+            var body = $"קוד האימות שלך הוא: {code}\n\nהקוד תקף ל-10 דקות.";
+
+            try
+            {
+                await _emailSender.SendAsync(email, subject, body);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to send password reset code to {Email}", email);
+                return StatusCode(500, new { message = "לא הצלחנו לשלוח אימייל כרגע. נסה שוב מאוחר יותר." });
+            }
+
+            return Ok(new { message = "אם כתובת האימייל קיימת במערכת, נשלח קוד איפוס." });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            var email = dto.Email.Trim().ToLowerInvariant();
+            var user = await FindUserByEmailAsync(email);
+
+            if (user == null)
+            {
+                return BadRequest(new { message = "קוד האימות אינו תקין או שפג תוקפו" });
+            }
+
+            var now = DateTime.UtcNow;
+            var resetCode = await _context.PasswordResetCodes
+                .Where(x => x.UserType == user.Value.UserType && x.UserId == user.Value.UserId && !x.IsUsed)
+                .OrderByDescending(x => x.CreatedAt)
+                .FirstOrDefaultAsync();
+
+            if (resetCode == null || resetCode.ExpiresAt <= now)
+            {
+                return BadRequest(new { message = "קוד האימות אינו תקין או שפג תוקפו" });
+            }
+
+            if (!VerifyPassword(dto.Code, resetCode.CodeHash))
+            {
+                await _context.SaveChangesAsync();
+                return BadRequest(new { message = "קוד האימות אינו תקין או שפג תוקפו" });
+            }
+
+            switch (user.Value.UserType)
+            {
+                case "Customer":
+                {
+                    var customer = await _context.Customers.FindAsync(user.Value.UserId);
+                    if (customer == null)
+                    {
+                        return BadRequest(new { message = "המשתמש לא נמצא" });
+                    }
+
+                    customer.PasswordHash = HashPassword(dto.NewPassword);
+                    break;
+                }
+                case "Worker":
+                {
+                    var worker = await _context.Workers.FindAsync(user.Value.UserId);
+                    if (worker == null)
+                    {
+                        return BadRequest(new { message = "המשתמש לא נמצא" });
+                    }
+
+                    worker.PasswordHash = HashPassword(dto.NewPassword);
+                    break;
+                }
+                case "Admin":
+                {
+                    var admin = await _context.Admins.FindAsync(user.Value.UserId);
+                    if (admin == null)
+                    {
+                        return BadRequest(new { message = "המשתמש לא נמצא" });
+                    }
+
+                    admin.PasswordHash = HashPassword(dto.NewPassword);
+                    break;
+                }
+            }
+
+            resetCode.IsUsed = true;
+            resetCode.UsedAt = now;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "הסיסמה אופסה בהצלחה" });
+        }
+
+        private async Task<(string UserType, int UserId)?> FindUserByEmailAsync(string email)
+        {
+            var customer = await _context.Customers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Email.ToLower() == email);
+            if (customer != null)
+            {
+                return ("Customer", customer.Id);
+            }
+
+            var worker = await _context.Workers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Email.ToLower() == email);
+            if (worker != null)
+            {
+                return ("Worker", worker.Id);
+            }
+
+            var admin = await _context.Admins
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Email.ToLower() == email);
+            if (admin != null)
+            {
+                return ("Admin", admin.Id);
+            }
+
+            return null;
+        }
 
         private static string HashPassword(string password)
         {
