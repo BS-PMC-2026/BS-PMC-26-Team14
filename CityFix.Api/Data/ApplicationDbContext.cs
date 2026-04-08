@@ -12,5 +12,6 @@ namespace CityFix.Api.Data
 
         public DbSet<Customer> Customers => Set<Customer>();
         public DbSet<Worker> Workers => Set<Worker>();
+        public DbSet<Admin> Admins => Set<Admin>();
     }
 }
