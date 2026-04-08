@@ -93,6 +93,10 @@
       box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
     }
 
+    .profile-btn.hidden {
+      display: none;
+    }
+
     .profile-btn:hover {
       background: #1d4ed8;
     }
@@ -301,9 +305,15 @@
 
     if (userRole === "Admin") {
       document.getElementById("adminSection").style.display = "block";
+    } else {
+      document.querySelector(".profile-btn").classList.add("hidden");
     }
 
     function goToProfile() {
+      if (userRole !== "Admin") {
+        return;
+      }
+
       window.location.href = "profile.html";
     }
 
