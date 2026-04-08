@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CityFix</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: #edf2ff;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+
+    .page {
+      width: 100%;
+      min-height: 100vh;
+      padding: 36px 20px 42px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 18px;
+      margin-bottom: 12px;
+      direction: ltr;
+    }
+
+    .logo-row h1 {
+      font-size: 56px;
+      line-height: 1;
+      font-weight: 800;
+      color: #3f37b7;
+    }
+
+.logo-icon {
+  width: 70px;
+  height: 70px;
+  background: #e0e7ff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-icon img {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+}
+    .subtitle {
+      font-size: 20px;
+      color: #334155;
+      margin-top: 8px;
+      margin-bottom: 8px;
+      text-align: center;
+    }
+
+    .location-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #64748b;
+      font-size: 17px;
+      margin-bottom: 46px;
+    }
+
+    .location-line svg {
+      width: 18px;
+      height: 18px;
+      stroke: #64748b;
+      stroke-width: 2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .main-cards {
+      width: 100%;
+      max-width: 850px;
+      display: flex;
+      gap: 28px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 56px;
+    }
+
+    .main-card {
+      width: 408px;
+      min-height: 210px;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 26px 24px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .main-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+    }
+
+    .circle-icon {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .circle-icon.login {
+      background: #dfe4ff;
+    }
+
+
+
+    .circle-icon svg {
+      width: 34px;
+      height: 34px;
+      stroke-width: 2.2;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+.circle-icon img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain;
+    margin-top: 15px; 
+}
+    .circle-icon.login svg {
+      stroke: #5a4df0;
+    }
+
+    .circle-icon.signup svg {
+      stroke: #16a34a;
+    }
+
+    .main-card h2 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+
+    .main-card p {
+      font-size: 16px;
+      color: #475569;
+    }
+
+    .how-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    .steps {
+      width: 100%;
+      max-width: 850px;
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .step-card {
+      width: 250px;
+      min-height: 148px;
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 18px 16px;
+      text-align: center;
+    }
+
+    .step-number {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #3b82f6;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 27px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    .step-card h3 {
+      font-size: 17px;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+
+    .step-card p {
+      font-size: 15px;
+      color: #64748b;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 900px) {
+      .logo-row h1 {
+        font-size: 46px;
+      }
+
+      .subtitle {
+        font-size: 18px;
+      }
+
+      .main-card {
+        width: 100%;
+        max-width: 500px;
+      }
+
+      .step-card {
+        width: 100%;
+        max-width: 500px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .page {
+        padding: 28px 14px 34px;
+      }
+
+      .logo-row h1 {
+        font-size: 38px;
+      }
+
+      .logo-icon svg {
+        width: 46px;
+        height: 46px;
+      }
+
+      .subtitle {
+        font-size: 17px;
+      }
+
+      .location-line {
+        font-size: 15px;
+        margin-bottom: 34px;
+      }
+
+      .how-title {
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <div class="logo-row">
+   <div class="logo-icon">
+    <img src="images/logo1.png" alt="logo">
+   </div>
+      <h1>CityFix</h1>
+    </div>
+
+    <p class="subtitle">דווח על בעיות עירוניות בקלות וקבלו מענה מהיר</p>
+
+    <div class="location-line">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 21s-6-4.35-6-10a6 6 0 1 1 12 0c0 5.65-6 10-6 10Z"/>
+        <circle cx="12" cy="11" r="2"/>
+      </svg>
+      <span>שיפור העיר מתחיל בדיווח שלך</span>
+    </div>
+
+    <div class="main-cards">
+      <div class="main-card" onclick="goToLogin()">
+        <div class="circle-icon login">
+          <svg viewBox="0 0 24 24">
+            <path d="M15 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/>
+            <path d="M10 17l5-5-5-5"/>
+            <path d="M15 12H4"/>
+          </svg>
+        </div>
+        <h2>התחברות</h2>
+        <p>התחבר למערכת עם החשבון שלך</p>
+      </div>
+
+      <div class="main-card" onclick="goToSignup()">
+       <div class="circle-icon signup">
+        <img src="images/signupLogo.png" alt="signup">
+      </div>
+        <h2>הרשמה</h2>
+        <p>צור חשבון חדש והתחל לדווח</p>
+      </div>
+    </div>
+
+    <h2 class="how-title">איך זה עובד?</h2>
+
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-number">1</div>
+        <h3>דווח על בעיה</h3>
+        <p>צלם ותאר את הבעיה במיקום שלך</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">2</div>
+        <h3>מעקב אחר הטיפול</h3>
+        <p>קבל עדכונים על התקדמות הטיפול</p>
+      </div>
+
+      <div class="step-card">
+        <div class="step-number">3</div>
+        <h3>שפר את העיר</h3>
+        <p>תרום לקהילה ולסביבה שלך</p>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function goToLogin() {
+      alert("כאן נעבור אחר כך לדף התחברות");
+    }
+
+   function goToSignup() {
+  window.location.href = "signUp/signup-choice.html";
+}
+  </script>
+</body>
+</html>
