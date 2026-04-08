@@ -290,6 +290,10 @@
     const userEmail = localStorage.getItem("userEmail") || "-";
     const userRole = localStorage.getItem("userRole") || "-";
 
+    if (userRole === "-" || !localStorage.getItem("userEmail")) {
+      window.location.href = "login.html";
+    }
+
     document.getElementById("welcomeTitle").textContent = `ברוך הבא, ${userName}`;
     document.getElementById("userName").textContent = userName;
     document.getElementById("userEmail").textContent = userEmail;
@@ -305,6 +309,13 @@
 
     function goToApproveWorkers() {
       window.location.href = "approve-workers.html";
+    }
+
+    function logout() {
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userEmail");
+      window.location.href = "login.html";
     }
 
   </script>

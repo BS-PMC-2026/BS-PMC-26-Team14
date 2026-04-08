@@ -78,10 +78,16 @@
       <p class="empty">טוען...</p>
     </div>
     <a href="home.html" class="back-link">← חזרה</a>
+    <a href="#" class="back-link" onclick="logout(); return false;">התנתקות</a>
   </div>
 
   <script>
-    const BASE_URL = "http://localhost:5042/api/auth";
+    const BASE_URL = "/api/auth";
+
+    const userRole = localStorage.getItem("userRole");
+    if (userRole !== "Admin") {
+      window.location.href = "login.html";
+    }
 
     async function loadPendingWorkers() {
       try {
@@ -171,6 +177,13 @@
       const box = document.getElementById("messageBox");
       box.className = `message ${type}`;
       box.textContent = text;
+    }
+
+    function logout() {
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userEmail");
+      window.location.href = "login.html";
     }
 
     loadPendingWorkers();

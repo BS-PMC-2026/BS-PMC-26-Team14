@@ -332,6 +332,10 @@
         return;
       }
 
+      localStorage.setItem("userRole", "Customer");
+      localStorage.setItem("userName", result.fullName || "");
+      localStorage.setItem("userEmail", data.email);
+
       messageBox.style.display = "block";
       messageBox.className = "message-box success";
       messageBox.textContent = result.message || "התחברת בהצלחה";
