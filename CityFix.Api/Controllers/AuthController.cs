@@ -13,6 +13,11 @@ namespace CityFix.Api.Controllers
     {
         private readonly ApplicationDbContext _context;
 
+        // Admin זמני קבוע בקוד
+        private const string AdminEmail = "admin@cityfix.com";
+        private const string AdminPassword = "1234";
+        private const string AdminFullName = "מנהל מערכת";
+
         public AuthController(ApplicationDbContext context)
         {
             _context = context;
@@ -67,13 +72,86 @@ namespace CityFix.Api.Controllers
             });
         }
 
-    
+        [HttpPost("login-customer")]
+        public async Task<IActionResult> LoginCustomer([FromBody] LoginDto dto)
+        {
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(x => x.Email == dto.Email);
+
+            if (customer == null)
+                return NotFound(new { message = "לא נמצא לקוח עם האימייל הזה" });
+
+            if (!VerifyPassword(dto.Password, customer.PasswordHash))
+                return Unauthorized(new { message = "סיסמה שגויה" });
+
+            return Ok(new
+            {
+                message = "התחברת בהצלחה",
+                role = "Customer",
+                fullName = customer.FullName,
+                email = customer.Email
+            });
+        }
+
+       [HttpPost("login-worker")]
+public async Task<IActionResult> LoginWorker([FromBody] LoginDto dto)
+{
+    var worker = await _context.Workers
+        .FirstOrDefaultAsync(x => x.Email == dto.Email);
+
+    if (worker == null)
+        return NotFound(new { message = "האימייל לא קיים במערכת" });
+
+    if (!VerifyPassword(dto.Password, worker.PasswordHash))
+        return Unauthorized(new { message = "הסיסמה שגויה" });
+
+    if (worker.ApprovalStatus == "Pending")
+        return BadRequest(new { message = "החשבון עדיין ממתין לאישור מנהל" });
+
+    if (worker.ApprovalStatus == "Rejected")
+        return BadRequest(new { message = "בקשת ההרשמה נדחתה" });
+
+    return Ok(new
+    {
+        message = "התחברת בהצלחה",
+        role = "Worker",
+        fullName = worker.FullName,
+        email = worker.Email
+    });
+}
+
+        [HttpPost("login-admin")]
+public async Task<IActionResult> LoginAdmin([FromBody] LoginDto dto)
+{
+    var admin = await _context.Admins
+        .FirstOrDefaultAsync(x => x.Email == dto.Email);
+
+    if (admin == null)
+        return NotFound(new { message = "האימייל לא קיים במערכת" });
+
+    if (!VerifyPassword(dto.Password, admin.PasswordHash))
+        return Unauthorized(new { message = "הסיסמה שגויה" });
+
+    return Ok(new
+    {
+        message = "התחברת בהצלחה",
+        role = "Admin",
+        fullName = admin.FullName,
+        email = admin.Email
+    });
+}
 
         private static string HashPassword(string password)
         {
             using var sha256 = SHA256.Create();
             var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
             return Convert.ToBase64String(bytes);
+        }
+
+        private static bool VerifyPassword(string password, string savedHash)
+        {
+            var hashedPassword = HashPassword(password);
+            return hashedPassword == savedHash;
         }
     }
 }

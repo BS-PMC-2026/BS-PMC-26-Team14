@@ -331,7 +331,7 @@
       </form>
 
       <div class="bottom-links">
-        <div>כבר יש לך חשבון? <a class="login-link" href="login.html">התחבר</a></div>
+        <div>כבר יש לך חשבון? <a class="login-link" href="/CityFix.Api/wwwroot/LogIn/login.html">התחבר</a></div>
         <div><a class="back-link" href="signup-choice.html">← חזרה לבחירת סוג הרשמה</a></div>
       </div>
     </div>
@@ -368,7 +368,7 @@
       if (response.ok) {
         successBox.style.display = "block";
         successBox.innerText = result.message;
-        form.reset();
+window.location.href = "/LogIn/customer-login.html";
       } else {
         alert(result.message || "שגיאה בהרשמה");
       }

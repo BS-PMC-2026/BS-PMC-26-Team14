@@ -2653,23 +2653,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\akhra\\.nuget\\packages\\": {},
+    "C:\\Users\\Bashar Abadi\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\akhra\\OneDrive\\מסמכים\\GitHub\\BS-PMC-26-Team14\\CityFix.Api\\CityFix.Api.csproj",
+      "projectUniqueName": "C:\\Users\\Bashar Abadi\\Desktop\\BS-PMC-26-Team14\\CityFix.Api\\CityFix.Api.csproj",
       "projectName": "CityFix.Api",
-      "projectPath": "C:\\Users\\akhra\\OneDrive\\מסמכים\\GitHub\\BS-PMC-26-Team14\\CityFix.Api\\CityFix.Api.csproj",
-      "packagesPath": "C:\\Users\\akhra\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\akhra\\OneDrive\\מסמכים\\GitHub\\BS-PMC-26-Team14\\CityFix.Api\\obj\\",
+      "projectPath": "C:\\Users\\Bashar Abadi\\Desktop\\BS-PMC-26-Team14\\CityFix.Api\\CityFix.Api.csproj",
+      "packagesPath": "C:\\Users\\Bashar Abadi\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\Bashar Abadi\\Desktop\\BS-PMC-26-Team14\\CityFix.Api\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\akhra\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\Bashar Abadi\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
