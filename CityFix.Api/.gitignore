@@ -1,5 +1,65 @@
-/CityFix.Api/bin
-/CityFix.Api/obj
-CityFix.Api/bin/Debug/net10.0/CityFix.Api.dll
-CityFix.Api/bin/Debug/net10.0/CityFix.Api.exe
-/CityFix.Api/obj
+# Build results
+bin/
+obj/
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# Visual Studio cache/options
+.vs/
+.vscode/
+*.userprefs
+*.suo
+*.user
+*.sln.docstates
+
+# NuGet
+*.nupkg
+*.snupkg
+*.nuget.props
+*.nuget.targets
+
+# Local Environment
+.env
+.env.local
+
+# Logs
+*.log
+*.logs
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+*.swn
+
+# User-specific files
+*.VisualState.xml
+DeploymentItem*
+
+# Dependencies
+node_modules/
+packages/
+
+# Publish
+PublishProfiles/
+
+# Test Results
+TestResults/
+
+# Coverage
+coverage/
+*.coverage
