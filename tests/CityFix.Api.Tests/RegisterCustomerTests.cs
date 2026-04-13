@@ -2,17 +2,50 @@ using System;
 using System.Net;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using CityFix.Api.Data;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace CityFix.Api.Tests
 {
-    public class RegisterCustomerTests : IClassFixture<WebApplicationFactory<Program>>
+    public class RegisterCustomerTests : IClassFixture<RegisterCustomerTests.InMemoryFactory>
     {
+        public class InMemoryFactory : WebApplicationFactory<Program>
+        {
+            protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
+            {
+                // ConfigureTestServices runs after the app's own services are registered,
+                // so our in-memory override wins over the real Postgres registration.
+                builder.ConfigureTestServices(services =>
+                {
+                    // In EF Core 8+, provider configuration is stored in
+                    // IDbContextOptionsConfiguration<TContext> descriptors.
+                    // We must remove ALL of those (plus the context itself) before
+                    // adding the in-memory provider, otherwise both Npgsql and
+                    // InMemory end up registered and EF throws at runtime.
+                    var configType = typeof(IDbContextOptionsConfiguration<ApplicationDbContext>);
+                    var toRemove = services
+                        .Where(d => d.ServiceType == configType
+                                 || d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>)
+                                 || d.ServiceType == typeof(ApplicationDbContext))
+                        .ToList();
+                    foreach (var d in toRemove)
+                        services.Remove(d);
+
+                    services.AddDbContext<ApplicationDbContext>(options =>
+                        options.UseInMemoryDatabase("TestDb"));
+                });
+            }
+        }
+
         private readonly HttpClient _client;
 
-        public RegisterCustomerTests(WebApplicationFactory<Program> factory)
+        public RegisterCustomerTests(InMemoryFactory factory)
         {
             _client = factory.CreateClient();
         }
@@ -206,7 +239,7 @@ namespace CityFix.Api.Tests
             };
 
             var response = await _client.PostAsJsonAsync("/api/auth/register-customer", request);
-
+            
             response.StatusCode.Should().NotBe(HttpStatusCode.OK);
         }
 
