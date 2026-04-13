@@ -16,11 +16,6 @@ namespace CityFix.Api.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ILogger<AuthController> _logger;
 
-        // Admin זמני קבוע בקוד
-        private const string AdminEmail = "admin@cityfix.com";
-        private const string AdminPassword = "1234";
-        private const string AdminFullName = "מנהל מערכת";
-
         public AuthController(ApplicationDbContext context, IEmailSender emailSender, ILogger<AuthController> logger)
         {
             _context = context;
@@ -144,6 +139,78 @@ namespace CityFix.Api.Controllers
                 fullName = admin.FullName,
                 email = admin.Email
             });
+        }
+
+        [HttpGet("admin-profile")]
+        public async Task<IActionResult> GetAdminProfile([FromQuery] string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return BadRequest(new { message = "האימייל נדרש" });
+
+            var normalizedEmail = email.Trim().ToLowerInvariant();
+            var admin = await _context.Admins
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Email.ToLower() == normalizedEmail);
+
+            if (admin == null)
+                return NotFound(new { message = "המנהל לא נמצא" });
+
+            return Ok(new
+            {
+                username = admin.FullName,
+                email = admin.Email
+            });
+        }
+
+        [HttpPut("admin-profile")]
+        public async Task<IActionResult> UpdateAdminProfile([FromBody] UpdateAdminProfileDto dto)
+        {
+            var currentEmail = dto.CurrentEmail.Trim().ToLowerInvariant();
+            var admin = await _context.Admins
+                .FirstOrDefaultAsync(x => x.Email.ToLower() == currentEmail);
+
+            if (admin == null)
+                return NotFound(new { message = "המנהל לא נמצא" });
+
+            var newEmail = dto.Email.Trim();
+            var normalizedNewEmail = newEmail.ToLowerInvariant();
+
+            var emailTaken = await _context.Admins
+                .AnyAsync(x => x.Id != admin.Id && x.Email.ToLower() == normalizedNewEmail);
+
+            if (emailTaken)
+                return BadRequest(new { message = "האימייל כבר קיים במערכת" });
+
+            admin.FullName = dto.Username.Trim();
+            admin.Email = newEmail;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "שם המשתמש והאימייל עודכנו בהצלחה",
+                username = admin.FullName,
+                email = admin.Email
+            });
+        }
+
+        [HttpPut("admin-password")]
+        public async Task<IActionResult> ChangeAdminPassword([FromBody] ChangeAdminPasswordDto dto)
+        {
+            var currentEmail = dto.CurrentEmail.Trim().ToLowerInvariant();
+            var admin = await _context.Admins
+                .FirstOrDefaultAsync(x => x.Email.ToLower() == currentEmail);
+
+            if (admin == null)
+                return NotFound(new { message = "המנהל לא נמצא" });
+
+            if (!VerifyPassword(dto.CurrentPassword, admin.PasswordHash))
+                return Unauthorized(new { message = "הסיסמה הנוכחית שגויה" });
+
+            admin.PasswordHash = HashPassword(dto.NewPassword);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "הסיסמה עודכנה בהצלחה" });
         }
 
         [HttpGet("pending-workers")]

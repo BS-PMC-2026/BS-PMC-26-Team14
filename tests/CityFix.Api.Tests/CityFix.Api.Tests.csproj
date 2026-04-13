@@ -18,4 +18,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\CityFix.Api\CityFix.Api.csproj" />
+  </ItemGroup>
+
 </Project>

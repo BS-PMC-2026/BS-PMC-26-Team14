@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>פרופיל מנהל - CityFix</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: linear-gradient(135deg, #eef4ff 0%, #f8fbff 100%);
+      min-height: 100vh;
+      color: #0f172a;
+    }
+
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topbar {
+      width: 100%;
+      background: #ffffff;
+      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-box {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: #efe3ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8b2cf5;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .brand h1 {
+      font-size: 28px;
+      color: #8b2cf5;
+      font-weight: 800;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 12px;
+      padding: 12px 20px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s ease;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .home-btn {
+      background: #dbeafe;
+      color: #1d4ed8;
+    }
+
+    .home-btn:hover {
+      background: #bfdbfe;
+    }
+
+    .logout-btn {
+      background: #e2e8f0;
+      color: #1e293b;
+    }
+
+    .logout-btn:hover {
+      background: #cbd5e1;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px 16px 44px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 980px;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.10);
+      padding: 36px 32px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .title {
+      font-size: 34px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      color: #475569;
+      line-height: 1.7;
+    }
+
+    .content {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .section {
+      background: #f8fbff;
+      border: 1px solid #dbeafe;
+      border-radius: 20px;
+      padding: 24px;
+    }
+
+    .section h2 {
+      font-size: 22px;
+      color: #8b2cf5;
+      margin-bottom: 18px;
+      font-weight: 800;
+    }
+
+    .section p.note {
+      color: #64748b;
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap input {
+      width: 100%;
+      height: 52px;
+      border: 1px solid #d7dee8;
+      border-radius: 12px;
+      background: #fff;
+      padding: 0 16px;
+      font-size: 16px;
+      color: #0f172a;
+      outline: none;
+    }
+
+    .input-wrap input:focus {
+      border-color: #8b2cf5;
+      box-shadow: 0 0 0 3px rgba(139, 44, 245, 0.10);
+    }
+
+    .action-btn {
+      width: 100%;
+      height: 52px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #a855f7 0%, #8b2cf5 100%);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: 0.2s ease;
+      margin-top: 4px;
+    }
+
+    .action-btn:hover {
+      opacity: 0.95;
+    }
+
+    .message-box {
+      display: none;
+      margin-bottom: 18px;
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 15px;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .message-box.success {
+      display: block;
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .message-box.error {
+      display: block;
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .current-info {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .info-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+
+    .info-label {
+      color: #64748b;
+      font-size: 14px;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    .info-value {
+      color: #0f172a;
+      font-size: 17px;
+      font-weight: 800;
+      word-break: break-word;
+    }
+
+    @media (max-width: 860px) {
+      .content {
+        grid-template-columns: 1fr;
+      }
+
+      .current-info {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .topbar {
+        padding: 16px;
+      }
+
+      .brand h1 {
+        font-size: 24px;
+      }
+
+      .card {
+        padding: 24px 18px;
+      }
+
+      .title {
+        font-size: 28px;
+      }
+
+      .subtitle {
+        font-size: 16px;
+      }
+
+      .btn {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-box">C</div>
+        <h1>CityFix</h1>
+      </div>
+
+      <div class="top-actions">
+        <a class="btn home-btn" href="home.html">חזרה לדף הראשי</a>
+        <button class="btn logout-btn" onclick="logout()">התנתקות</button>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="card">
+        <div class="header">
+          <h2 class="title">פרופיל מנהל</h2>
+          <p class="subtitle">כאן ניתן לעדכן את שם המשתמש, כתובת האימייל והסיסמה שלך.</p>
+        </div>
+
+        <div id="messageBox" class="message-box"></div>
+
+        <div class="current-info">
+          <div class="info-box">
+            <div class="info-label">שם נוכחי</div>
+            <div class="info-value" id="currentName">-</div>
+          </div>
+          <div class="info-box">
+            <div class="info-label">אימייל נוכחי</div>
+            <div class="info-value" id="currentEmailValue">-</div>
+          </div>
+        </div>
+
+        <div class="content">
+          <section class="section">
+            <h2>עדכון פרטי פרופיל</h2>
+            <p class="note">עדכן את פרטי המשתמש שלך. לאחר השמירה, המידע ישמר גם במערכת וגם בדפדפן שלך.</p>
+
+            <form id="profileForm">
+              <div class="form-group">
+                <label for="username">שם משתמש</label>
+                <div class="input-wrap">
+                  <input type="text" id="username" required minlength="2" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="email">אימייל</label>
+                <div class="input-wrap">
+                  <input type="email" id="email" required />
+                </div>
+              </div>
+
+              <button type="submit" class="action-btn">שמור שינויים</button>
+            </form>
+          </section>
+
+          <section class="section">
+            <h2>שינוי סיסמה</h2>
+            <p class="note">מומלץ לבחור סיסמה חזקה שאינה בשימוש במקומות אחרים.</p>
+
+            <form id="passwordForm">
+              <div class="form-group">
+                <label for="currentPassword">סיסמה נוכחית</label>
+                <div class="input-wrap">
+                  <input type="password" id="currentPassword" required />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="newPassword">סיסמה חדשה</label>
+                <div class="input-wrap">
+                  <input type="password" id="newPassword" required minlength="6" />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="confirmNewPassword">אימות סיסמה חדשה</label>
+                <div class="input-wrap">
+                  <input type="password" id="confirmNewPassword" required minlength="6" />
+                </div>
+              </div>
+
+              <button type="submit" class="action-btn">עדכן סיסמה</button>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = "/api/Auth";
+    const userRole = localStorage.getItem("userRole");
+    let currentEmail = localStorage.getItem("userEmail") || "";
+
+    if (userRole !== "Admin" || !currentEmail) {
+      window.location.href = "login.html";
+    }
+
+    const messageBox = document.getElementById("messageBox");
+    const currentNameEl = document.getElementById("currentName");
+    const currentEmailValueEl = document.getElementById("currentEmailValue");
+    const usernameInput = document.getElementById("username");
+    const emailInput = document.getElementById("email");
+
+    function showMessage(text, type) {
+      messageBox.className = `message-box ${type}`;
+      messageBox.textContent = text;
+      messageBox.style.display = "block";
+    }
+
+    function clearMessage() {
+      messageBox.className = "message-box";
+      messageBox.textContent = "";
+      messageBox.style.display = "none";
+    }
+
+    function syncProfileView(username, email) {
+      usernameInput.value = username || "";
+      emailInput.value = email || "";
+      currentNameEl.textContent = username || "-";
+      currentEmailValueEl.textContent = email || "-";
+    }
+
+    async function loadProfile() {
+      syncProfileView(localStorage.getItem("userName") || "", currentEmail);
+
+      try {
+        const response = await fetch(`${BASE_URL}/admin-profile?email=${encodeURIComponent(currentEmail)}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          showMessage(data.message || "שגיאה בטעינת הפרופיל", "error");
+          return;
+        }
+
+        const username = data.username || data.fullName || "";
+        const email = data.email || currentEmail;
+
+        currentEmail = email;
+        localStorage.setItem("userName", username);
+        localStorage.setItem("userEmail", email);
+        syncProfileView(username, email);
+      } catch (error) {
+        showMessage("לא ניתן לטעון את הפרופיל כרגע", "error");
+      }
+    }
+
+    document.getElementById("profileForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearMessage();
+
+      const payload = {
+        currentEmail,
+        username: usernameInput.value.trim(),
+        email: emailInput.value.trim()
+      };
+
+      try {
+        const response = await fetch(`${BASE_URL}/admin-profile`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          showMessage(data.message || "שגיאה בעדכון שם המשתמש והאימייל", "error");
+          return;
+        }
+
+        currentEmail = data.email || payload.email;
+        const updatedUsername = data.username || payload.username;
+        localStorage.setItem("userName", updatedUsername);
+        localStorage.setItem("userEmail", currentEmail);
+        syncProfileView(updatedUsername, currentEmail);
+        showMessage(data.message || "שם המשתמש והאימייל עודכנו בהצלחה", "success");
+      } catch (error) {
+        showMessage("שגיאה בעדכון שם המשתמש והאימייל", "error");
+      }
+    });
+
+    document.getElementById("passwordForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      clearMessage();
+
+      const currentPassword = document.getElementById("currentPassword").value;
+      const newPassword = document.getElementById("newPassword").value;
+      const confirmNewPassword = document.getElementById("confirmNewPassword").value;
+
+      if (newPassword !== confirmNewPassword) {
+        showMessage("הסיסמה החדשה ואימות הסיסמה אינם תואמים", "error");
+        return;
+      }
+
+      const payload = {
+        currentEmail,
+        currentPassword,
+        newPassword,
+        confirmNewPassword
+      };
+
+      try {
+        const response = await fetch(`${BASE_URL}/admin-password`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          showMessage(data.message || "שגיאה בעדכון הסיסמה", "error");
+          return;
+        }
+
+        document.getElementById("passwordForm").reset();
+        showMessage(data.message || "הסיסמה עודכנה בהצלחה", "success");
+      } catch (error) {
+        showMessage("שגיאה בעדכון הסיסמה", "error");
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem("userRole");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("userEmail");
+      window.location.href = "login.html";
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>
+
+
