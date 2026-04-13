@@ -1,11 +1,20 @@
-namespace CityFix.Api.Models
+using System.ComponentModel.DataAnnotations;
+
+public class CustomerRegisterDto
 {
-    public class CustomerRegisterDto
-    {
-        public string FullName { get; set; } = "";
-        public string Phone { get; set; } = "";
-        public string Email { get; set; } = "";
-        public string Address { get; set; } = "";
-        public string Password { get; set; } = "";
-    }
+    [Required]
+public string Phone { get; set; } = string.Empty;
+    [Required]
+    public string FullName { get; set; }
+
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
+
+    [Required]
+    public string Address { get; set; }
+
+    [Required]
+    [MinLength(6)]
+    public string Password { get; set; }
 }

@@ -37,7 +37,8 @@ namespace CityFix.Api.Controllers
                 Address = dto.Address,
                 PasswordHash = HashPassword(dto.Password)
             };
-
+ if (!ModelState.IsValid)
+        return BadRequest("Invalid data");
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
 

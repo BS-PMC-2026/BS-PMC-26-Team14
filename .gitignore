@@ -7,3 +7,6 @@ obj/
 .idea/.idea.BS-PMC-26-Team14.dir/.idea/indexLayout.xml
 .idea/.idea.BS-PMC-26-Team14.dir/.idea/vcs.xml
 /CityFix.Api/.idea
+CityFix.Api/appsettings.Development.json
+CityFix.Api/appsettings.Development.json
+CityFix.Api/appsettings.json
