@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>דף בית - עובד</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #eefbf3;
+}
+
+.topbar {
+  background: white;
+  padding: 15px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #16a34a;
+}
+
+.top-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 10px 18px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.profile-btn {
+  background: #16a34a;
+  color: white;
+}
+
+.logout-btn {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.container {
+  text-align: center;
+  margin-top: 80px;
+}
+
+h1 {
+  font-size: 30px;
+  margin-bottom: 20px;
+}
+
+.info-box {
+  background: white;
+  width: 320px;
+  margin: 0 auto;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  text-align: right;
+}
+
+.info-box p {
+  margin: 12px 0;
+  font-size: 18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <div class="logo">CityFix Worker</div>
+
+  <div class="top-buttons">
+    <button class="btn profile-btn" onclick="goToProfile()">פרופיל</button>
+    <button class="btn logout-btn" onclick="logout()">התנתקות</button>
+  </div>
+</div>
+
+<div class="container">
+  <h1 id="welcomeText">ברוך הבא 👋</h1>
+
+  <div class="info-box">
+    <p><b>שם עובד:</b> <span id="workerName">-</span></p>
+    <p><b>אימייל:</b> <span id="workerEmail">-</span></p>
+    <p><b>סוג משתמש:</b> <span id="workerRole">-</span></p>
+  </div>
+</div>
+
+<script>
+function logout() {
+  localStorage.clear();
+  window.location.href = "../index.html";
+}
+
+function goToProfile() {
+  window.location.href = "../profile/worker-profile.html";
+}
+
+const fullName = localStorage.getItem("workerFullName");
+const email = localStorage.getItem("workerEmail");
+const role = localStorage.getItem("workerRole");
+
+document.getElementById("workerName").innerText = fullName || "לא זמין";
+document.getElementById("workerEmail").innerText = email || "לא זמין";
+document.getElementById("workerRole").innerText = role || "Worker";
+
+document.getElementById("welcomeText").innerText =
+  "ברוך הבא, " + (fullName || "עובד") + " 👋";
+</script>
+
+</body>
+</html>
