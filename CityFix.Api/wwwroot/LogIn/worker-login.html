@@ -320,28 +320,27 @@
 
         const result = await response.json();
 
-        if (!response.ok) {
-          messageBox.className = "message-box error";
-          messageBox.textContent = result.message || "שגיאה בהתחברות";
-          return;
-        }
+       if (!response.ok) {
+  messageBox.style.display = "block";
+  messageBox.className = "message-box error";
+  messageBox.textContent = result.message || "שגיאה בהתחברות";
+  return;
+}
 
-        if (document.getElementById("rememberMe").checked) {
-          localStorage.setItem("workerEmail", data.email);
-        } else {
-          localStorage.removeItem("workerEmail");
-        }
+localStorage.setItem("workerFullName", result.fullName || "");
+localStorage.setItem("workerEmail", result.email || "");
+localStorage.setItem("workerRole", result.role || "Worker");
+localStorage.setItem("workerPhone", result.phone || "");
+localStorage.setItem("workerMunicipality", result.municipality || "");
+localStorage.setItem("workerDepartment", result.department || "");
 
-        localStorage.setItem("userRole", "Worker");
-        localStorage.setItem("userName", result.fullName || "");
-        localStorage.setItem("userEmail", data.email);
+messageBox.style.display = "block";
+messageBox.className = "message-box success";
+messageBox.textContent = result.message || "התחברת בהצלחה";
 
-        messageBox.className = "message-box success";
-        messageBox.textContent = result.message || "התחברת בהצלחה";
-
-        setTimeout(() => {
-window.location.href = "home.html";
-        }, 1000);
+setTimeout(() => {
+  window.location.href = "../homepage/worker-home.html";
+}, 1000);
 
       } catch (error) {
         messageBox.className = "message-box error";

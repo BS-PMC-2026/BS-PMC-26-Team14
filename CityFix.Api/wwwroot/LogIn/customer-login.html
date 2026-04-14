@@ -274,7 +274,7 @@
       </div>
 
       <div class="options-row">
-        <a href="forgot-password.html?return=customer-login.html" class="forgot-link">שכחתי סיסמה</a>
+        <a href="#" class="forgot-link">שכחתי סיסמה</a>
 
         <label class="remember">
           <input type="checkbox" id="rememberMe" />
@@ -325,24 +325,26 @@
         result = {};
       }
 
-      if (!response.ok) {
-        messageBox.style.display = "block";
-        messageBox.className = "message-box error";
-        messageBox.textContent = result.message || "שגיאה בהתחברות";
-        return;
-      }
+ if (!response.ok) {
+  messageBox.style.display = "block";
+  messageBox.className = "message-box error";
+  messageBox.textContent = result.message || "שגיאה בהתחברות";
+  return;
+}
 
-      localStorage.setItem("userRole", "Customer");
-      localStorage.setItem("userName", result.fullName || "");
-      localStorage.setItem("userEmail", data.email);
+localStorage.setItem("userFullName", result.fullName || "");
+localStorage.setItem("userEmail", result.email || "");
+localStorage.setItem("userRole", result.role || "Customer");
+localStorage.setItem("userPhone", result.phone || "");
+localStorage.setItem("userAddress", result.address || "");
 
-      messageBox.style.display = "block";
-      messageBox.className = "message-box success";
-      messageBox.textContent = result.message || "התחברת בהצלחה";
+messageBox.style.display = "block";
+messageBox.className = "message-box success";
+messageBox.textContent = result.message || "התחברת בהצלחה";
 
-      setTimeout(() => {
-window.location.href = "home.html";
-      }, 1000);
+setTimeout(() => {
+  window.location.href = "../homepage/customer-home.html";
+}, 1000);
 
     } catch (error) {
       messageBox.style.display = "block";
