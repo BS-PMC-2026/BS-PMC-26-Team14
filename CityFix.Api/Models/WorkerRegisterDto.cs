@@ -1,13 +1,27 @@
-namespace CityFix.Api.Models
+using System.ComponentModel.DataAnnotations;
+
+public class WorkerRegisterDto
 {
-    public class WorkerRegisterDto
-    {
-        public string FullName { get; set; } = "";
-        public string NationalId { get; set; } = "";
-        public string Phone { get; set; } = "";
-        public string Email { get; set; } = "";
-        public string Department { get; set; } = "";
-        public string Municipality { get; set; } = "";
-        public string Password { get; set; } = "";
-    }
+    [Required]
+    public string NationalId { get; set; }
+
+    [Required]
+    public string FullName { get; set; }
+
+    [Required]
+    public string Phone { get; set; }
+
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
+
+    [Required]
+    public string Municipality { get; set; }
+
+    [Required]
+    public string Department { get; set; }
+
+    [Required]
+    [MinLength(6)]
+    public string Password { get; set; }
 }

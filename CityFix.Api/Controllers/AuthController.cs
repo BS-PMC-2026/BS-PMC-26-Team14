@@ -62,7 +62,8 @@ namespace CityFix.Api.Controllers
                 PasswordHash = HashPassword(dto.Password),
                 ApprovalStatus = "Pending"
             };
-
+if (!ModelState.IsValid)
+    return BadRequest("Invalid data");
             _context.Workers.Add(worker);
             await _context.SaveChangesAsync();
 
