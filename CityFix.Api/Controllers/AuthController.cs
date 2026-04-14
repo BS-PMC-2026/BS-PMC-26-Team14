@@ -72,26 +72,28 @@ namespace CityFix.Api.Controllers
             });
         }
 
-        [HttpPost("login-customer")]
-        public async Task<IActionResult> LoginCustomer([FromBody] LoginDto dto)
-        {
-            var customer = await _context.Customers
-                .FirstOrDefaultAsync(x => x.Email == dto.Email);
+     [HttpPost("login-customer")]
+public async Task<IActionResult> LoginCustomer([FromBody] LoginDto dto)
+{
+    var customer = await _context.Customers
+        .FirstOrDefaultAsync(x => x.Email == dto.Email);
 
-            if (customer == null)
-                return NotFound(new { message = "לא נמצא לקוח עם האימייל הזה" });
+    if (customer == null)
+        return NotFound(new { message = "לא נמצא לקוח עם האימייל הזה" });
 
-            if (!VerifyPassword(dto.Password, customer.PasswordHash))
-                return Unauthorized(new { message = "סיסמה שגויה" });
+    if (!VerifyPassword(dto.Password, customer.PasswordHash))
+        return Unauthorized(new { message = "סיסמה שגויה" });
 
-            return Ok(new
-            {
-                message = "התחברת בהצלחה",
-                role = "Customer",
-                fullName = customer.FullName,
-                email = customer.Email
-            });
-        }
+    return Ok(new
+    {
+        message = "התחברת בהצלחה",
+        role = "Customer",
+        fullName = customer.FullName,
+        email = customer.Email,
+        phone = customer.Phone,
+        address = customer.Address
+    });
+}
 
        [HttpPost("login-worker")]
 public async Task<IActionResult> LoginWorker([FromBody] LoginDto dto)
@@ -111,13 +113,16 @@ public async Task<IActionResult> LoginWorker([FromBody] LoginDto dto)
     if (worker.ApprovalStatus == "Rejected")
         return BadRequest(new { message = "בקשת ההרשמה נדחתה" });
 
-    return Ok(new
-    {
-        message = "התחברת בהצלחה",
-        role = "Worker",
-        fullName = worker.FullName,
-        email = worker.Email
-    });
+   return Ok(new
+{
+    message = "התחברת בהצלחה",
+    role = "Worker",
+    fullName = worker.FullName,
+    email = worker.Email,
+    phone = worker.Phone,
+    municipality = worker.Municipality,
+    department = worker.Department
+});
 }
 
         [HttpPost("login-admin")]
@@ -153,5 +158,116 @@ public async Task<IActionResult> LoginAdmin([FromBody] LoginDto dto)
             var hashedPassword = HashPassword(password);
             return hashedPassword == savedHash;
         }
+        public class UpdateCustomerProfileDto
+{
+    public string Email { get; set; } = "";
+    public string FullName { get; set; } = "";
+    public string Phone { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string CurrentPassword { get; set; } = "";
+    public string NewPassword { get; set; } = "";
+}
+[HttpPut("update-customer-profile")]
+public async Task<IActionResult> UpdateCustomerProfile([FromBody] UpdateCustomerProfileDto dto)
+{
+    var customer = await _context.Customers
+        .FirstOrDefaultAsync(x => x.Email == dto.Email);
+
+    if (customer == null)
+        return NotFound(new { message = "הלקוח לא נמצא" });
+
+    customer.FullName = dto.FullName;
+    customer.Phone = dto.Phone;
+    customer.Address = dto.Address;
+
+    if (!string.IsNullOrWhiteSpace(dto.NewPassword))
+    {
+        if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
+            return BadRequest(new { message = "יש להזין סיסמה נוכחית" });
+
+        if (!VerifyPassword(dto.CurrentPassword, customer.PasswordHash))
+            return BadRequest(new { message = "הסיסמה הנוכחית שגויה" });
+
+        customer.PasswordHash = HashPassword(dto.NewPassword);
+    }
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "הפרופיל עודכן בהצלחה",
+        role = "Customer",
+        fullName = customer.FullName,
+        email = customer.Email,
+        phone = customer.Phone,
+        address = customer.Address
+    });
+}
+public class UpdateWorkerProfileDto
+{
+    public string Email { get; set; } = "";
+    public string FullName { get; set; } = "";
+    public string Phone { get; set; } = "";
+    public string Municipality { get; set; } = "";
+    public string Department { get; set; } = "";
+    public string CurrentPassword { get; set; } = "";
+    public string NewPassword { get; set; } = "";
+}
+[HttpGet("worker-profile")]
+public async Task<IActionResult> GetWorkerProfile(string email)
+{
+    var worker = await _context.Workers
+        .FirstOrDefaultAsync(x => x.Email == email);
+
+    if (worker == null)
+        return NotFound(new { message = "העובד לא נמצא" });
+
+    return Ok(new
+    {
+        fullName = worker.FullName,
+        email = worker.Email,
+        phone = worker.Phone,
+        municipality = worker.Municipality,
+        department = worker.Department
+    });
+}
+[HttpPut("update-worker-profile")]
+public async Task<IActionResult> UpdateWorkerProfile([FromBody] UpdateWorkerProfileDto dto)
+{
+    var worker = await _context.Workers
+        .FirstOrDefaultAsync(x => x.Email == dto.Email);
+
+    if (worker == null)
+        return NotFound(new { message = "העובד לא נמצא" });
+
+    worker.FullName = dto.FullName;
+    worker.Phone = dto.Phone;
+    worker.Municipality = dto.Municipality;
+    worker.Department = dto.Department;
+
+    if (!string.IsNullOrWhiteSpace(dto.NewPassword))
+    {
+        if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
+            return BadRequest(new { message = "יש להזין סיסמה נוכחית" });
+
+        if (!VerifyPassword(dto.CurrentPassword, worker.PasswordHash))
+            return BadRequest(new { message = "הסיסמה הנוכחית שגויה" });
+
+        worker.PasswordHash = HashPassword(dto.NewPassword);
+    }
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "פרופיל העובד עודכן בהצלחה",
+        role = "Worker",
+        fullName = worker.FullName,
+        email = worker.Email,
+        phone = worker.Phone,
+        municipality = worker.Municipality,
+        department = worker.Department
+    });
+}
     }
 }
