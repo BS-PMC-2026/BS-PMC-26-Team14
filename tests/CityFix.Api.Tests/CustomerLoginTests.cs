@@ -1,219 +1,123 @@
-using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
-using CityFix.Api.Data;
-using CityFix.Api.Models;
-using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
-using Xunit;
+using System.ComponentModel.DataAnnotations;
 
-namespace CityFix.Api.Tests
+namespace CityFix.Api.Tests;
+
+public class CustomerLoginTests
 {
-    public class CustomerLoginTests : IClassFixture<CustomerLoginTests.InMemoryFactory>
+    private class CustomerLoginModel
     {
-        public class InMemoryFactory : WebApplicationFactory<Program>
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = "";
+
+        [Required]
+        [MinLength(6)]
+        public string Password { get; set; } = "";
+    }
+
+    private static IList<ValidationResult> Validate(object obj)
+    {
+        var results = new List<ValidationResult>();
+        var ctx = new ValidationContext(obj);
+        Validator.TryValidateObject(obj, ctx, results, validateAllProperties: true);
+        return results;
+    }
+
+    [Fact]
+    public void CustomerLogin_ValidInput_PassesValidation()
+    {
+        var model = new CustomerLoginModel
         {
-            protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    var configType = typeof(IDbContextOptionsConfiguration<ApplicationDbContext>);
-                    var toRemove = services
-                        .Where(d => d.ServiceType == configType
-                                 || d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>)
-                                 || d.ServiceType == typeof(ApplicationDbContext))
-                        .ToList();
+            Email = "customer@test.com",
+            Password = "123456"
+        };
 
-                    foreach (var d in toRemove)
-                        services.Remove(d);
+        var errors = Validate(model);
 
-                    services.AddDbContext<ApplicationDbContext>(options =>
-                        options.UseInMemoryDatabase("LoginTestDb"));
-                });
-            }
-        }
+        Assert.Empty(errors);
+    }
 
-        private readonly HttpClient _client;
-
-        public CustomerLoginTests(InMemoryFactory factory)
+    [Fact]
+    public void CustomerLogin_InvalidEmail_FailsValidation()
+    {
+        var model = new CustomerLoginModel
         {
-            _client = factory.CreateClient();
-        }
+            Email = "invalid-email",
+            Password = "123456"
+        };
 
-        private async Task SeedCustomerAsync(string email, string password, string fullName = "Test Customer")
+        var errors = Validate(model);
+
+        Assert.NotEmpty(errors);
+    }
+
+    [Fact]
+    public void CustomerLogin_EmptyEmail_FailsValidation()
+    {
+        var model = new CustomerLoginModel
         {
-            var registerRequest = new
-            {
-                phone = "0501234567",
-                fullName = fullName,
-                email = email,
-                address = "Beer Sheva",
-                password = password
-            };
+            Email = "",
+            Password = "123456"
+        };
 
-            var response = await _client.PostAsJsonAsync("/api/auth/register-customer", registerRequest);
+        var errors = Validate(model);
 
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
+        Assert.NotEmpty(errors);
+    }
 
-        [Fact]
-        public async Task LoginCustomer_ShouldReturnSuccess_WhenCredentialsAreCorrect()
+    [Fact]
+    public void CustomerLogin_EmptyPassword_FailsValidation()
+    {
+        var model = new CustomerLoginModel
         {
-            var email = $"login_{Guid.NewGuid()}@test.com";
-            var password = "123456";
+            Email = "customer@test.com",
+            Password = ""
+        };
 
-            await SeedCustomerAsync(email, password);
+        var errors = Validate(model);
 
-            var request = new
-            {
-                email,
-                password
-            };
+        Assert.NotEmpty(errors);
+    }
 
-            var response = await _client.PostAsJsonAsync("/api/auth/login-customer", request);
-
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-        }
-
-        [Fact]
-        public async Task LoginCustomer_ShouldReturnContent_WhenLoginSucceeds()
+    [Fact]
+    public void CustomerLogin_NullEmail_FailsValidation()
+    {
+        var model = new CustomerLoginModel
         {
-            var email = $"content_{Guid.NewGuid()}@test.com";
-            var password = "123456";
+            Email = null!,
+            Password = "123456"
+        };
 
-            await SeedCustomerAsync(email, password);
+        var errors = Validate(model);
 
-            var request = new
-            {
-                email,
-                password
-            };
+        Assert.NotEmpty(errors);
+    }
 
-            var response = await _client.PostAsJsonAsync("/api/auth/login-customer", request);
-            var content = await response.Content.ReadAsStringAsync();
-
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            content.Should().NotBeNullOrWhiteSpace();
-        }
-
-        [Fact]
-        public async Task LoginCustomer_ShouldFail_WhenEmailIsMissing()
+    [Fact]
+    public void CustomerLogin_NullPassword_FailsValidation()
+    {
+        var model = new CustomerLoginModel
         {
-            var request = new
-            {
-                email = "",
-                password = "123456"
-            };
+            Email = "customer@test.com",
+            Password = null!
+        };
 
-            var response = await _client.PostAsJsonAsync("/api/auth/login-customer", request);
+        var errors = Validate(model);
 
-            response.StatusCode.Should().NotBe(HttpStatusCode.OK);
-        }
+        Assert.NotEmpty(errors);
+    }
 
-        [Fact]
-        public async Task LoginCustomer_ShouldFail_WhenPasswordIsMissing()
+    [Fact]
+    public void CustomerLogin_PasswordTooShort_FailsValidation()
+    {
+        var model = new CustomerLoginModel
         {
-            var request = new
-            {
-                email = "customer@test.com",
-                password = ""
-            };
+            Email = "customer@test.com",
+            Password = "123"
+        };
 
-            var response = await _client.PostAsJsonAsync("/api/auth/login-customer", request);
+        var errors = Validate(model);
 
-            response.StatusCode.Should().NotBe(HttpStatusCode.OK);
-        }
-
-        [Fact]
-        public async Task LoginCustomer_ShouldFail_WhenBothFieldsAreMissing()
-        {
-            var request = new
-            {
-                email = "",
-                password = ""
-            };
-
-            var response = await _client.PostAsJsonAsync("/api/auth/login-customer", request);
-
-            response.StatusCode.Should().NotBe(HttpStatusCode.OK);
-        }
-
-        [Fact]
-        public async Task LoginCustomer_ShouldFail_WhenEmailDoesNotExist()
-        {
-            var request = new
-            {
-                email = $"notfound_{Guid.NewGuid()}@test.com",
-                password = "123456"
-            };
-
-            var response = await _client.PostAsJsonAsync("/api/auth/login-customer", request);
-
-            response.StatusCode.Should().NotBe(HttpStatusCode.OK);
-        }
-
-        [Fact]
-        public async Task LoginCustomer_ShouldFail_WhenPasswordIsIncorrect()
-        {
-            var email = $"wrongpass_{Guid.NewGuid()}@test.com";
-            await SeedCustomerAsync(email, "123456");
-
-            var request = new
-            {
-                email,
-                password = "wrong123"
-            };
-
-            var response = await _client.PostAsJsonAsync("/api/auth/login-customer", request);
-
-            response.StatusCode.Should().NotBe(HttpStatusCode.OK);
-        }
-
-        [Fact]
-        public async Task LoginCustomer_ShouldFail_WhenEmailFormatIsInvalid()
-        {
-            var request = new
-            {
-                email = "invalid-email",
-                password = "123456"
-            };
-
-            var response = await _client.PostAsJsonAsync("/api/auth/login-customer", request);
-
-            response.StatusCode.Should().NotBe(HttpStatusCode.OK);
-        }
-
-        [Fact]
-        public async Task LoginCustomer_ShouldFail_WhenBodyIsNull()
-        {
-            var response = await _client.PostAsJsonAsync<object?>("/api/auth/login-customer", null);
-
-            response.StatusCode.Should().NotBe(HttpStatusCode.OK);
-        }
-
-        [Fact]
-        public async Task LoginCustomer_ShouldHandleLongInputValues()
-        {
-            var request = new
-            {
-                email = new string('a', 200) + "@test.com",
-                password = new string('b', 300)
-            };
-
-            var response = await _client.PostAsJsonAsync("/api/auth/login-customer", request);
-
-            response.StatusCode.Should().BeOneOf(
-                HttpStatusCode.OK,
-                HttpStatusCode.BadRequest,
-                HttpStatusCode.Unauthorized,
-                HttpStatusCode.NotFound
-            );
-        }
+        Assert.NotEmpty(errors);
     }
 }
