@@ -1,0 +1,69 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main  
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+
+      - name: Build & Test
+        run: |
+          echo "Running build and tests..."
+          # npm test / mvn test / pytest / etc.
+
+  notify-jira:
+    runs-on: ubuntu-latest
+    needs: build-and-test  
+    if: always()           
+    steps:
+      - name: Notify Jira Deployment
+        env:
+          JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
+          JIRA_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+          DEPLOY_STATE: ${{ needs.build-and-test.result == 'success' && 'successful' || 'failed' }}
+          RUN_NUMBER: ${{ github.run_number }}
+          COMMIT_SHA: ${{ github.sha }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+        run: |
+          TOKEN=$(echo -n "$JIRA_EMAIL:$JIRA_API_TOKEN" | base64)
+          
+          # Extract Jira issue keys from commit message (e.g. PROJ-123)
+          ISSUE_KEYS=$(git log -1 --pretty=%B | grep -oE '[A-Z]+-[0-9]+' | jq -Rsc 'split("\n")[:-1]')
+          
+          if [ "$ISSUE_KEYS" = "[]" ]; then
+            echo "No Jira issue keys found in commit message, skipping."
+            exit 0
+          fi
+
+          curl -X POST "$JIRA_BASE_URL/rest/deployments/0.1/bulk" \
+            -H "Authorization: Basic $TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"deployments\": [{
+                \"deploymentSequenceNumber\": $RUN_NUMBER,
+                \"updateSequenceNumber\": $RUN_NUMBER,
+                \"issueKeys\": $ISSUE_KEYS,
+                \"displayName\": \"Build #$RUN_NUMBER\",
+                \"url\": \"$REPO_URL/actions/runs/${{ github.run_id }}\",
+                \"description\": \"Commit $COMMIT_SHA\",
+                \"lastUpdated\": \"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\",
+                \"state\": \"$DEPLOY_STATE\",
+                \"pipeline\": {
+                  \"id\": \"${{ github.repository }}\",
+                  \"displayName\": \"${{ github.repository }} Pipeline\",
+                  \"url\": \"$REPO_URL\"
+                },
+                \"environment\": {
+                  \"id\": \"production\",
+                  \"displayName\": \"Production\",
+                  \"type\": \"production\"
+                }
+              }]
+            }"
