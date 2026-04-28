@@ -5,7 +5,7 @@ using CityFix.Api.Models;
 using CityFix.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using NetTopologySuite.Geometries;
 namespace CityFix.Api.Controllers
 {
     [ApiController]
@@ -540,7 +540,62 @@ public async Task<IActionResult> UpdateWorkerProfile([FromBody] UpdateWorkerProf
         department = worker.Department
     });
 }
+[HttpPost("create-report")]
+public async Task<IActionResult> CreateReport([FromBody] CreateReportDto dto)
+{
+    if (!ModelState.IsValid)
+        return BadRequest(new { message = "נתונים לא תקינים" });
+if (dto.Latitude == 0 || dto.Longitude == 0)
+{
+    return BadRequest(new { message = "מיקום לא תקין" });
+}
 
+if (dto.Latitude < -90 || dto.Latitude > 90 ||
+    dto.Longitude < -180 || dto.Longitude > 180)
+{
+    return BadRequest(new { message = "קואורדינטות לא חוקיות" });
+}
+
+// גבולות ישראל
+if (dto.Latitude < 29.45 || dto.Latitude > 33.35 ||
+    dto.Longitude < 34.25 || dto.Longitude > 35.65)
+{
+    return BadRequest(new { message = "המיקום חייב להיות בתוך ישראל" });
+}
+    var customerExists = await _context.Customers
+        .AnyAsync(c => c.Email.ToLower() == dto.CustomerEmail.ToLower());
+
+    if (!customerExists)
+        return NotFound(new { message = "הלקוח לא נמצא במערכת" });
+
+var geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+
+var report = new Report
+{
+    CustomerEmail = dto.CustomerEmail,
+    Category = dto.Category,
+    Priority = dto.Priority,
+    Description = dto.Description,
+    Notes = dto.Notes,
+    ImageBase64 = dto.ImageBase64,
+    Latitude = dto.Latitude,
+    Longitude = dto.Longitude,
+    LocationPoint = geometryFactory.CreatePoint(
+    new Coordinate(dto.Longitude, dto.Latitude)
+    ),
+    Status = "Open",
+    CreatedAt = DateTime.UtcNow
+};
+
+    _context.Reports.Add(report);
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "הדיווח נשמר בהצלחה",
+        reportId = report.Id
+    });
+}
         private async Task<(string UserType, int UserId)?> FindUserByEmailAsync(string email)
         {
             var customer = await _context.Customers
