@@ -182,6 +182,135 @@ direction: rtl;
   height: 85px;
   object-fit: contain;
 }
+
+.detect-location-card {
+  margin: 0 0 18px;
+  background: #ffffff;
+  border: 1px solid #d7dde5;
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.detect-location-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.detect-location-text b {
+  font-size: 19px;
+  color: #111827;
+}
+
+.detect-location-text span {
+  color: #64748b;
+  font-size: 15px;
+}
+
+.detect-location-btn {
+  border: none;
+  border-radius: 10px;
+  background: #0b63e5;
+  color: white;
+  padding: 13px 22px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.detect-location-btn:hover {
+  background: #084fbb;
+}
+
+.location-detected-box {
+  max-width: 520px;
+  margin: 0 auto 18px;
+  background: #ffffff;
+  border: 1px solid #d7dde5;
+  border-radius: 14px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+}
+
+.location-detected-box.hidden {
+  display: none;
+}
+
+.success-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  font-weight: bold;
+}
+
+.location-detected-box h3 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  color: #111827;
+}
+
+.location-detected-box p {
+  margin: 0;
+  color: #475569;
+  font-size: 16px;
+}
+
+.location-status-bar {
+  margin-top: 15px;
+  background: white;
+  border: 1px solid #d7dde5;
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #1f2937;
+}
+
+.location-status-bar b {
+  color: #111827;
+}
+
+.accuracy-high {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+@media(max-width:900px) {
+  .detect-location-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .detect-location-btn {
+    justify-content: center;
+  }
+
+  .location-status-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
 </style>
 </head>
 
@@ -294,6 +423,26 @@ direction: rtl;
   <input type="text" id="cityInput" placeholder="City / עיר לדוגמה: באר שבע">
   <input type="text" id="streetInput" placeholder="Street / רחוב לדוגמה: רגר">
   <button type="button" class="btn btn-primary" onclick="searchAddress()">חפש</button>
+</div>
+
+<div class="detect-location-card">
+  <div class="detect-location-text">
+    <b>זיהוי מיקום אוטומטי</b>
+    <span>המערכת תזהה את המיקום הנוכחי שלך ותציג אותו על המפה</span>
+  </div>
+
+  <button type="button" class="detect-location-btn" onclick="detectCurrentLocation()">
+    <span>📍</span>
+    זהה את המיקום שלי
+  </button>
+</div>
+
+<div id="locationDetectedBox" class="location-detected-box hidden">
+  <div class="success-icon">✓</div>
+  <div>
+    <h3>המיקום זוהה אוטומטית</h3>
+    <p>המיקום הנוכחי שלך זוהה ומוצג על המפה.</p>
+  </div>
 </div>
           <div id="map"></div>
 
@@ -578,6 +727,78 @@ setTimeout(() => {
 function isInsideIsrael(lat, lng) {
   return lat >= 29.45 && lat <= 33.35 && lng >= 34.25 && lng <= 35.65;
 }
+
+function detectCurrentLocation() {
+  const detectedBox = document.getElementById("locationDetectedBox");
+
+  if (!navigator.geolocation) {
+    alert("הדפדפן לא תומך בזיהוי מיקום אוטומטי");
+    return;
+  }
+
+  detectedBox.classList.add("hidden");
+
+  navigator.geolocation.getCurrentPosition(
+    function (position) {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+
+      if (!isInsideIsrael(lat, lng)) {
+        alert("המיקום שזוהה אינו בתוך ישראל");
+        return;
+      }
+
+      selectedLatitude = lat;
+      selectedLongitude = lng;
+      selectedLocation = lat.toFixed(6) + "," + lng.toFixed(6);
+
+      map.setView([lat, lng], 17);
+
+      if (marker) {
+        marker.setLatLng([lat, lng]);
+      } else {
+        marker = L.marker([lat, lng]).addTo(map);
+      }
+
+      marker.bindPopup(`
+        <b>המיקום הנוכחי שלך</b><br>
+        ${selectedLocation}<br>
+        זוהה אוטומטית
+      `).openPopup();
+
+      document.getElementById("locationText").innerHTML = `
+        <div class="location-status-bar">
+          <div>
+            📍 <b>מיקום:</b> ${selectedLocation}<br>
+            <span>זוהה אוטומטית</span>
+          </div>
+          <div>
+            דיוק:
+            <span class="accuracy-high">${Math.round(accuracy)} מטר</span>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("sumLocation").innerText = selectedLocation;
+
+      detectedBox.classList.remove("hidden");
+
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 200);
+    },
+    function () {
+      alert("לא ניתן לזהות מיקום. צריך לאשר הרשאת מיקום בדפדפן.");
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+  );
+}
+
 map.on("click", function (e) {
   const lat = e.latlng.lat.toFixed(6);
   const lng = e.latlng.lng.toFixed(6);
