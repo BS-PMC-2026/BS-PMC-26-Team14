@@ -1,4 +1,5 @@
 using NetTopologySuite.Geometries;
+
 namespace CityFix.Api.Models
 {
     public class Report
@@ -14,11 +15,17 @@ namespace CityFix.Api.Models
 
         public string Location { get; set; } = "";
         public string ImageBase64 { get; set; } = "";
+
         public double Latitude { get; set; }
         public double Longitude { get; set; }
 
         public string Status { get; set; } = "Open";
+
+        public string? AssignedWorkerEmail { get; set; }
+        public DateTime? AcceptedAt { get; set; }
+
         public Point? LocationPoint { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
