@@ -24,6 +24,10 @@ namespace CityFix.Api.Models
         public string? AssignedWorkerEmail { get; set; }
         public DateTime? AcceptedAt { get; set; }
 
+        public string? WorkerImageBase64 { get; set; }
+        public string? WorkerImageNote { get; set; }
+        public DateTime? WorkerImageUploadedAt { get; set; }
+
         public Point? LocationPoint { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
