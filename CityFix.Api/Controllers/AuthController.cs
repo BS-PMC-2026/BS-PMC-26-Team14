@@ -482,6 +482,13 @@ public class AcceptReportDto
     public string WorkerEmail { get; set; } = "";
 }
 
+public class WorkerUploadImageDto
+{
+    public string WorkerEmail { get; set; } = "";
+    public string ImageBase64 { get; set; } = "";
+    public string Note { get; set; } = "";
+}
+
 [HttpGet("worker-profile")]
 public async Task<IActionResult> GetWorkerProfile([FromQuery] string email)
 {
@@ -645,6 +652,49 @@ public async Task<IActionResult> AcceptReport(int reportId, [FromBody] AcceptRep
     });
 }
 
+
+[HttpPut("worker-upload-image/{reportId}")]
+public async Task<IActionResult> WorkerUploadImage(int reportId, [FromBody] WorkerUploadImageDto dto)
+{
+    if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
+        return BadRequest(new { message = "אימייל עובד נדרש" });
+
+    if (string.IsNullOrWhiteSpace(dto.ImageBase64))
+        return BadRequest(new { message = "חובה לבחור תמונה" });
+
+    var workerEmail = dto.WorkerEmail.Trim().ToLowerInvariant();
+
+    var report = await _context.Reports.FirstOrDefaultAsync(r => r.Id == reportId);
+
+    if (report == null)
+        return NotFound(new { message = "הדיווח לא נמצא" });
+
+    if (report.Status != "In Treatment")
+        return BadRequest(new { message = "אפשר להעלות תמונה רק לדיווח שנמצא בטיפול" });
+
+    if (string.IsNullOrWhiteSpace(report.AssignedWorkerEmail))
+        return BadRequest(new { message = "הדיווח עדיין לא שויך לעובד" });
+
+    if (report.AssignedWorkerEmail.ToLower() != workerEmail)
+        return BadRequest(new { message = "רק העובד שקיבל את הדיווח יכול להעלות תמונה" });
+
+    report.WorkerImageBase64 = dto.ImageBase64;
+    report.WorkerImageNote = dto.Note;
+    report.WorkerImageUploadedAt = DateTime.UtcNow;
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "התמונה נשמרה בהצלחה",
+        reportId = report.Id,
+        status = report.Status,
+        workerImageBase64 = report.WorkerImageBase64,
+        workerImageNote = report.WorkerImageNote,
+        workerImageUploadedAt = report.WorkerImageUploadedAt
+    });
+}
+
 [HttpGet("open-reports")]
 public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
 {
@@ -672,7 +722,10 @@ public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
             status = r.Status,
             assignedWorkerEmail = r.AssignedWorkerEmail,
             acceptedAt = r.AcceptedAt,
-            createdAt = r.CreatedAt
+            createdAt = r.CreatedAt,
+            workerImageBase64 = r.WorkerImageBase64,
+            workerImageNote = r.WorkerImageNote,
+            workerImageUploadedAt = r.WorkerImageUploadedAt,
         })
         .ToListAsync();
 
