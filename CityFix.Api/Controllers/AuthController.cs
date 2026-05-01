@@ -477,6 +477,11 @@ public class UpdateWorkerProfileDto
     public string NewPassword { get; set; } = "";
 }
 
+public class AcceptReportDto
+{
+    public string WorkerEmail { get; set; } = "";
+}
+
 [HttpGet("worker-profile")]
 public async Task<IActionResult> GetWorkerProfile([FromQuery] string email)
 {
@@ -596,6 +601,85 @@ var report = new Report
         reportId = report.Id
     });
 }
+
+
+[HttpPost("accept-report/{reportId}")]
+public async Task<IActionResult> AcceptReport(int reportId, [FromBody] AcceptReportDto dto)
+{
+    if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
+        return BadRequest(new { message = "אימייל עובד נדרש" });
+
+    var workerEmail = dto.WorkerEmail.Trim().ToLowerInvariant();
+
+    var worker = await _context.Workers
+        .FirstOrDefaultAsync(w => w.Email.ToLower() == workerEmail);
+
+    if (worker == null)
+        return NotFound(new { message = "העובד לא נמצא במערכת" });
+
+    if (worker.ApprovalStatus != "Approved")
+        return BadRequest(new { message = "העובד עדיין לא מאושר במערכת" });
+
+    var report = await _context.Reports
+        .FirstOrDefaultAsync(r => r.Id == reportId);
+
+    if (report == null)
+        return NotFound(new { message = "הדיווח לא נמצא" });
+
+    if (report.Status != "Open")
+        return BadRequest(new { message = "הדיווח כבר נלקח לטיפול או שאינו פתוח" });
+
+    report.Status = "In Treatment";
+    report.AssignedWorkerEmail = worker.Email;
+    report.AcceptedAt = DateTime.UtcNow;
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "הדיווח התקבל לטיפול בהצלחה",
+        reportId = report.Id,
+        status = report.Status,
+        assignedWorkerEmail = report.AssignedWorkerEmail,
+        acceptedAt = report.AcceptedAt
+    });
+}
+
+[HttpGet("open-reports")]
+public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
+{
+    workerEmail = workerEmail?.Trim().ToLower();
+
+    var reports = await _context.Reports
+        .Where(r =>
+            r.Status == "Open" ||
+            (!string.IsNullOrEmpty(workerEmail) &&
+             r.AssignedWorkerEmail != null &&
+             r.AssignedWorkerEmail.ToLower() == workerEmail)
+        )
+        .OrderByDescending(r => r.CreatedAt)
+        .Select(r => new
+        {
+            id = r.Id,
+            customerEmail = r.CustomerEmail,
+            category = r.Category,
+            priority = r.Priority,
+            description = r.Description,
+            notes = r.Notes,
+            imageBase64 = r.ImageBase64,
+            latitude = r.Latitude,
+            longitude = r.Longitude,
+            status = r.Status,
+            assignedWorkerEmail = r.AssignedWorkerEmail,
+            acceptedAt = r.AcceptedAt,
+            createdAt = r.CreatedAt
+        })
+        .ToListAsync();
+
+    return Ok(reports);
+}
+
+
         private async Task<(string UserType, int UserId)?> FindUserByEmailAsync(string email)
         {
             var customer = await _context.Customers
