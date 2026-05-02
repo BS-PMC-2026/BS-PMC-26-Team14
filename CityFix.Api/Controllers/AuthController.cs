@@ -42,7 +42,7 @@ namespace CityFix.Api.Controllers
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
 
-            return Ok(new { message = "הלקוח נרשם בהצלחה" });
+            return Ok(new { message = "התושב נרשם בהצלחה" });
         }
 
         [HttpPost("register-worker")]
@@ -81,7 +81,7 @@ if (!ModelState.IsValid)
                 .FirstOrDefaultAsync(x => x.Email == dto.Email);
 
             if (customer == null)
-                return NotFound(new { message = "לא נמצא לקוח עם האימייל הזה" });
+                return NotFound(new { message = "לא נמצא תושב עם האימייל הזה" });
 
             if (!VerifyPassword(dto.Password, customer.PasswordHash))
                 return Unauthorized(new { message = "סיסמה שגויה" });
@@ -408,7 +408,7 @@ public async Task<IActionResult> GetCustomerProfile([FromQuery] string email)
         .FirstOrDefaultAsync(x => x.Email.ToLower() == normalizedEmail);
 
     if (customer == null)
-        return NotFound(new { message = "הלקוח לא נמצא" });
+        return NotFound(new { message = "התושב לא נמצא" });
 
     return Ok(new
     {
@@ -436,7 +436,7 @@ public async Task<IActionResult> UpdateCustomerProfile([FromBody] UpdateCustomer
         .FirstOrDefaultAsync(x => x.Email == dto.Email);
 
     if (customer == null)
-        return NotFound(new { message = "הלקוח לא נמצא" });
+        return NotFound(new { message = "התושב לא נמצא" });
 
     customer.FullName = dto.FullName;
     customer.Phone = dto.Phone;
