@@ -26,7 +26,6 @@ builder.Services.AddCors(options =>
     });
 });
 var app = builder.Build();
-app.UseDefaultFiles();
 app.UseStaticFiles();
 app.UseCors("AllowAll");
 app.UseSwagger();
@@ -36,6 +35,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.MapGet("/", () => Results.Redirect("/index.html"));
 app.MapControllers();
 
 

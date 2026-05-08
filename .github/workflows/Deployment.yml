@@ -1,0 +1,76 @@
+name: Build and deploy app
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  AZURE_WEBAPP_NAME: CityFix-app
+  AZURE_WEBAPP_PACKAGE_PATH: '.'
+  DOTNET_VERSION: '10.0.x'
+  AZURE_RESOURCEGROUP_NAME: bs-pm-2026-team14
+
+
+jobs:
+  build-and-deploy:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+        
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: dotnet restore
+        run: dotnet restore CityFix.Api/CityFix.Api.csproj
+
+      - name: dotnet build and publish
+        run: |
+          dotnet build CityFix.Api/CityFix.Api.csproj --configuration Release
+          dotnet publish CityFix.Api/CityFix.Api.csproj -c Release -o myapp
+
+      - name: Create deployment archive
+        shell: pwsh
+        run: |
+          $packagePath = Join-Path $env:RUNNER_TEMP 'webapp.zip'
+          if(Test-Path $packagePath){
+              Remove-Item $packagePath -Force
+          }
+          Compress-Archive -Path 'myapp\*' -DestinationPath $packagePath
+          
+      - name: Deploy app using publish profile
+        shell: pwsh
+        env:
+          AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        run: |
+          [xml]$publishProfileXml = $env:AZURE_WEBAPP_PUBLISH_PROFILE
+          $publishProfile = @($publishProfileXml.publishData.publishProfile) |
+            Where-Object { $_.publishMethod -in @('ZipDeploy', 'MSDeploy') } |
+            Select-Object -First 1
+
+          if(-not $publishProfile){
+              Write-Error "No valid publish profile found in AZURE_WEBAPP_PUBLISH_PROFILE"
+              exit 1
+          }
+
+          $publishHost = ($publishProfile.publishUrl -replace '^https?://', '').Split('/')[0]
+          $publishUser = $publishProfile.userName
+          $publishPassword = $publishProfile.userPWD
+          $packagePath = Join-Path $env:RUNNER_TEMP 'webapp.zip'
+          if (-not (Test-Path $packagePath)) {
+              throw "Deployment package not found at $packagePath."
+          }
+
+          $basicAuth = [Convert]::ToBase64String(
+            [System.Text.Encoding]::ASCII.GetBytes("${publishUser}:${publishPassword}")
+          )
+
+          Invoke-WebRequest `
+            -Uri "https://$publishHost/api/publish?type=zip" `
+            -Method Post `
+            -Headers @{ Authorization = "Basic $basicAuth" } `
+            -InFile $packagePath `
+            -ContentType "application/zip"

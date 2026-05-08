@@ -695,6 +695,46 @@ public async Task<IActionResult> WorkerUploadImage(int reportId, [FromBody] Work
     });
 }
 
+[HttpGet("reports-map")]
+public async Task<IActionResult> GetReportsMap(
+    [FromQuery] string? status,
+    [FromQuery] string? fromDate,
+    [FromQuery] string? toDate)
+{
+    var query = _context.Reports.AsQueryable();
+
+    if (!string.IsNullOrWhiteSpace(status))
+    {
+        var statuses = status.Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(s => s.Trim()).ToList();
+        query = query.Where(r => statuses.Contains(r.Status));
+    }
+
+    if (DateTime.TryParse(fromDate, out var from))
+        query = query.Where(r => r.CreatedAt >= from);
+
+    if (DateTime.TryParse(toDate, out var to))
+        query = query.Where(r => r.CreatedAt <= to.AddDays(1));
+
+    var reports = await query
+        .OrderByDescending(r => r.CreatedAt)
+        .Select(r => new
+        {
+            id = r.Id,
+            category = r.Category,
+            status = r.Status,
+            createdAt = r.CreatedAt,
+            latitude = r.Latitude,
+            longitude = r.Longitude,
+            location = r.Location,
+            description = r.Description,
+            priority = r.Priority
+        })
+        .ToListAsync();
+
+    return Ok(reports);
+}
+
 [HttpGet("open-reports")]
 public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
 {
