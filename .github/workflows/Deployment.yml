@@ -23,12 +23,12 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: dotnet restore
-        run: dotnet restore
+        run: dotnet restore CityFix.Api/CityFix.Api.csproj
 
       - name: dotnet build and publish
         run: |
-          dotnet build --configuration Release
-          dotnet publish -c Release -o myapp
+          dotnet build CityFix.Api/CityFix.Api.csproj --configuration Release
+          dotnet publish CityFix.Api/CityFix.Api.csproj -c Release -o myapp
 
       - name: Create deployment archive
         shell: pwsh
