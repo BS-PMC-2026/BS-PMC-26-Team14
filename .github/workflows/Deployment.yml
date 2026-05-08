@@ -1,4 +1,4 @@
-name: deploy app
+name: Build and deploy app
 
 on:
   push:
@@ -16,6 +16,7 @@ jobs:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v4
+        
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -36,38 +37,38 @@ jobs:
           if(Test-Path $packagePath){
               Remove-Item $packagePath -Force
           }
-         Compress-Archive -Path 'myapp\*' -DestinationPath $packagePath
+          Compress-Archive -Path 'myapp\*' -DestinationPath $packagePath
           
       - name: Deploy app using publish profile
         shell: pwsh
         env:
           AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
         run: |
-            [xml]$publishProfileXml = $env:AZURE_WEBAPP_PUBLISH_PROFILE
-            $publishProfile = @($publishProfileXml.publishData.publishProfile) |
+          [xml]$publishProfileXml = $env:AZURE_WEBAPP_PUBLISH_PROFILE
+          $publishProfile = @($publishProfileXml.publishData.publishProfile) |
             Where-Object { $_.publishMethod -in @('ZipDeploy', 'MSDeploy') } |
             Select-Object -First 1
-          
+
           if(-not $publishProfile){
               Write-Error "No valid publish profile found in AZURE_WEBAPP_PUBLISH_PROFILE"
               exit 1
           }
-          
+
           $publishHost = ($publishProfile.publishUrl -replace '^https?://', '').Split('/')[0]
           $publishUser = $publishProfile.userName
           $publishPassword = $publishProfile.userPWD
           $packagePath = Join-Path $env:RUNNER_TEMP 'webapp.zip'
           if (-not (Test-Path $packagePath)) {
-             throw "Deployment package not found at $packagePath."
+              throw "Deployment package not found at $packagePath."
           }
-          
+
           $basicAuth = [Convert]::ToBase64String(
-          [ System.Text.Encoding ]::ASCII.GetBytes("${publishUser}:${publishPassword}")
+            [System.Text.Encoding]::ASCII.GetBytes("${publishUser}:${publishPassword}")
           )
-          
+
           Invoke-WebRequest `
-          -Uri "https://$publishHost/api/publish?type=zip" `
-          -Method Post `
-          -Headers @{ Authorization = "Basic $basicAuth" } `
-          -InFile $packagePath `
-          -ContentType "application/zip"
+            -Uri "https://$publishHost/api/publish?type=zip" `
+            -Method Post `
+            -Headers @{ Authorization = "Basic $basicAuth" } `
+            -InFile $packagePath `
+            -ContentType "application/zip"
