@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מפת דיווחים - CityFix</title>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #f8fafc; color: #111827; }
+.layout { display: flex; min-height: 100vh; }
+
+.sidebar {
+  width: 260px;
+  background: #fff;
+  border-left: 1px solid #e5e7eb;
+  min-height: 100vh;
+  padding: 0;
+  direction: rtl;
+  position: relative;
+}
+
+.logo {
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.logo img {
+  width: 85px;
+  height: 85px;
+  object-fit: contain;
+}
+
+.menu { padding-top: 28px; }
+
+.menu a {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 60px;
+  padding: 0 28px;
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.menu a:hover { background: #f3f7ff; color: #0b63e5; }
+.menu a:hover i { stroke: #0b63e5; }
+
+.menu a.active {
+  background: #eaf2ff;
+  color: #0b63e5;
+  border-left: 4px solid #0b63e5;
+  font-weight: 700;
+}
+
+.menu a.active i { stroke: #0b63e5; }
+
+.menu a i, .menu-title i { width: 23px; height: 23px; stroke: #6b7280; }
+
+.menu-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 60px;
+  padding: 0 28px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0b63e5;
+}
+
+.menu-title i { stroke: #0b63e5; }
+
+.logout { position: absolute; bottom: 30px; width: 260px; }
+
+.main { flex: 1; display: flex; flex-direction: column; }
+
+.topbar {
+  height: 82px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 35px;
+}
+
+.user { display: flex; align-items: center; gap: 12px; }
+.avatar { width: 50px; height: 50px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+
+.content { padding: 30px 40px; flex: 1; display: flex; flex-direction: column; }
+
+h1 { font-size: 28px; margin-bottom: 20px; }
+
+/* FILTER BAR */
+.filter-bar {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.filter-bar label {
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.filter-bar select,
+.filter-bar input[type="date"] {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 15px;
+  background: white;
+  color: #111827;
+  cursor: pointer;
+}
+
+.filter-bar .filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-reset {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #374151;
+}
+
+.btn-reset:hover { background: #e5e7eb; }
+
+/* LEGEND */
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-right: auto;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.2);
+}
+
+.dot-open { background: #ef4444; }
+.dot-treatment { background: #f97316; }
+.dot-completed { background: #22c55e; }
+
+/* MAP */
+#map {
+  flex: 1;
+  min-height: 520px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* STATS */
+.stats-bar {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.stat-chip {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-chip .count { font-size: 20px; font-weight: 700; }
+.count-open { color: #ef4444; }
+.count-treatment { color: #f97316; }
+.count-completed { color: #22c55e; }
+.count-total { color: #6b7280; }
+
+/* LOADING */
+.loading-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: #374151;
+  z-index: 1000;
+  border-radius: 12px;
+}
+
+.map-wrap { position: relative; flex: 1; display: flex; flex-direction: column; }
+
+/* POPUP */
+.leaflet-popup-content { direction: rtl; text-align: right; min-width: 180px; }
+.popup-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: #111827; }
+.popup-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.badge-open { background: #fee2e2; color: #b91c1c; }
+.badge-treatment { background: #ffedd5; color: #c2410c; }
+.badge-completed { background: #dcfce7; color: #15803d; }
+.popup-date { font-size: 13px; color: #6b7280; }
+.popup-location { font-size: 13px; color: #374151; margin-top: 4px; }
+
+@media (max-width: 900px) {
+  .layout { display: block; }
+  .sidebar { width: 100%; position: relative; min-height: auto; }
+  .logout { position: static; width: 100%; }
+  .filter-bar { flex-direction: column; align-items: flex-start; }
+  .legend { margin-right: 0; }
+}
+</style>
+</head>
+
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="logo">
+    <span>CityFix</span>
+    <img src="../images/logoooo.png" alt="CityFix Logo">
+  </div>
+
+  <div class="menu">
+    <div class="menu-title">
+      <i data-lucide="user"></i>
+      <span>אזור לקוח</span>
+    </div>
+
+    <a href="create-report.html">
+      <i data-lucide="file-text"></i>
+      <span>יצירת דיווח</span>
+    </a>
+
+    <a href="#">
+      <i data-lucide="clipboard-list"></i>
+      <span>הדיווחים שלי</span>
+    </a>
+
+    <a class="active" href="customer-reports-map.html">
+      <i data-lucide="map"></i>
+      <span>מפת דיווחים</span>
+    </a>
+
+    <a href="../profile/customer-profile.html">
+      <i data-lucide="user-circle"></i>
+      <span>פרופיל</span>
+    </a>
+  </div>
+
+  <div class="menu logout">
+    <a href="#" onclick="logout()">
+      <i data-lucide="log-out"></i>
+      <span>התנתקות</span>
+    </a>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div style="font-size:30px"></div>
+    <div class="user">
+      <div><b id="userName"></b></div>
+      <div class="avatar">👤</div>
+    </div>
+  </div>
+
+  <div class="content">
+    <h1>מפת דיווחים</h1>
+
+    <!-- STATS -->
+    <div class="stats-bar">
+      <div class="stat-chip">
+        <span>סה"כ</span>
+        <span class="count count-total" id="statTotal">0</span>
+      </div>
+      <div class="stat-chip">
+        <span class="legend-dot dot-open" style="width:12px;height:12px;border-radius:50%;display:inline-block;"></span>
+        <span>פתוח</span>
+        <span class="count count-open" id="statOpen">0</span>
+      </div>
+      <div class="stat-chip">
+        <span class="legend-dot dot-treatment" style="width:12px;height:12px;border-radius:50%;display:inline-block;"></span>
+        <span>בטיפול</span>
+        <span class="count count-treatment" id="statTreatment">0</span>
+      </div>
+      <div class="stat-chip">
+        <span class="legend-dot dot-completed" style="width:12px;height:12px;border-radius:50%;display:inline-block;"></span>
+        <span>הושלם</span>
+        <span class="count count-completed" id="statCompleted">0</span>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label for="filterStatus">סטטוס:</label>
+        <select id="filterStatus" onchange="applyFilters()">
+          <option value="">הכל</option>
+          <option value="Open">פתוח</option>
+          <option value="In Treatment">בטיפול</option>
+          <option value="Completed">הושלם</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filterFrom">מתאריך:</label>
+        <input type="date" id="filterFrom" onchange="applyFilters()">
+      </div>
+
+      <div class="filter-group">
+        <label for="filterTo">עד תאריך:</label>
+        <input type="date" id="filterTo" onchange="applyFilters()">
+      </div>
+
+      <button class="btn-reset" onclick="resetFilters()">איפוס</button>
+
+      <div class="legend" style="margin-right:auto;">
+        <div class="legend-item">
+          <span class="legend-dot dot-open"></span> פתוח
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot dot-treatment"></span> בטיפול
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot dot-completed"></span> הושלם
+        </div>
+      </div>
+    </div>
+
+    <!-- MAP -->
+    <div class="map-wrap">
+      <div id="loadingOverlay" class="loading-overlay">טוען דיווחים...</div>
+      <div id="map"></div>
+    </div>
+  </div>
+</main>
+</div>
+
+<script>
+lucide.createIcons();
+
+const userName = localStorage.getItem("userFullName") || "משתמש";
+const userEmail = localStorage.getItem("userEmail") || "";
+document.getElementById("userName").innerText = userName;
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "../index.html";
+}
+
+// Map setup
+const israelBounds = [[29.45, 34.25], [33.35, 35.65]];
+
+const map = L.map("map", {
+  maxBounds: israelBounds,
+  maxBoundsViscosity: 0.9
+});
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
+  attribution: "© OpenStreetMap"
+}).addTo(map);
+
+map.fitBounds(israelBounds);
+map.setMinZoom(7);
+map.setMaxZoom(18);
+
+// Colored circle markers
+function makeIcon(color) {
+  return L.divIcon({
+    className: "",
+    html: `<div style="width:16px;height:16px;border-radius:50%;background:${color};border:2px solid rgba(0,0,0,0.3);box-shadow:0 1px 4px rgba(0,0,0,0.3);"></div>`,
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+    popupAnchor: [0, -12]
+  });
+}
+
+const icons = {
+  "Open":         makeIcon("#ef4444"),
+  "In Treatment": makeIcon("#f97316"),
+  "Completed":    makeIcon("#22c55e")
+};
+
+const statusLabel = {
+  "Open":         "פתוח",
+  "In Treatment": "בטיפול",
+  "Completed":    "הושלם"
+};
+
+const badgeClass = {
+  "Open":         "badge-open",
+  "In Treatment": "badge-treatment",
+  "Completed":    "badge-completed"
+};
+
+function formatDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("he-IL", { year: "numeric", month: "2-digit", day: "2-digit" });
+}
+
+// All reports loaded from server
+let allReports = [];
+let markers = [];
+let markerLayer = L.layerGroup().addTo(map);
+
+function renderMarkers(reports) {
+  markerLayer.clearLayers();
+  markers = [];
+
+  reports.forEach(r => {
+    if (!r.latitude || !r.longitude) return;
+
+    const icon = icons[r.status] || icons["Open"];
+    const label = statusLabel[r.status] || r.status;
+    const badge = badgeClass[r.status] || "badge-open";
+
+    const m = L.marker([r.latitude, r.longitude], { icon })
+      .bindPopup(`
+        <div class="leaflet-popup-content">
+          <div class="popup-title">${escapeHtml(r.category)}</div>
+          <span class="popup-badge ${badge}">${label}</span>
+          <div class="popup-date">📅 ${formatDate(r.createdAt)}</div>
+          ${r.location ? `<div class="popup-location">📍 ${escapeHtml(r.location)}</div>` : ""}
+        </div>
+      `, { maxWidth: 240 });
+
+    markerLayer.addLayer(m);
+    markers.push(m);
+  });
+
+  updateStats(reports);
+}
+
+function updateStats(reports) {
+  document.getElementById("statTotal").innerText = reports.length;
+  document.getElementById("statOpen").innerText = reports.filter(r => r.status === "Open").length;
+  document.getElementById("statTreatment").innerText = reports.filter(r => r.status === "In Treatment").length;
+  document.getElementById("statCompleted").innerText = reports.filter(r => r.status === "Completed").length;
+}
+
+function applyFilters() {
+  const status = document.getElementById("filterStatus").value;
+  const from = document.getElementById("filterFrom").value;
+  const to = document.getElementById("filterTo").value;
+
+  let filtered = allReports;
+
+  if (status) {
+    filtered = filtered.filter(r => r.status === status);
+  }
+
+  if (from) {
+    const fromTs = new Date(from).getTime();
+    filtered = filtered.filter(r => new Date(r.createdAt).getTime() >= fromTs);
+  }
+
+  if (to) {
+    const toTs = new Date(to).getTime() + 86400000; // include end day
+    filtered = filtered.filter(r => new Date(r.createdAt).getTime() <= toTs);
+  }
+
+  renderMarkers(filtered);
+}
+
+function resetFilters() {
+  document.getElementById("filterStatus").value = "";
+  document.getElementById("filterFrom").value = "";
+  document.getElementById("filterTo").value = "";
+  renderMarkers(allReports);
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+async function loadReports() {
+  const start = Date.now();
+  try {
+    const res = await fetch("/api/Auth/reports-map");
+    if (!res.ok) throw new Error("שגיאה בטעינת הדיווחים");
+    allReports = await res.json();
+    renderMarkers(allReports);
+  } catch (e) {
+    console.error(e);
+    document.getElementById("loadingOverlay").innerText = "שגיאה בטעינת הדיווחים. נסה לרענן.";
+    return;
+  }
+  const elapsed = Date.now() - start;
+  console.log(`Loaded ${allReports.length} reports in ${elapsed}ms`);
+  document.getElementById("loadingOverlay").style.display = "none";
+
+  setTimeout(() => map.invalidateSize(), 100);
+}
+
+loadReports();
+</script>
+</body>
+</html>
