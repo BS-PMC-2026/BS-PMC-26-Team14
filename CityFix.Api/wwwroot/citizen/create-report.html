@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Report - CityFix</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f8fafc;color:#111827}
+.layout{display:flex;min-height:100vh}
+.sidebar {
+  width: 260px;
+  background: #fff;
+  border-left: 1px solid #e5e7eb;
+  min-height: 100vh;
+  padding: 0;
+  direction: rtl;
+}
+
+.logo {
+  height: 88px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap:-5px;
+  font-size: 28px;
+  font-weight: bold;
+  color: #111827;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.logo i {
+  width: 32px;
+  height: 32px;
+  stroke: #0b63e5;
+}
+
+.menu {
+  padding-top: 28px;
+}
+
+.menu a {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 60px;
+  padding: 0 28px;
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.menu a:hover {
+  background: #f3f7ff;
+  color: #0b63e5;
+}
+
+.menu a i {
+  width: 23px;
+  height: 23px;
+  stroke: #6b7280;
+}
+
+.menu a:hover i {
+  stroke: #0b63e5;
+}
+
+.menu a.active {
+  background: #eaf2ff;
+  color: #0b63e5;
+  border-left: 4px solid #0b63e5;
+  font-weight: 700;
+}
+
+.menu a.active i {
+  stroke: #0b63e5;
+}
+
+.logout {
+  position: absolute;
+  bottom: 30px;
+  width: 260px;
+}
+.menu-title {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 60px;
+  padding: 0 28px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #0b63e5;
+}
+
+.menu-title i {
+  width: 23px;
+  height: 23px;
+  stroke: #0b63e5;
+}
+.main{flex:1}
+.topbar{height:82px;background:white;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;padding:0 35px}
+.user{display:flex;align-items:center;gap:12px}
+.avatar{width:50px;height:50px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:24px}
+.content{padding:38px 55px}
+h1{font-size:32px;margin-bottom:30px}
+.steps{display:flex;align-items:center;justify-content:center;margin-bottom:30px;gap:25px}
+.step{text-align:center;color:#6b7280;font-size:17px}
+.circle{width:42px;height:42px;border-radius:50%;background:#6b7280;color:white;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-weight:bold}
+.step.active .circle,.step.done .circle{background:#0b63e5}
+.step.active{color:#0b63e5;font-weight:bold}
+.line{width:260px;height:2px;background:#c9c9c9}
+.card{background:white;border:1px solid #d7dde5;border-radius:8px}
+.card-body{padding:28px}
+.card-footer{border-top:1px solid #e5e7eb;padding:20px;display:flex;  justify-content: space-between;
+  flex-direction: row-reverse;}
+.hidden{display:none}
+.upload-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 35px;
+}.upload-box{height:350px;border:2px dashed #64748b;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.upload-icon{font-size:70px;color:#6b7280}
+.btn{border:none;border-radius:7px;padding:14px 35px;font-size:18px;font-weight:bold;cursor:pointer}
+.btn-primary{background:#0b63e5;color:white}
+.btn-secondary{background:white;border:1px solid #9ca3af;color:#111827}
+.preview{border:1px solid #d7dde5;border-radius:7px;padding:20px;text-align:center}
+.preview-box{height:230px;background:#f3f4f6;border-radius:10px;margin:20px 0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.preview-box img{width:100%;height:100%;object-fit:cover}
+
+#map {
+  width: 100%;
+  height: 400px;
+  border: 1px solid #d7dde5;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.info{margin-top:15px;background:#eef4ff;border:1px solid #c7dcff;border-radius:6px;padding:14px;color:#374151;  direction: rtl;
+}
+.form-grid{display:grid;grid-template-columns:1fr 1fr 330px;gap:30px}
+.form-left{grid-column:1/3}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:25px;margin-bottom:22px}
+label{display:block;margin-bottom:10px;font-size:17px}
+select,input,textarea{width:100%;border:1px solid #cfd6df;border-radius:7px;padding:14px;font-size:17px}
+textarea{height:110px;resize:none}
+.summary{border:1px solid #d7dde5;border-radius:7px;padding:20px}
+.summary-img{width:100px;height:75px;object-fit:cover;border-radius:6px;background:#e5e7eb}
+.badge{display:inline-block;background:#fee2e2;color:#b91c1c;padding:8px 12px;border-radius:6px;margin-top:8px}
+@media(max-width:900px){
+.layout{display:block}.sidebar{width:100%;position:relative}.logout{position:static;width:100%}
+.upload-grid,.form-grid,.input-row{grid-template-columns:1fr}.form-left{grid-column:auto}.line{width:80px}
+}
+.location-search {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 12px;
+  margin-bottom: 15px;
+direction: rtl;
+
+}
+
+.location-search input {
+  height: 48px;
+}
+
+@media(max-width:900px) {
+  .location-search {
+    grid-template-columns: 1fr;
+  }
+}
+.upload-box.drag-over {
+  background: #eef4ff;
+  border-color: #0b63e5;
+}
+.logo img {
+  width: 85px;
+  height: 85px;
+  object-fit: contain;
+}
+
+.detect-location-card {
+  margin: 0 0 18px;
+  background: #ffffff;
+  border: 1px solid #d7dde5;
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
+}
+
+.detect-location-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.detect-location-text b {
+  font-size: 19px;
+  color: #111827;
+}
+
+.detect-location-text span {
+  color: #64748b;
+  font-size: 15px;
+}
+
+.detect-location-btn {
+  border: none;
+  border-radius: 10px;
+  background: #0b63e5;
+  color: white;
+  padding: 13px 22px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.detect-location-btn:hover {
+  background: #084fbb;
+}
+
+.location-detected-box {
+  max-width: 520px;
+  margin: 0 auto 18px;
+  background: #ffffff;
+  border: 1px solid #d7dde5;
+  border-radius: 14px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.12);
+}
+
+.location-detected-box.hidden {
+  display: none;
+}
+
+.success-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #16a34a;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34px;
+  font-weight: bold;
+}
+
+.location-detected-box h3 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  color: #111827;
+}
+
+.location-detected-box p {
+  margin: 0;
+  color: #475569;
+  font-size: 16px;
+}
+
+.location-status-bar {
+  margin-top: 15px;
+  background: white;
+  border: 1px solid #d7dde5;
+  border-radius: 10px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #1f2937;
+}
+
+.location-status-bar b {
+  color: #111827;
+}
+
+.accuracy-high {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+@media(max-width:900px) {
+  .detect-location-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .detect-location-btn {
+    justify-content: center;
+  }
+
+  .location-status-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+<div class="logo">
+      <span>CityFix</span>
+
+  <img src="../images/logoooo.png" alt="CityFix Logo">
+</div>
+
+  <div class="menu">
+ <div class="menu-title">
+  <i data-lucide="user"></i>
+  <span>אזור לקוח</span>
+</div>
+
+    <a class="active" href="#">
+      <i data-lucide="file-text"></i>
+      <span>יצירת דיווח</span>
+    </a>
+
+    <a href="#">
+      <i data-lucide="clipboard-list"></i>
+      <span>הדיווחים שלי</span>
+    </a>
+
+    <a href="#">
+      <i data-lucide="map"></i>
+      <span>מפת דיווחים</span>
+    </a>
+
+    <a href="../profile/customer-profile.html">
+      <i data-lucide="user-circle"></i>
+      <span>פרופיל</span>
+    </a>
+  </div>
+
+  <div class="menu logout">
+    <a href="#" onclick="logout()">
+      <i data-lucide="log-out"></i>
+      <span>התנתקות</span>
+    </a>
+  </div>
+</aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div style="font-size:30px"> </div>
+      <div class="user">
+        <div>
+            <b id="userName"></b><br>
+        </div>
+                <div class="avatar">👤</div>
+
+      </div>
+    </div>
+
+    <div class="content">
+<h1>יצירת דיווח</h1>
+<div class="steps">
+  <div class="step active" id="s1"><div class="circle">1</div>מיקום</div>
+  <div class="line"></div>
+
+  <div class="step" id="s2"><div class="circle">2</div>העלאת תמונה</div>
+  <div class="line"></div>
+
+  <div class="step" id="s3"><div class="circle">3</div>פרטים</div>
+</div>
+
+<section class="card hidden" id="step2">
+          <div class="card-body">
+          <h2>העלאת תמונה</h2>
+          <p style="margin:10px 0 25px;color:#374151">העלה תמונה של הבעיה</p>
+
+          <div class="upload-grid">
+            <div>
+<div class="upload-box" id="uploadBox" onclick="imageInput.click()">
+                    <div class="upload-icon">☁️</div>
+                <p>גרור תמונה לכאן</p>
+                <p style="margin:12px">או</p>
+                <button class="btn btn-primary" type="button">בחר תמונה</button>
+                <input id="imageInput" type="file" accept="image/png,image/jpeg" hidden>
+              </div>
+              <p style="margin-top:15px;color:#64748b">JPG, PNG up to 10MB</p>
+            </div>
+
+            <div class="preview">
+              <h3>Preview</h3>
+              <div class="preview-box" id="previewBox">🖼️</div>
+              <p id="previewText">No image selected</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+<button class="btn btn-secondary" onclick="nextStep(1)">חזור</button>
+<button class="btn btn-primary" onclick="nextStep(3)">הבא</button>
+        </div>
+      </section>
+
+<section class="card" id="step1">
+         <div class="card-body">
+          <h2>בחירת מיקום</h2>
+          <p style="margin:10px 0 15px;color:#374151">בחר מיקום על המפה</p>
+
+   <div class="location-search">
+  <input type="text" id="cityInput" placeholder="City / עיר לדוגמה: באר שבע">
+  <input type="text" id="streetInput" placeholder="Street / רחוב לדוגמה: רגר">
+  <button type="button" class="btn btn-primary" onclick="searchAddress()">חפש</button>
+</div>
+
+<div class="detect-location-card">
+  <div class="detect-location-text">
+    <b>זיהוי מיקום אוטומטי</b>
+    <span>המערכת תזהה את המיקום הנוכחי שלך ותציג אותו על המפה</span>
+  </div>
+
+  <button type="button" class="detect-location-btn" onclick="detectCurrentLocation()">
+    <span>📍</span>
+    זהה את המיקום שלי
+  </button>
+</div>
+
+<div id="locationDetectedBox" class="location-detected-box hidden">
+  <div class="success-icon">✓</div>
+  <div>
+    <h3>המיקום זוהה אוטומטית</h3>
+    <p>המיקום הנוכחי שלך זוהה ומוצג על המפה.</p>
+  </div>
+</div>
+          <div id="map"></div>
+
+          <div class="info" id="locationText">
+            ℹ️  לחץ על המפה לבחירת מיקום
+          </div>
+        </div>
+
+        <div class="card-footer">
+<button class="btn btn-secondary" onclick="cancel()">ביטול</button>
+<button class="btn btn-primary" onclick="nextStep(2)">הבא</button>
+        </div>
+      </section>
+
+      <section class="card hidden" id="step3">
+        <div class="card-body">
+          <h2>פרטי הדיווח</h2>
+          <p style="margin:10px 0 25px;color:#374151">Please provide more information about the issue</p>
+
+          <div class="form-grid">
+            <div class="form-left">
+              <div class="input-row">
+                <div>
+                  <label>קטגוריה  </label>
+   <select id="category" onchange="updateSummary()">
+  <option value="נזק בכביש">נזק בכביש</option>
+  <option value="תאורת רחוב">תאורת רחוב</option>
+  <option value="אשפה / תברואה">אשפה / תברואה</option>
+  <option value="גינון">גינון</option>
+  <option value="מים / ביוב">מים / ביוב</option>
+  <option value="תחזוקה כללית">תחזוקה כללית</option>
+</select>
+                </div>
+
+                <div>
+                  <label>דחיפות</label>
+<select id="priority" onchange="updateSummary()">
+  <option value="גבוהה">גבוהה</option>
+  <option value="בינונית">בינונית</option>
+  <option value="נמוכה">נמוכה</option>
+</select>
+                </div>
+              </div>
+
+              <div class="input-row">
+                <div>
+                  <label>תיאור</label>
+<textarea id="description" maxlength="500"
+  oninput="updateCount();updateSummary()"
+  placeholder="תאר את הבעיה..."></textarea>
+                    <div style="text-align:left;color:#64748b"><span id="descCount">0</span> / 500</div>
+                </div>
+
+                <div>
+                  <label>תאריך ושעה</label>
+                  <input id="dateTime" type="text" readonly>
+                </div>
+              </div>
+
+              <label>הערות נוספות</label>
+<textarea id="notes" maxlength="300"
+  oninput="updateNotesCount()"
+  placeholder="פרטים נוספים..."></textarea>              <div style="text-align:left;color:#64748b"><span id="notesCount">0</span> / 300</div>
+            </div>
+
+<div class="summary">
+  <h3>סיכום הדיווח</h3>
+
+  <div style="display:flex;gap:15px;margin:20px 0">
+    <img id="summaryImage" class="summary-img">
+    <div>
+      <p>קטגוריה</p>
+      <b id="sumCategory">נזק בכביש</b>
+    </div>
+  </div>
+
+  <hr>
+
+  <p style="margin-top:18px">📍 מיקום</p>
+  <b id="sumLocation">לא נבחר מיקום</b>
+
+  <hr style="margin:18px 0">
+
+  <p>דחיפות</p>
+  <span class="badge" id="sumPriority">גבוהה</span>
+
+  <hr style="margin:18px 0">
+
+  <p>🗓️ תאריך ושעה</p>
+  <b id="sumDate">-</b>
+</div>
+          </div>
+        </div>
+
+        <div class="card-footer">
+<button class="btn btn-secondary" onclick="nextStep(2)">חזור</button>
+          <button class="btn btn-primary" onclick="submitReport()">שלח דיווח</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+let selectedImageFile = null;
+let selectedImageBase64 = "";
+let selectedLocation = "";
+let selectedLatitude = null;
+let selectedLongitude = null;
+function compressImage(file, callback) {
+  const img = new Image();
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    img.src = e.target.result;
+  };
+
+  img.onload = function () {
+    const canvas = document.createElement("canvas");
+
+    const maxWidth = 800;
+    const scale = maxWidth / img.width;
+
+    canvas.width = maxWidth;
+    canvas.height = img.height * scale;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    const compressed = canvas.toDataURL("image/jpeg", 0.7);
+    callback(compressed);
+  };
+
+  reader.readAsDataURL(file);
+}
+const fullName = localStorage.getItem("userFullName");
+
+document.getElementById("userName").innerText =
+  fullName || "משתמש";
+
+
+const now = new Date();
+document.getElementById("dateTime").value = now.toLocaleString();
+document.getElementById("sumDate").innerText = now.toLocaleString();
+
+const imageInput = document.getElementById("imageInput");
+
+const uploadBox = document.getElementById("uploadBox");
+
+function handleImageFile(file) {
+  if (!file) return;
+
+  if (!file.type.startsWith("image/")) {
+    alert("נא לבחור קובץ תמונה בלבד");
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    alert("התמונה גדולה מדי. מותר עד 10MB");
+    return;
+  }
+
+  selectedImageFile = file;
+
+compressImage(file, function (compressed) {
+  selectedImageBase64 = compressed;
+
+  document.getElementById("previewBox").innerHTML =
+    `<img src="${selectedImageBase64}">`;
+
+  document.getElementById("summaryImage").src = selectedImageBase64;
+  document.getElementById("previewText").innerText = file.name;
+});
+}
+
+imageInput.addEventListener("change", function () {
+  handleImageFile(this.files[0]);
+});
+
+uploadBox.addEventListener("dragover", function (e) {
+  e.preventDefault();
+  uploadBox.classList.add("drag-over");
+});
+
+uploadBox.addEventListener("dragleave", function () {
+  uploadBox.classList.remove("drag-over");
+});
+
+uploadBox.addEventListener("drop", function (e) {
+  e.preventDefault();
+  uploadBox.classList.remove("drag-over");
+
+  const file = e.dataTransfer.files[0];
+  handleImageFile(file);
+});
+function nextStep(step) {
+  if (step === 2 && !selectedLocation) {
+    alert("נא לבחור מיקום על המפה קודם");
+    return;
+  }
+
+  if (step === 3 && !selectedImageFile) {
+    alert("נא לבחור תמונה קודם");
+    return;
+  }
+
+  document.getElementById("step1").classList.add("hidden");
+  document.getElementById("step2").classList.add("hidden");
+  document.getElementById("step3").classList.add("hidden");
+  document.getElementById("step" + step).classList.remove("hidden");
+
+  ["s1","s2","s3"].forEach(id => {
+    document.getElementById(id).classList.remove("active","done");
+  });
+
+  if (step === 1) document.getElementById("s1").classList.add("active");
+  if (step === 2) {
+    document.getElementById("s1").classList.add("done");
+    document.querySelector("#s1 .circle").innerText = "✓";
+    document.getElementById("s2").classList.add("active");
+  }
+  if (step === 3) {
+    document.getElementById("s1").classList.add("done");
+    document.getElementById("s2").classList.add("done");
+    document.querySelector("#s1 .circle").innerText = "✓";
+    document.querySelector("#s2 .circle").innerText = "✓";
+    document.getElementById("s3").classList.add("active");
+  }
+if (step === 1) {
+setTimeout(() => {
+  map.invalidateSize();
+}, 300);
+}
+}
+
+function detectLocation(event) {
+  event.stopPropagation();
+
+  if (!navigator.geolocation) {
+    alert("הדפדפן לא תומך בזיהוי מיקום");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      selectedLocation = pos.coords.latitude + "," + pos.coords.longitude;
+      document.getElementById("locationText").innerText =
+        "✅ המיקום נקלט אוטומטית: " + selectedLocation;
+      document.getElementById("sumLocation").innerText = selectedLocation;
+    },
+    () => alert("לא ניתן לקבל מיקום. בדוק הרשאות מיקום בדפדפן.")
+  );
+}
+
+let marker = null;
+
+const israelBounds = [
+  [29.45, 34.25],
+  [33.35, 35.65]
+];
+
+const map = L.map("map", {
+  maxBounds: israelBounds,
+  maxBoundsViscosity: 1.0
+});
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
+  attribution: "© OpenStreetMap"
+}).addTo(map);
+
+map.fitBounds(israelBounds);
+map.setMinZoom(7);
+map.setMaxZoom(18);
+
+setTimeout(() => {
+  map.invalidateSize();
+  map.fitBounds(israelBounds);
+}, 300);
+
+function isInsideIsrael(lat, lng) {
+  return lat >= 29.45 && lat <= 33.35 && lng >= 34.25 && lng <= 35.65;
+}
+
+function detectCurrentLocation() {
+  const detectedBox = document.getElementById("locationDetectedBox");
+
+  if (!navigator.geolocation) {
+    alert("הדפדפן לא תומך בזיהוי מיקום אוטומטי");
+    return;
+  }
+
+  detectedBox.classList.add("hidden");
+
+  navigator.geolocation.getCurrentPosition(
+    function (position) {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      const accuracy = position.coords.accuracy;
+
+      if (!isInsideIsrael(lat, lng)) {
+        alert("המיקום שזוהה אינו בתוך ישראל");
+        return;
+      }
+
+      selectedLatitude = lat;
+      selectedLongitude = lng;
+      selectedLocation = lat.toFixed(6) + "," + lng.toFixed(6);
+
+      map.setView([lat, lng], 17);
+
+      if (marker) {
+        marker.setLatLng([lat, lng]);
+      } else {
+        marker = L.marker([lat, lng]).addTo(map);
+      }
+
+      marker.bindPopup(`
+        <b>המיקום הנוכחי שלך</b><br>
+        ${selectedLocation}<br>
+        זוהה אוטומטית
+      `).openPopup();
+
+      document.getElementById("locationText").innerHTML = `
+        <div class="location-status-bar">
+          <div>
+            📍 <b>מיקום:</b> ${selectedLocation}<br>
+            <span>זוהה אוטומטית</span>
+          </div>
+          <div>
+            דיוק:
+            <span class="accuracy-high">${Math.round(accuracy)} מטר</span>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("sumLocation").innerText = selectedLocation;
+
+      detectedBox.classList.remove("hidden");
+
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 200);
+    },
+    function () {
+      alert("לא ניתן לזהות מיקום. צריך לאשר הרשאת מיקום בדפדפן.");
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    }
+  );
+}
+
+map.on("click", function (e) {
+  const lat = e.latlng.lat.toFixed(6);
+  const lng = e.latlng.lng.toFixed(6);
+if (!isInsideIsrael(parseFloat(lat), parseFloat(lng))) {
+  alert("נא לבחור מיקום בתוך ישראל בלבד");
+  return;
+}
+  selectedLocation = lat + "," + lng;
+selectedLatitude = e.latlng.lat;
+selectedLongitude = e.latlng.lng; 
+  if (marker) {
+    marker.setLatLng(e.latlng);
+  } else {
+    marker = L.marker(e.latlng).addTo(map);
+  }
+
+  document.getElementById("locationText").innerText =
+    "✅ נבחר מיקום: " + selectedLocation;
+
+  document.getElementById("sumLocation").innerText = selectedLocation;
+});
+
+function updateCount() {
+  document.getElementById("descCount").innerText =
+    document.getElementById("description").value.length;
+}
+
+function updateNotesCount() {
+  document.getElementById("notesCount").innerText =
+    document.getElementById("notes").value.length;
+}
+
+function updateSummary() {
+  document.getElementById("sumCategory").innerText =
+    document.getElementById("category").value;
+  document.getElementById("sumPriority").innerText =
+    document.getElementById("priority").value;
+}
+async function searchAddress() {
+  const city = document.getElementById("cityInput").value.trim();
+  const street = document.getElementById("streetInput").value.trim();
+
+  if (!city && !street) {
+    alert("נא להזין עיר או רחוב");
+    return;
+  }
+
+  const query = `${street} ${city} Israel`.trim();
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`
+    );
+
+    const results = await response.json();
+
+    if (!results || results.length === 0) {
+      alert("לא נמצא מיקום מתאים");
+      return;
+    }
+
+const lat = parseFloat(results[0].lat);
+const lng = parseFloat(results[0].lon);
+
+if (!isInsideIsrael(lat, lng)) {
+  alert("המיקום שנמצא אינו בתוך ישראל");
+  return;
+}
+
+    selectedLocation = lat.toFixed(6) + "," + lng.toFixed(6);
+selectedLatitude = lat;
+selectedLongitude = lng;
+    map.setView([lat, lng], 17);
+
+    if (marker) {
+      marker.setLatLng([lat, lng]);
+    } else {
+      marker = L.marker([lat, lng]).addTo(map);
+    }
+
+    document.getElementById("locationText").innerText =
+      "✅ נבחר מיקום: " + query + " (" + selectedLocation + ")";
+
+    document.getElementById("sumLocation").innerText = query;
+
+  } catch (error) {
+    alert("שגיאה בחיפוש המיקום");
+    console.error(error);
+  }
+}
+async function submitReport() {
+  const description = document.getElementById("description").value.trim();
+
+  if (!description) {
+    alert("נא להזין תיאור תקלה");
+    return;
+  }
+  if (selectedLatitude === null || selectedLongitude === null) {
+  alert("נא לבחור מיקום על המפה");
+  return;
+  console.log("report sent:", report);
+}
+
+const report = {
+  customerEmail: localStorage.getItem("userEmail"),
+  category: document.getElementById("category").value,
+  priority: document.getElementById("priority").value,
+  description: description,
+  notes: document.getElementById("notes").value.trim(),
+  latitude: selectedLatitude,
+  longitude: selectedLongitude,
+  imageBase64: selectedImageBase64
+};
+
+  try {
+    const response = await fetch("/api/Auth/create-report", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(report)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.message || "שגיאה בשמירת הדיווח");
+      return;
+    }
+
+    alert(result.message || "הדיווח נשמר בהצלחה");
+    window.location.href = "../citizen/create-report.html";
+
+  } catch (error) {
+    alert("בעיה בחיבור לשרת");
+    console.error(error);
+  }
+}
+
+function cancel() {
+    window.location.href = "../citizen/create-report.html";
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "../index.html";
+}
+</script>
+<script>
+  lucide.createIcons();
+</script>
+</body>
+</html>

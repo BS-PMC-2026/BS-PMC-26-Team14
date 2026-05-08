@@ -5,7 +5,7 @@ using CityFix.Api.Models;
 using CityFix.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using NetTopologySuite.Geometries;
 namespace CityFix.Api.Controllers
 {
     [ApiController]
@@ -477,6 +477,18 @@ public class UpdateWorkerProfileDto
     public string NewPassword { get; set; } = "";
 }
 
+public class AcceptReportDto
+{
+    public string WorkerEmail { get; set; } = "";
+}
+
+public class WorkerUploadImageDto
+{
+    public string WorkerEmail { get; set; } = "";
+    public string ImageBase64 { get; set; } = "";
+    public string Note { get; set; } = "";
+}
+
 [HttpGet("worker-profile")]
 public async Task<IActionResult> GetWorkerProfile([FromQuery] string email)
 {
@@ -540,6 +552,186 @@ public async Task<IActionResult> UpdateWorkerProfile([FromBody] UpdateWorkerProf
         department = worker.Department
     });
 }
+[HttpPost("create-report")]
+public async Task<IActionResult> CreateReport([FromBody] CreateReportDto dto)
+{
+    if (!ModelState.IsValid)
+        return BadRequest(new { message = "נתונים לא תקינים" });
+if (dto.Latitude == 0 || dto.Longitude == 0)
+{
+    return BadRequest(new { message = "מיקום לא תקין" });
+}
+
+if (dto.Latitude < -90 || dto.Latitude > 90 ||
+    dto.Longitude < -180 || dto.Longitude > 180)
+{
+    return BadRequest(new { message = "קואורדינטות לא חוקיות" });
+}
+
+// גבולות ישראל
+if (dto.Latitude < 29.45 || dto.Latitude > 33.35 ||
+    dto.Longitude < 34.25 || dto.Longitude > 35.65)
+{
+    return BadRequest(new { message = "המיקום חייב להיות בתוך ישראל" });
+}
+    var customerExists = await _context.Customers
+        .AnyAsync(c => c.Email.ToLower() == dto.CustomerEmail.ToLower());
+
+    if (!customerExists)
+        return NotFound(new { message = "הלקוח לא נמצא במערכת" });
+
+var geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+
+var report = new Report
+{
+    CustomerEmail = dto.CustomerEmail,
+    Category = dto.Category,
+    Priority = dto.Priority,
+    Description = dto.Description,
+    Notes = dto.Notes,
+    ImageBase64 = dto.ImageBase64,
+    Latitude = dto.Latitude,
+    Longitude = dto.Longitude,
+    LocationPoint = geometryFactory.CreatePoint(
+    new Coordinate(dto.Longitude, dto.Latitude)
+    ),
+    Status = "Open",
+    CreatedAt = DateTime.UtcNow
+};
+
+    _context.Reports.Add(report);
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "הדיווח נשמר בהצלחה",
+        reportId = report.Id
+    });
+}
+
+
+[HttpPost("accept-report/{reportId}")]
+public async Task<IActionResult> AcceptReport(int reportId, [FromBody] AcceptReportDto dto)
+{
+    if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
+        return BadRequest(new { message = "אימייל עובד נדרש" });
+
+    var workerEmail = dto.WorkerEmail.Trim().ToLowerInvariant();
+
+    var worker = await _context.Workers
+        .FirstOrDefaultAsync(w => w.Email.ToLower() == workerEmail);
+
+    if (worker == null)
+        return NotFound(new { message = "העובד לא נמצא במערכת" });
+
+    if (worker.ApprovalStatus != "Approved")
+        return BadRequest(new { message = "העובד עדיין לא מאושר במערכת" });
+
+    var report = await _context.Reports
+        .FirstOrDefaultAsync(r => r.Id == reportId);
+
+    if (report == null)
+        return NotFound(new { message = "הדיווח לא נמצא" });
+
+    if (report.Status != "Open")
+        return BadRequest(new { message = "הדיווח כבר נלקח לטיפול או שאינו פתוח" });
+
+    report.Status = "In Treatment";
+    report.AssignedWorkerEmail = worker.Email;
+    report.AcceptedAt = DateTime.UtcNow;
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "הדיווח התקבל לטיפול בהצלחה",
+        reportId = report.Id,
+        status = report.Status,
+        assignedWorkerEmail = report.AssignedWorkerEmail,
+        acceptedAt = report.AcceptedAt
+    });
+}
+
+
+[HttpPut("worker-upload-image/{reportId}")]
+public async Task<IActionResult> WorkerUploadImage(int reportId, [FromBody] WorkerUploadImageDto dto)
+{
+    if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
+        return BadRequest(new { message = "אימייל עובד נדרש" });
+
+    if (string.IsNullOrWhiteSpace(dto.ImageBase64))
+        return BadRequest(new { message = "חובה לבחור תמונה" });
+
+    var workerEmail = dto.WorkerEmail.Trim().ToLowerInvariant();
+
+    var report = await _context.Reports.FirstOrDefaultAsync(r => r.Id == reportId);
+
+    if (report == null)
+        return NotFound(new { message = "הדיווח לא נמצא" });
+
+    if (report.Status != "In Treatment")
+        return BadRequest(new { message = "אפשר להעלות תמונה רק לדיווח שנמצא בטיפול" });
+
+    if (string.IsNullOrWhiteSpace(report.AssignedWorkerEmail))
+        return BadRequest(new { message = "הדיווח עדיין לא שויך לעובד" });
+
+    if (report.AssignedWorkerEmail.ToLower() != workerEmail)
+        return BadRequest(new { message = "רק העובד שקיבל את הדיווח יכול להעלות תמונה" });
+
+    report.WorkerImageBase64 = dto.ImageBase64;
+    report.WorkerImageNote = dto.Note;
+    report.WorkerImageUploadedAt = DateTime.UtcNow;
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "התמונה נשמרה בהצלחה",
+        reportId = report.Id,
+        status = report.Status,
+        workerImageBase64 = report.WorkerImageBase64,
+        workerImageNote = report.WorkerImageNote,
+        workerImageUploadedAt = report.WorkerImageUploadedAt
+    });
+}
+
+[HttpGet("open-reports")]
+public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
+{
+    workerEmail = workerEmail?.Trim().ToLower();
+
+    var reports = await _context.Reports
+        .Where(r =>
+            r.Status == "Open" ||
+            (!string.IsNullOrEmpty(workerEmail) &&
+             r.AssignedWorkerEmail != null &&
+             r.AssignedWorkerEmail.ToLower() == workerEmail)
+        )
+        .OrderByDescending(r => r.CreatedAt)
+        .Select(r => new
+        {
+            id = r.Id,
+            customerEmail = r.CustomerEmail,
+            category = r.Category,
+            priority = r.Priority,
+            description = r.Description,
+            notes = r.Notes,
+            imageBase64 = r.ImageBase64,
+            latitude = r.Latitude,
+            longitude = r.Longitude,
+            status = r.Status,
+            assignedWorkerEmail = r.AssignedWorkerEmail,
+            acceptedAt = r.AcceptedAt,
+            createdAt = r.CreatedAt,
+            workerImageBase64 = r.WorkerImageBase64,
+            workerImageNote = r.WorkerImageNote,
+            workerImageUploadedAt = r.WorkerImageUploadedAt,
+        })
+        .ToListAsync();
+
+    return Ok(reports);
+}
+
 
         private async Task<(string UserType, int UserId)?> FindUserByEmailAsync(string email)
         {

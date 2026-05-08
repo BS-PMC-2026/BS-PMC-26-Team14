@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using CityFix.Api.Models;
-
+using NetTopologySuite.Geometries;
 namespace CityFix.Api.Data
 {
     public class ApplicationDbContext : DbContext
@@ -14,5 +14,21 @@ namespace CityFix.Api.Data
         public DbSet<Worker> Workers => Set<Worker>();
         public DbSet<Admin> Admins => Set<Admin>();
         public DbSet<PasswordResetCode> PasswordResetCodes => Set<PasswordResetCode>();
+        public DbSet<Report> Reports => Set<Report>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.HasPostgresExtension("postgis");
+
+            modelBuilder.Entity<Report>()
+                .Property(r => r.LocationPoint)
+                .HasColumnType("geometry(Point,4326)");
+
+            modelBuilder.Entity<Report>()
+                .HasIndex(r => r.LocationPoint)
+                .HasMethod("GIST");
+        }
     }
 }
