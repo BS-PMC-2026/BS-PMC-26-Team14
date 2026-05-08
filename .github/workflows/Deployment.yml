@@ -36,7 +36,7 @@ jobs:
           if(Test-Path $packagePath){
               Remove-Item $packagePath -Force
           }
-          Compress-Archive -Path 'myapp\*' -DestinationPath $packagePath
+         Compress-Archive -Path 'myapp\*' -DestinationPath $packagePath
           
       - name: Deploy app using publish profile
         shell: pwsh
