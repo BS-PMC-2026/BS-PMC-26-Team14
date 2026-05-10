@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Map View - CityFix</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  direction: ltr;
+}
+
+.page { display: flex; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  min-height: 100vh;
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+}
+
+.logo {
+  height: 82px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 28px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.logo-icon { width: 38px; height: 38px; color: #0b63e5; }
+
+.menu { padding: 28px 14px; }
+
+.menu a {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 22px;
+  color: #334155;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 17px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.menu a:hover { background: #f1f5f9; }
+
+.menu a.active {
+  background: #eaf2ff;
+  color: #0066ff;
+  font-weight: 700;
+}
+
+.menu a.active::after {
+  content: "";
+  position: absolute;
+  right: -14px;
+  height: 44px;
+  width: 4px;
+  background: #0066ff;
+  border-radius: 4px;
+}
+
+.menu i { width: 22px; height: 22px; }
+
+.logout-area {
+  position: absolute;
+  bottom: 28px;
+  left: 14px;
+  right: 14px;
+}
+
+.logout-area a {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 22px;
+  text-decoration: none;
+  color: #334155;
+  border-radius: 8px;
+  font-size: 17px;
+}
+
+.logout-area a:hover { background: #f1f5f9; }
+
+/* MAIN */
+.main {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  height: 82px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+}
+
+.menu-icon { width: 28px; height: 28px; color: #334155; }
+
+.worker-box { display: flex; align-items: center; gap: 14px; }
+
+.avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.avatar i { width: 28px; height: 28px; color: #64748b; }
+
+.worker-name { font-weight: 800; font-size: 17px; }
+.worker-role { color: #64748b; font-size: 14px; }
+
+/* CONTENT */
+.content {
+  padding: 34px 44px 44px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-title { font-size: 30px; font-weight: 800; margin-bottom: 20px; }
+
+/* STATS */
+.stats-bar {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.stat-chip {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-chip .count { font-size: 20px; font-weight: 700; }
+.count-total { color: #6b7280; }
+.count-open { color: #ef4444; }
+.count-treatment { color: #f97316; }
+
+.dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(0,0,0,0.15);
+  display: inline-block;
+}
+.dot-open { background: #ef4444; }
+.dot-treatment { background: #f97316; }
+
+/* FILTER BAR */
+.filter-bar {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 20px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.filter-bar label { font-size: 15px; font-weight: 600; color: #374151; }
+
+.filter-bar select {
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 15px;
+  background: white;
+  color: #111827;
+  cursor: pointer;
+}
+
+.btn-reset {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #374151;
+}
+.btn-reset:hover { background: #e5e7eb; }
+
+/* LEGEND */
+.legend { display: flex; align-items: center; gap: 16px; margin-left: auto; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #4b5563; }
+
+/* MAP */
+.map-wrap { position: relative; flex: 1; display: flex; flex-direction: column; }
+
+#map {
+  flex: 1;
+  min-height: 520px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(255,255,255,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  color: #374151;
+  z-index: 1000;
+  border-radius: 12px;
+}
+
+/* POPUP */
+.popup-id { font-size: 13px; color: #6b7280; margin-bottom: 4px; }
+.popup-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; color: #111827; }
+.popup-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.badge-open { background: #fee2e2; color: #b91c1c; }
+.badge-treatment { background: #ffedd5; color: #c2410c; }
+.popup-row { font-size: 13px; color: #374151; margin-top: 2px; }
+.popup-link {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0066ff;
+  text-decoration: none;
+}
+.popup-link:hover { text-decoration: underline; }
+
+@media(max-width: 1000px) {
+  .sidebar { position: static; width: 100%; min-height: auto; }
+  .page { display: block; }
+  .main { margin-left: 0; width: 100%; }
+  .filter-bar { flex-direction: column; align-items: flex-start; }
+  .legend { margin-left: 0; }
+}
+</style>
+</head>
+
+<body>
+<div class="page">
+
+  <aside class="sidebar">
+    <div class="logo">
+      <i data-lucide="building-2" class="logo-icon"></i>
+      <span>CityFix</span>
+    </div>
+
+    <div class="menu">
+      <a href="worker-home.html">
+        <i data-lucide="home"></i>
+        <span>Overview</span>
+      </a>
+
+      <a href="worker-home.html">
+        <i data-lucide="file-text"></i>
+        <span>My Reports</span>
+      </a>
+
+      <a href="worker-reports-map.html" class="active">
+        <i data-lucide="map"></i>
+        <span>Map View</span>
+      </a>
+
+      <a href="#">
+        <i data-lucide="camera"></i>
+        <span>Upload Image</span>
+      </a>
+
+      <a href="#">
+        <i data-lucide="calendar-days"></i>
+        <span>Schedule</span>
+      </a>
+
+      <a href="#">
+        <i data-lucide="message-circle"></i>
+        <span>Messages</span>
+      </a>
+
+      <a href="../profile/worker-profile.html">
+        <i data-lucide="user"></i>
+        <span>Profile</span>
+      </a>
+    </div>
+
+    <div class="logout-area">
+      <a href="#" onclick="logout()">
+        <i data-lucide="log-out"></i>
+        <span>Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <i data-lucide="menu" class="menu-icon"></i>
+      <div class="worker-box">
+        <div class="avatar"><i data-lucide="user"></i></div>
+        <div>
+          <div class="worker-name" id="topWorkerName">Worker</div>
+          <div class="worker-role">Worker</div>
+        </div>
+        <i data-lucide="chevron-down"></i>
+      </div>
+    </div>
+
+    <div class="content">
+      <h1 class="page-title">Reports Map</h1>
+
+      <!-- STATS -->
+      <div class="stats-bar">
+        <div class="stat-chip">
+          <span>Total Active</span>
+          <span class="count count-total" id="statTotal">0</span>
+        </div>
+        <div class="stat-chip">
+          <span class="dot dot-open"></span>
+          <span>Open</span>
+          <span class="count count-open" id="statOpen">0</span>
+        </div>
+        <div class="stat-chip">
+          <span class="dot dot-treatment"></span>
+          <span>In Treatment</span>
+          <span class="count count-treatment" id="statTreatment">0</span>
+        </div>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div class="filter-bar">
+        <label for="filterStatus">Status:</label>
+        <select id="filterStatus" onchange="applyFilters()">
+          <option value="">All Active</option>
+          <option value="Open">Open</option>
+          <option value="In Treatment">In Treatment</option>
+        </select>
+
+        <button class="btn-reset" onclick="resetFilters()">Reset</button>
+
+        <div class="legend">
+          <div class="legend-item"><span class="dot dot-open"></span> Open</div>
+          <div class="legend-item"><span class="dot dot-treatment"></span> In Treatment</div>
+        </div>
+      </div>
+
+      <!-- MAP -->
+      <div class="map-wrap">
+        <div id="loadingOverlay" class="loading-overlay">Loading reports...</div>
+        <div id="map"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+lucide.createIcons();
+
+document.getElementById("topWorkerName").innerText =
+  localStorage.getItem("workerName") || localStorage.getItem("userFullName") || "Worker";
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "../index.html";
+}
+
+const israelBounds = [[29.45, 34.25], [33.35, 35.65]];
+
+const map = L.map("map", {
+  maxBounds: israelBounds,
+  maxBoundsViscosity: 0.9
+});
+
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  maxZoom: 19,
+  attribution: "© OpenStreetMap"
+}).addTo(map);
+
+map.fitBounds(israelBounds);
+map.setMinZoom(7);
+map.setMaxZoom(18);
+
+function makeIcon(color) {
+  return L.divIcon({
+    className: "",
+    html: `<div style="width:16px;height:16px;border-radius:50%;background:${color};border:2px solid rgba(0,0,0,0.3);box-shadow:0 1px 4px rgba(0,0,0,0.3);"></div>`,
+    iconSize: [16, 16],
+    iconAnchor: [8, 8],
+    popupAnchor: [0, -12]
+  });
+}
+
+const icons = {
+  "Open":         makeIcon("#ef4444"),
+  "In Treatment": makeIcon("#f97316")
+};
+
+const badgeClass = {
+  "Open":         "badge-open",
+  "In Treatment": "badge-treatment"
+};
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleDateString("en-GB", {
+    year: "numeric", month: "2-digit", day: "2-digit"
+  });
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+let allReports = [];
+const markerLayer = L.layerGroup().addTo(map);
+
+function renderMarkers(reports) {
+  markerLayer.clearLayers();
+
+  reports.forEach(r => {
+    if (!r.latitude || !r.longitude) return;
+
+    const icon = icons[r.status];
+    if (!icon) return;
+
+    const badge = badgeClass[r.status] || "";
+
+    L.marker([r.latitude, r.longitude], { icon })
+      .bindPopup(`
+        <div>
+          <div class="popup-id">Report #${r.id}</div>
+          <div class="popup-title">${escapeHtml(r.category)}</div>
+          <span class="popup-badge ${badge}">${escapeHtml(r.status)}</span>
+          <div class="popup-row">Priority: ${escapeHtml(r.priority)}</div>
+          <div class="popup-row">📅 ${formatDate(r.createdAt)}</div>
+          <a href="worker-home.html?reportId=${r.id}" class="popup-link">View Report →</a>
+        </div>
+      `, { maxWidth: 240 })
+      .addTo(markerLayer);
+  });
+
+  updateStats(reports);
+}
+
+function updateStats(reports) {
+  document.getElementById("statTotal").innerText = reports.length;
+  document.getElementById("statOpen").innerText =
+    reports.filter(r => r.status === "Open").length;
+  document.getElementById("statTreatment").innerText =
+    reports.filter(r => r.status === "In Treatment").length;
+}
+
+function applyFilters() {
+  const status = document.getElementById("filterStatus").value;
+  const filtered = status ? allReports.filter(r => r.status === status) : allReports;
+  renderMarkers(filtered);
+}
+
+function resetFilters() {
+  document.getElementById("filterStatus").value = "";
+  renderMarkers(allReports);
+}
+
+async function loadReports() {
+  try {
+    const res = await fetch("/api/Auth/reports-map");
+    if (!res.ok) throw new Error("Failed to load reports");
+    const data = await res.json();
+    allReports = data.filter(r => r.status === "Open" || r.status === "In Treatment");
+    renderMarkers(allReports);
+  } catch (e) {
+    console.error(e);
+    document.getElementById("loadingOverlay").innerText =
+      "Failed to load reports. Please refresh the page.";
+    return;
+  }
+
+  document.getElementById("loadingOverlay").style.display = "none";
+  setTimeout(() => map.invalidateSize(), 100);
+}
+
+loadReports();
+</script>
+</body>
+</html>
