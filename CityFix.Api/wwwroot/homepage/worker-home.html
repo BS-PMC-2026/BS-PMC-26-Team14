@@ -722,7 +722,7 @@ body {
         <span>My Reports</span>
       </a>
 
-      <a href="#">
+      <a href="worker-reports-map.html">
         <i data-lucide="map"></i>
         <span>Map View</span>
       </a>
@@ -1451,7 +1451,11 @@ async function saveWorkerImage() {
   }
 }
 
-loadOpenReports();
+loadOpenReports().then(() => {
+  const params = new URLSearchParams(window.location.search);
+  const reportId = params.get("reportId");
+  if (reportId) openReportDetails(parseInt(reportId, 10));
+});
 lucide.createIcons();
 </script>
 
