@@ -15,6 +15,7 @@ namespace CityFix.Api.Data
         public DbSet<Admin> Admins => Set<Admin>();
         public DbSet<PasswordResetCode> PasswordResetCodes => Set<PasswordResetCode>();
         public DbSet<Report> Reports => Set<Report>();
+        public DbSet<ReportStatusHistory> ReportStatusHistories => Set<ReportStatusHistory>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

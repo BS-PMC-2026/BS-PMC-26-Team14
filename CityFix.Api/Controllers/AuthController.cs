@@ -497,6 +497,11 @@ namespace CityFix.Api.Controllers
             public string ImageBase64 { get; set; } = "";
             public string Note { get; set; } = "";
         }
+        public class UpdateReportStatusDto
+{
+    public string WorkerEmail { get; set; } = "";
+    public string NewStatus { get; set; } = "";
+}
 
         [HttpGet("worker-profile")]
         public async Task<IActionResult> GetWorkerProfile([FromQuery] string email)
@@ -897,5 +902,81 @@ namespace CityFix.Api.Controllers
             var hashedPassword = HashPassword(password);
             return hashedPassword == savedHash;
         }
+        [HttpPut("update-report-status/{reportId}")]
+public async Task<IActionResult> UpdateReportStatus(
+    int reportId,
+    [FromBody] UpdateReportStatusDto dto)
+{
+    if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
+        return Unauthorized(new { message = "יש להתחבר כעובד" });
+
+    var worker = await _context.Workers
+        .FirstOrDefaultAsync(w =>
+            w.Email.ToLower() == dto.WorkerEmail.ToLower() &&
+            w.ApprovalStatus == "Approved");
+
+    if (worker == null)
+        return Unauthorized(new { message = "אין הרשאה לעדכן סטטוס" });
+
+    var allowedStatuses = new[]
+    {
+        "Open",
+        "In Treatment",
+        "Completed"
+    };
+
+    if (!allowedStatuses.Contains(dto.NewStatus))
+        return BadRequest(new { message = "סטטוס לא חוקי" });
+
+    var report = await _context.Reports.FindAsync(reportId);
+
+    if (report == null)
+        return NotFound(new { message = "הקריאה לא נמצאה" });
+
+    if (report.AssignedWorkerEmail != null &&
+        report.AssignedWorkerEmail.ToLower() != dto.WorkerEmail.ToLower())
+    {
+        return Forbid();
+    }
+
+    var oldStatus = report.Status;
+
+    report.Status = dto.NewStatus;
+    
+
+    var history = new ReportStatusHistory
+    {
+        ReportId = report.Id,
+        OldStatus = oldStatus,
+        NewStatus = dto.NewStatus,
+        ChangedByWorkerEmail = dto.WorkerEmail,
+        ChangedAt = DateTime.UtcNow
+    };
+
+    _context.ReportStatusHistories.Add(history);
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "סטטוס הקריאה עודכן בהצלחה",
+        reportId = report.Id,
+        oldStatus,
+        newStatus = report.Status,
+        changedBy = dto.WorkerEmail,
+        changedAt = history.ChangedAt
+    });
+}
+
+[HttpGet("report-status-history/{reportId}")]
+public async Task<IActionResult> GetReportStatusHistory(int reportId)
+{
+    var history = await _context.ReportStatusHistories
+        .Where(h => h.ReportId == reportId)
+        .OrderByDescending(h => h.ChangedAt)
+        .ToListAsync();
+
+    return Ok(history);
+}
     }
 }

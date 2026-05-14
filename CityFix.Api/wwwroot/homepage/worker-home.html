@@ -749,6 +749,62 @@ body {
     width: 100%;
     justify-content: center;
   }
+
+}
+.status-panel {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 20px;
+  margin: 24px 0 28px;
+  align-items: start;
+}
+
+.status-update-box,
+#statusHistoryBox {
+  margin-top: 24px;
+}
+
+.status-update-box h3,
+#statusHistoryBox h3 {
+  font-size: 20px;
+  margin-bottom: 14px;
+  color: #0f172a;
+}
+
+.status-controls {
+  display: flex;
+  gap: 10px;
+}
+
+.status-controls select {
+  height: 44px;
+  flex: 1;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 16px;
+}
+
+.status-controls button {
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: #0b63f6;
+  color: white;
+  padding: 0 18px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.history-item {
+  background: #f8fafc;
+  border: 1px solid #dbe2ea;
+  border-right: 5px solid #0b63f6;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 12px;
+  line-height: 1.7;
 }
 </style>
 </head>
@@ -839,6 +895,26 @@ body {
 
           <span id="detailStatus" class="status-pill">New</span>
         </div>
+
+
+<div class="status-update-box hidden" id="statusPanel">    <h3>עדכון מצב קריאה</h3>
+
+    <div class="status-controls">
+      <select id="statusUpdateSelect">
+        <option value="Open">פתוח</option>
+        <option value="In Treatment">בטיפול</option>
+        <option value="Completed">הושלם</option>
+      </select>
+
+      <button onclick="updateReportStatus()">עדכן מצב</button>
+    </div>
+  </div>
+
+
+</div>
+
+  
+<div id="statusHistoryBox"></div>
 
         <div id="detailDate" class="report-date">Reported recently</div>
 
@@ -1096,25 +1172,56 @@ function renderReportsList() {
   let html = `<div class="reports-list">`;
 
   reports.forEach(report => {
+
     const isInTreatment = report.status === "In Treatment";
+    const isCompleted = report.status === "Completed";
 
     html += `
-      <div class="list-card ${isInTreatment ? "in-treatment-card" : ""}" onclick="openReportDetails(${report.id})">
+      <div class="list-card 
+        ${isInTreatment ? "in-treatment-card" : ""}
+        ${isCompleted ? "completed-card" : ""}
+      " onclick="openReportDetails(${report.id})">
+
         <h3>${report.category || "Report"}</h3>
-        <p><b>Priority:</b> ${getPriorityText(report.priority)}</p>
+
+        <p>
+          <b>Priority:</b> ${getPriorityText(report.priority)}
+        </p>
+
         <p>
           <b>Status:</b>
-          <span class="${isInTreatment ? "treatment-badge" : "open-badge"}">
-            ${isInTreatment ? "בטיפול" : "פתוח"}
+
+          <span class="
+            ${isInTreatment ? "treatment-badge" : ""}
+            ${isCompleted ? "completed-badge" : ""}
+            ${!isInTreatment && !isCompleted ? "open-badge" : ""}
+          ">
+
+            ${
+              isInTreatment
+                ? "בטיפול"
+                : isCompleted
+                ? "הושלם"
+                : "פתוח"
+            }
+
           </span>
         </p>
-        <p><b>Customer:</b> ${report.customerEmail || "-"}</p>
-        <p><b>Description:</b> ${report.description || "-"}</p>
+
+        <p>
+          <b>Customer:</b> ${report.customerEmail || "-"}
+        </p>
+
+        <p>
+          <b>Description:</b> ${report.description || "-"}
+        </p>
+
       </div>
     `;
   });
 
   html += `</div>`;
+
   container.innerHTML = html;
 }
 
@@ -1144,7 +1251,16 @@ async function openReportDetails(reportId) {
     }
 
     currentReport = fullReport;
+const statusPanel = document.getElementById("statusPanel");
 
+if (
+  currentReport.assignedWorkerEmail &&
+  currentReport.assignedWorkerEmail.toLowerCase() === workerEmail.toLowerCase()
+) {
+  statusPanel.classList.remove("hidden");
+} else {
+  statusPanel.classList.add("hidden");
+}
     document.getElementById("listView").classList.add("hidden");
     document.getElementById("uploadImageView").classList.add("hidden");
     document.getElementById("detailsView").classList.remove("hidden");
@@ -1156,7 +1272,10 @@ async function openReportDetails(reportId) {
     document.getElementById("detailCategoryInfo").innerText = currentReport.category || "-";
 
     document.getElementById("detailStatus").innerText =
-      currentReport.status === "In Treatment" ? "בטיפול" : "New";
+  currentReport.status === "In Treatment" ? "בטיפול" :
+  currentReport.status === "Completed" ? "הושלם" :
+  currentReport.status === "Open" ? "פתוח" :
+  currentReport.status;
 
     document.getElementById("detailDate").innerText = formatDate(currentReport.createdAt);
 
@@ -1170,6 +1289,10 @@ async function openReportDetails(reportId) {
 
     document.getElementById("detailDescription").innerHTML =
       `${currentReport.description || "No description"}<br>${currentReport.notes || ""}`;
+      document.getElementById("statusUpdateSelect").value =
+  currentReport.status || "Open";
+
+loadStatusHistory(currentReport.id);
 
     let photoHtml = "";
 
@@ -1220,6 +1343,7 @@ async function openReportDetails(reportId) {
     alert("בעיה בטעינת פרטי הדיווח");
     console.error(error);
   }
+  
 }
 
 function initMap(lat, lng) {
@@ -1526,6 +1650,67 @@ if (reportId) {
 lucide.createIcons();
 
 lucide.createIcons();
+async function updateReportStatus() {
+  if (!currentReport) {
+    alert("לא נבחרה קריאה");
+    return;
+  }
+
+  const newStatus = document.getElementById("statusUpdateSelect").value;
+
+  const response = await fetch(`/api/Auth/update-report-status/${currentReport.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      workerEmail: workerEmail,
+      newStatus: newStatus
+    })
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    alert(result.message || "שגיאה בעדכון הסטטוס");
+    return;
+  }
+
+  alert("הסטטוס עודכן בהצלחה");
+
+  currentReport.status = newStatus;
+
+  document.getElementById("detailStatus").innerText =
+  newStatus === "In Treatment" ? "בטיפול" :
+  newStatus === "Completed" ? "הושלם" :
+  "פתוח";
+
+  loadStatusHistory(currentReport.id);
+}
+
+async function loadStatusHistory(reportId) {
+  const response = await fetch(`/api/Auth/report-status-history/${reportId}`);
+  const history = await response.json();
+
+  const box = document.getElementById("statusHistoryBox");
+
+  if (!history.length) {
+    box.innerHTML = "";
+    return;
+  }
+
+  box.innerHTML = `
+    <h3 style="margin-top:20px;">היסטוריית שינויים</h3>
+    ${history.map(h => `
+      <div class="history-item">
+        <b>${h.oldStatus}</b> → <b>${h.newStatus}</b><br>
+        עובד: ${h.changedByWorkerEmail}<br>
+        זמן: ${new Date(h.changedAt).toLocaleString("he-IL")}
+      </div>
+    `).join("")}
+  `;
+}
+
 </script>
 
 </body>
