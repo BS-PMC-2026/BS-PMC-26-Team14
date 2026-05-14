@@ -199,6 +199,49 @@ body {
   margin-bottom: 20px;
 }
 
+/* ADDED BUTTON AREA */
+.worker-home-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.worker-home-btn {
+  height: 50px;
+  border: none;
+  border-radius: 8px;
+  background: #0b63f6;
+  color: white;
+  padding: 0 22px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 14px rgba(11, 99, 246, 0.22);
+}
+
+.worker-home-btn:hover {
+  background: #004fd1;
+}
+
+.worker-home-btn.secondary {
+  background: white;
+  color: #0b63f6;
+  border: 1px solid #bfdbfe;
+}
+
+.worker-home-btn.secondary:hover {
+  background: #eff6ff;
+}
+
+.worker-home-btn i {
+  width: 20px;
+  height: 20px;
+}
+
 .report-top {
   display: flex;
   align-items: center;
@@ -697,6 +740,15 @@ body {
   .save-upload-btn {
     width: 100%;
   }
+
+  .worker-home-actions {
+    flex-direction: column;
+  }
+
+  .worker-home-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style>
 </head>
@@ -712,34 +764,19 @@ body {
     </div>
 
     <div class="menu">
-      <a href="#" onclick="showList()">
-        <i data-lucide="home"></i>
-        <span>Overview</span>
-      </a>
-
       <a href="#" class="active" onclick="showList()">
         <i data-lucide="file-text"></i>
-        <span>My Reports</span>
+        <span>All Reports</span>
+      </a>
+
+      <a href="worker-assigned-reports.html">
+        <i data-lucide="clipboard-list"></i>
+        <span>Assigned Reports</span>
       </a>
 
       <a href="worker-reports-map.html">
         <i data-lucide="map"></i>
         <span>Map View</span>
-      </a>
-
-      <a href="#" onclick="openUploadImageFromMenu()">
-        <i data-lucide="camera"></i>
-        <span>Upload Image</span>
-      </a>
-
-      <a href="#">
-        <i data-lucide="calendar-days"></i>
-        <span>Schedule</span>
-      </a>
-
-      <a href="#">
-        <i data-lucide="message-circle"></i>
-        <span>Messages</span>
       </a>
 
       <a href="../profile/worker-profile.html">
@@ -762,7 +799,6 @@ body {
       <i data-lucide="menu" class="menu-icon"></i>
 
       <div class="worker-box">
-      
         <div class="avatar">
           <i data-lucide="user"></i>
         </div>
@@ -780,7 +816,10 @@ body {
 
       <!-- LIST VIEW -->
       <section id="listView">
-        <h1 class="page-title">My Reports</h1>
+        <h1 class="page-title">All Reports</h1>
+
+        <div class="worker-home-actions"></div>
+
         <div id="reportsContainer">
           <p class="empty-msg">Loading reports...</p>
         </div>
@@ -788,7 +827,7 @@ body {
 
       <!-- DETAILS VIEW -->
       <section id="detailsView" class="hidden">
-        <a class="back-link" onclick="showList()">← Back to My Reports</a>
+        <a class="back-link" onclick="showList()">← Back to All Reports</a>
 
         <h1 class="page-title">Report Details</h1>
 
@@ -877,7 +916,7 @@ body {
             </button>
 
             <div class="small-note">
-              You can review this report again in the 'My Reports' section.
+              You can review this report again in the 'All Reports' section.
             </div>
           </div>
 
@@ -1085,84 +1124,102 @@ function showList() {
   document.getElementById("listView").classList.remove("hidden");
 }
 
-function openReportDetails(reportId) {
-  currentReport = reports.find(r => r.id === reportId);
+async function openReportDetails(reportId) {
+  try {
+    const response = await fetch(
+      `/api/Auth/report-details/${reportId}?workerEmail=${encodeURIComponent(workerEmail)}`
+    );
 
-  if (!currentReport) {
-    alert("הדיווח לא נמצא");
-    return;
-  }
+    let fullReport = null;
 
-  document.getElementById("listView").classList.add("hidden");
-  document.getElementById("uploadImageView").classList.add("hidden");
-  document.getElementById("detailsView").classList.remove("hidden");
+    try {
+      fullReport = await response.json();
+    } catch {
+      fullReport = null;
+    }
 
-  document.getElementById("detailPriority").className = getPriorityClass(currentReport.priority);
-  document.getElementById("detailPriority").innerText = getPriorityText(currentReport.priority);
+    if (!response.ok || !fullReport) {
+      alert(fullReport?.message || "הדיווח לא נמצא");
+      return;
+    }
 
-  document.getElementById("detailCategory").innerText = currentReport.category || "-";
-  document.getElementById("detailCategoryInfo").innerText = currentReport.category || "-";
+    currentReport = fullReport;
 
-  document.getElementById("detailStatus").innerText =
-    currentReport.status === "In Treatment" ? "בטיפול" : "New";
+    document.getElementById("listView").classList.add("hidden");
+    document.getElementById("uploadImageView").classList.add("hidden");
+    document.getElementById("detailsView").classList.remove("hidden");
 
-  document.getElementById("detailDate").innerText = formatDate(currentReport.createdAt);
+    document.getElementById("detailPriority").className = getPriorityClass(currentReport.priority);
+    document.getElementById("detailPriority").innerText = getPriorityText(currentReport.priority);
 
-  document.getElementById("detailLocation").innerHTML =
-    `${currentReport.latitude || "-"}, ${currentReport.longitude || "-"}`;
+    document.getElementById("detailCategory").innerText = currentReport.category || "-";
+    document.getElementById("detailCategoryInfo").innerText = currentReport.category || "-";
 
-  document.getElementById("detailCustomer").innerHTML =
-    `${currentReport.customerEmail || "-"}<br>${currentReport.phone || ""}`;
+    document.getElementById("detailStatus").innerText =
+      currentReport.status === "In Treatment" ? "בטיפול" : "New";
 
-  document.getElementById("detailId").innerText = "RPT-" + currentReport.id;
+    document.getElementById("detailDate").innerText = formatDate(currentReport.createdAt);
 
-  document.getElementById("detailDescription").innerHTML =
-    `${currentReport.description || "No description"}<br>${currentReport.notes || ""}`;
+    document.getElementById("detailLocation").innerHTML =
+      `${currentReport.latitude || "-"}, ${currentReport.longitude || "-"}`;
 
-  let photoHtml = "";
+    document.getElementById("detailCustomer").innerHTML =
+      `${currentReport.customerEmail || "-"}<br>${currentReport.phone || ""}`;
 
-  if (currentReport.imageBase64) {
-    photoHtml += `<img class="photo" src="${currentReport.imageBase64}" alt="Report photo">`;
-  } else {
-    photoHtml += `<div class="no-photo">No photo uploaded</div>`;
-  }
+    document.getElementById("detailId").innerText = "RPT-" + currentReport.id;
 
-  if (currentReport.workerImageBase64) {
-    photoHtml += `
-      <div class="worker-uploaded-section">
-        <div class="section-title">
-          <i data-lucide="camera"></i>
-          <span>Worker Uploaded Image</span>
+    document.getElementById("detailDescription").innerHTML =
+      `${currentReport.description || "No description"}<br>${currentReport.notes || ""}`;
+
+    let photoHtml = "";
+
+    if (currentReport.imageBase64) {
+      photoHtml += `<img class="photo" src="${currentReport.imageBase64}" alt="Report photo">`;
+    } else {
+      photoHtml += `<div class="no-photo">No photo uploaded</div>`;
+    }
+
+    if (currentReport.workerImageBase64) {
+      photoHtml += `
+        <div class="worker-uploaded-section">
+          <div class="section-title">
+            <i data-lucide="camera"></i>
+            <span>Worker Uploaded Image</span>
+          </div>
+
+          <img src="${currentReport.workerImageBase64}" alt="Worker uploaded image">
+
+          <div class="worker-uploaded-note">
+            <b>Note:</b><br>
+            ${currentReport.workerImageNote || "No note"}
+          </div>
         </div>
+      `;
+    }
 
-        <img src="${currentReport.workerImageBase64}" alt="Worker uploaded image">
+    document.getElementById("photoBox").innerHTML = photoHtml;
 
-        <div class="worker-uploaded-note">
-          <b>Note:</b><br>
-          ${currentReport.workerImageNote || "No note"}
-        </div>
-      </div>
-    `;
+    const acceptButton = document.querySelector(".accept-btn");
+
+    if (currentReport.status === "In Treatment") {
+      acceptButton.innerText = "✓ הדיווח כבר בטיפול";
+      acceptButton.disabled = true;
+      acceptButton.classList.add("accepted-disabled");
+    } else {
+      acceptButton.innerText = "✓ Accept Report";
+      acceptButton.disabled = false;
+      acceptButton.classList.remove("accepted-disabled");
+    }
+
+    setTimeout(() => {
+      initMap(currentReport.latitude, currentReport.longitude);
+      lucide.createIcons();
+    }, 200);
+
+  } catch (error) {
+    alert("בעיה בטעינת פרטי הדיווח");
+    console.error(error);
   }
-
-  document.getElementById("photoBox").innerHTML = photoHtml;
-
-  const acceptButton = document.querySelector(".accept-btn");
-
-  if (currentReport.status === "In Treatment") {
-    acceptButton.innerText = "✓ הדיווח כבר בטיפול";
-    acceptButton.disabled = true;
-    acceptButton.classList.add("accepted-disabled");
-  } else {
-    acceptButton.innerText = "✓ Accept Report";
-    acceptButton.disabled = false;
-    acceptButton.classList.remove("accepted-disabled");
-  }
-
-  setTimeout(() => {
-    initMap(currentReport.latitude, currentReport.longitude);
-    lucide.createIcons();
-  }, 200);
 }
 
 function initMap(lat, lng) {
@@ -1253,7 +1310,7 @@ async function acceptCurrentReport() {
 
 function openUploadImageFromMenu() {
   if (!currentReport) {
-    alert("קודם צריך לבחור דיווח מתוך My Reports");
+    alert("קודם צריך לבחור דיווח מתוך All Reports");
     return;
   }
 
@@ -1438,12 +1495,7 @@ async function saveWorkerImage() {
 
     await loadOpenReports();
 
-    const updatedReport = reports.find(r => r.id === currentReport.id);
-    if (updatedReport) {
-      currentReport = updatedReport;
-    }
-
-    openReportDetails(currentReport.id);
+    await openReportDetails(currentReport.id);
 
   } catch (error) {
     alert("בעיה בחיבור לשרת");
@@ -1451,11 +1503,28 @@ async function saveWorkerImage() {
   }
 }
 
-loadOpenReports().then(() => {
-  const params = new URLSearchParams(window.location.search);
-  const reportId = params.get("reportId");
-  if (reportId) openReportDetails(parseInt(reportId, 10));
-});
+const params = new URLSearchParams(window.location.search);
+const reportId = params.get("reportId");
+
+if (reportId) {
+  document.getElementById("listView").classList.add("hidden");
+  document.getElementById("uploadImageView").classList.add("hidden");
+  document.getElementById("detailsView").classList.remove("hidden");
+
+  document.getElementById("detailCategory").innerText = "Loading...";
+  document.getElementById("detailCategoryInfo").innerText = "Loading...";
+  document.getElementById("detailDescription").innerText = "Loading report details...";
+  document.getElementById("detailId").innerText = "RPT-" + reportId;
+
+  openReportDetails(parseInt(reportId, 10));
+
+  loadOpenReports();
+} else {
+  loadOpenReports();
+}
+
+lucide.createIcons();
+
 lucide.createIcons();
 </script>
 

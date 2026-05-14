@@ -290,36 +290,25 @@ body {
     </div>
 
     <div class="menu">
-      <a href="worker-home.html">
-        <i data-lucide="home"></i>
-        <span>Overview</span>
-      </a>
+      
 
+    
       <a href="worker-home.html">
         <i data-lucide="file-text"></i>
-        <span>My Reports</span>
+        <span>All Reports</span>
       </a>
+
+       <a href="worker-assigned-reports.html">
+  <i data-lucide="clipboard-list"></i>
+  <span>Assigned Reports</span>
+</a>
 
       <a href="worker-reports-map.html" class="active">
         <i data-lucide="map"></i>
         <span>Map View</span>
       </a>
 
-      <a href="#">
-        <i data-lucide="camera"></i>
-        <span>Upload Image</span>
-      </a>
-
-      <a href="#">
-        <i data-lucide="calendar-days"></i>
-        <span>Schedule</span>
-      </a>
-
-      <a href="#">
-        <i data-lucide="message-circle"></i>
-        <span>Messages</span>
-      </a>
-
+  
       <a href="../profile/worker-profile.html">
         <i data-lucide="user"></i>
         <span>Profile</span>
@@ -414,7 +403,7 @@ const map = L.map("map", {
 
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
   maxZoom: 19,
-  attribution: "© OpenStreetMap"
+  attribution: "Â© OpenStreetMap"
 }).addTo(map);
 
 map.fitBounds(israelBounds);
@@ -476,8 +465,8 @@ function renderMarkers(reports) {
           <div class="popup-title">${escapeHtml(r.category)}</div>
           <span class="popup-badge ${badge}">${escapeHtml(r.status)}</span>
           <div class="popup-row">Priority: ${escapeHtml(r.priority)}</div>
-          <div class="popup-row">📅 ${formatDate(r.createdAt)}</div>
-          <a href="worker-home.html?reportId=${r.id}" class="popup-link">View Report →</a>
+          <div class="popup-row">ðŸ“… ${formatDate(r.createdAt)}</div>
+          <a href="worker-home.html?reportId=${r.id}" class="popup-link">View Report â†’</a>
         </div>
       `, { maxWidth: 240 })
       .addTo(markerLayer);
