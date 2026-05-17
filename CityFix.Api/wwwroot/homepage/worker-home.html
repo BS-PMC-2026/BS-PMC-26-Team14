@@ -840,6 +840,60 @@ body {
 .completed-card {
   opacity: 0.85;
 }
+
+/* PAGINATION */
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  height: 38px;
+  min-width: 38px;
+  padding: 0 12px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #eff6ff;
+  color: #0526ff;
+  border-color: #bfdbfe;
+}
+
+.page-btn.active {
+  background: #0526ff;
+  color: white;
+  border-color: #0526ff;
+  font-weight: 700;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-ellipsis {
+  color: #94a3b8;
+  font-size: 14px;
+  padding: 0 4px;
+}
+
+.page-info {
+  margin-left: 8px;
+  font-size: 13px;
+  color: #64748b;
+}
 </style>
 </head>
 
@@ -908,7 +962,33 @@ body {
       <section id="listView">
         <h1 class="page-title">All Reports</h1>
 
-        <div class="worker-home-actions"></div>
+        <div class="filters-card">
+          <div class="filter-group">
+            <label>Category</label>
+            <select id="categoryFilter" onchange="currentPage=1;renderReportsList()">
+              <option value="">All Categories</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Status</label>
+            <select id="statusFilter" onchange="currentPage=1;renderReportsList()">
+              <option value="">All Statuses</option>
+              <option value="Open">Open</option>
+              <option value="In Treatment">In Treatment</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Priority</label>
+            <select id="priorityFilter" onchange="currentPage=1;renderReportsList()">
+              <option value="">All Priorities</option>
+              <option value="High Priority">High Priority</option>
+              <option value="Medium Priority">Medium Priority</option>
+              <option value="Low Priority">Low Priority</option>
+            </select>
+          </div>
+          <button class="reset-filter-btn" onclick="resetReportFilters()">Reset</button>
+        </div>
 
         <div id="reportsContainer">
           <p class="empty-msg">Loading reports...</p>
@@ -1072,6 +1152,8 @@ body {
 
 <script>
 let reports = [];
+let currentPage = 1;
+const REPORTS_PER_PAGE = 10;
 let currentReport = null;
 let map = null;
 let marker = null;
@@ -1138,6 +1220,8 @@ async function loadOpenReports() {
       return;
     }
 
+    currentPage = 1;
+    fillCategoryFilter();
     renderReportsList();
 
   } catch (error) {
@@ -1154,60 +1238,115 @@ function renderReportsList() {
     return;
   }
 
+  const statusFilter = document.getElementById("statusFilter")?.value || "";
+  const priorityFilter = document.getElementById("priorityFilter")?.value || "";
+  const categoryFilter = document.getElementById("categoryFilter")?.value || "";
+
+  const filtered = reports.filter(report => {
+    const statusMatch = !statusFilter || report.status === statusFilter;
+    const priorityMatch = !priorityFilter || getPriorityText(report.priority) === priorityFilter;
+    const categoryMatch = !categoryFilter || report.category === categoryFilter;
+    return statusMatch && priorityMatch && categoryMatch;
+  });
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<p class="empty-msg">No reports match the selected filters</p>`;
+    return;
+  }
+
+  const totalPages = Math.ceil(filtered.length / REPORTS_PER_PAGE);
+  if (currentPage > totalPages) currentPage = totalPages;
+  if (currentPage < 1) currentPage = 1;
+
+  const start = (currentPage - 1) * REPORTS_PER_PAGE;
+  const pageReports = filtered.slice(start, start + REPORTS_PER_PAGE);
+
   let html = `<div class="reports-list">`;
 
-  reports.forEach(report => {
-
+  pageReports.forEach(report => {
     const isInTreatment = report.status === "In Treatment";
     const isCompleted = report.status === "Completed";
 
     html += `
-      <div class="list-card 
-        ${isInTreatment ? "in-treatment-card" : ""}
-        ${isCompleted ? "completed-card" : ""}
-      " onclick="openReportDetails(${report.id})">
-
+      <div class="list-card${isInTreatment ? " in-treatment-card" : ""}${isCompleted ? " completed-card" : ""}"
+           onclick="openReportDetails(${report.id})">
         <h3>${report.category || "Report"}</h3>
-
-        <p>
-          <b>Priority:</b> ${getPriorityText(report.priority)}
-        </p>
-
+        <p><b>Priority:</b> ${getPriorityText(report.priority)}</p>
         <p>
           <b>Status:</b>
-
-          <span class="
-            ${isInTreatment ? "treatment-badge" : ""}
-            ${isCompleted ? "completed-badge" : ""}
-            ${!isInTreatment && !isCompleted ? "open-badge" : ""}
-          ">
-
-            ${
-              isInTreatment
-                ? "In Treatment"
-                : isCompleted
-                ? "Completed"
-                : "Open"
-            }
-
+          <span class="${isInTreatment ? "treatment-badge" : isCompleted ? "completed-badge" : "open-badge"}">
+            ${isInTreatment ? "In Treatment" : isCompleted ? "Completed" : "Open"}
           </span>
         </p>
-
-        <p>
-          <b>Customer:</b> ${report.customerEmail || "-"}
-        </p>
-
-        <p>
-          <b>Description:</b> ${report.description || "-"}
-        </p>
-
+        <p><b>Customer:</b> ${report.customerEmail || "-"}</p>
+        <p><b>Description:</b> ${report.description || "-"}</p>
       </div>
     `;
   });
 
   html += `</div>`;
 
+  if (totalPages > 1) {
+    const end = Math.min(start + REPORTS_PER_PAGE, filtered.length);
+    html += `<div class="pagination-bar">`;
+    html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})"${currentPage === 1 ? " disabled" : ""}>← Prev</button>`;
+
+    getPaginationRange(currentPage, totalPages).forEach(p => {
+      if (p === "...") {
+        html += `<span class="page-ellipsis">…</span>`;
+      } else {
+        html += `<button class="page-btn${p === currentPage ? " active" : ""}" onclick="goToPage(${p})">${p}</button>`;
+      }
+    });
+
+    html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})"${currentPage === totalPages ? " disabled" : ""}>Next →</button>`;
+    html += `<span class="page-info">${start + 1}–${end} of ${filtered.length}</span>`;
+    html += `</div>`;
+  }
+
   container.innerHTML = html;
+}
+
+function fillCategoryFilter() {
+  const select = document.getElementById("categoryFilter");
+  if (!select) return;
+  const categories = [...new Set(reports.map(r => r.category).filter(Boolean))].sort();
+  select.innerHTML = `<option value="">All Categories</option>`;
+  categories.forEach(cat => {
+    select.innerHTML += `<option value="${cat}">${cat}</option>`;
+  });
+}
+
+function resetReportFilters() {
+  document.getElementById("statusFilter").value = "";
+  document.getElementById("priorityFilter").value = "";
+  document.getElementById("categoryFilter").value = "";
+  currentPage = 1;
+  renderReportsList();
+}
+
+function getPaginationRange(current, total) {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 4) return [1, 2, 3, 4, 5, "...", total];
+  if (current >= total - 3) return [1, "...", total - 4, total - 3, total - 2, total - 1, total];
+  return [1, "...", current - 1, current, current + 1, "...", total];
+}
+
+function goToPage(page) {
+  const statusFilter = document.getElementById("statusFilter")?.value || "";
+  const priorityFilter = document.getElementById("priorityFilter")?.value || "";
+  const categoryFilter = document.getElementById("categoryFilter")?.value || "";
+  const filtered = reports.filter(report => {
+    const statusMatch = !statusFilter || report.status === statusFilter;
+    const priorityMatch = !priorityFilter || getPriorityText(report.priority) === priorityFilter;
+    const categoryMatch = !categoryFilter || report.category === categoryFilter;
+    return statusMatch && priorityMatch && categoryMatch;
+  });
+  const totalPages = Math.ceil(filtered.length / REPORTS_PER_PAGE);
+  if (page < 1 || page > totalPages) return;
+  currentPage = page;
+  renderReportsList();
+  document.getElementById("listView").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function showList() {
