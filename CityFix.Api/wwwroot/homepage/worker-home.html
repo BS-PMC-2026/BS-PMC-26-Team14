@@ -840,6 +840,60 @@ body {
 .completed-card {
   opacity: 0.85;
 }
+
+/* PAGINATION */
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  height: 38px;
+  min-width: 38px;
+  padding: 0 12px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: #eff6ff;
+  color: #0526ff;
+  border-color: #bfdbfe;
+}
+
+.page-btn.active {
+  background: #0526ff;
+  color: white;
+  border-color: #0526ff;
+  font-weight: 700;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-ellipsis {
+  color: #94a3b8;
+  font-size: 14px;
+  padding: 0 4px;
+}
+
+.page-info {
+  margin-left: 8px;
+  font-size: 13px;
+  color: #64748b;
+}
 </style>
 </head>
 
@@ -1072,6 +1126,8 @@ body {
 
 <script>
 let reports = [];
+let currentPage = 1;
+const REPORTS_PER_PAGE = 10;
 let currentReport = null;
 let map = null;
 let marker = null;
@@ -1138,6 +1194,7 @@ async function loadOpenReports() {
       return;
     }
 
+    currentPage = 1;
     renderReportsList();
 
   } catch (error) {
@@ -1154,60 +1211,74 @@ function renderReportsList() {
     return;
   }
 
+  const totalPages = Math.ceil(reports.length / REPORTS_PER_PAGE);
+  if (currentPage > totalPages) currentPage = totalPages;
+  if (currentPage < 1) currentPage = 1;
+
+  const start = (currentPage - 1) * REPORTS_PER_PAGE;
+  const pageReports = reports.slice(start, start + REPORTS_PER_PAGE);
+
   let html = `<div class="reports-list">`;
 
-  reports.forEach(report => {
-
+  pageReports.forEach(report => {
     const isInTreatment = report.status === "In Treatment";
     const isCompleted = report.status === "Completed";
 
     html += `
-      <div class="list-card 
-        ${isInTreatment ? "in-treatment-card" : ""}
-        ${isCompleted ? "completed-card" : ""}
+      <div class="list-card
+        ${isInTreatment ? " in-treatment-card" : ""}
+        ${isCompleted ? " completed-card" : ""}
       " onclick="openReportDetails(${report.id})">
-
         <h3>${report.category || "Report"}</h3>
-
-        <p>
-          <b>Priority:</b> ${getPriorityText(report.priority)}
-        </p>
-
+        <p><b>Priority:</b> ${getPriorityText(report.priority)}</p>
         <p>
           <b>Status:</b>
-
-          <span class="
-            ${isInTreatment ? "treatment-badge" : ""}
-            ${isCompleted ? "completed-badge" : ""}
-            ${!isInTreatment && !isCompleted ? "open-badge" : ""}
-          ">
-
-            ${
-              isInTreatment
-                ? "In Treatment"
-                : isCompleted
-                ? "Completed"
-                : "Open"
-            }
-
+          <span class="${isInTreatment ? "treatment-badge" : isCompleted ? "completed-badge" : "open-badge"}">
+            ${isInTreatment ? "In Treatment" : isCompleted ? "Completed" : "Open"}
           </span>
         </p>
-
-        <p>
-          <b>Customer:</b> ${report.customerEmail || "-"}
-        </p>
-
-        <p>
-          <b>Description:</b> ${report.description || "-"}
-        </p>
-
+        <p><b>Customer:</b> ${report.customerEmail || "-"}</p>
+        <p><b>Description:</b> ${report.description || "-"}</p>
       </div>
     `;
   });
 
   html += `</div>`;
 
+  if (totalPages > 1) {
+    const end = Math.min(start + REPORTS_PER_PAGE, reports.length);
+    html += `<div class="pagination-bar">`;
+    html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})"${currentPage === 1 ? " disabled" : ""}>← Prev</button>`;
+
+    getPaginationRange(currentPage, totalPages).forEach(p => {
+      if (p === "...") {
+        html += `<span class="page-ellipsis">…</span>`;
+      } else {
+        html += `<button class="page-btn${p === currentPage ? " active" : ""}" onclick="goToPage(${p})">${p}</button>`;
+      }
+    });
+
+    html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})"${currentPage === totalPages ? " disabled" : ""}>Next →</button>`;
+    html += `<span class="page-info">${start + 1}–${end} of ${reports.length}</span>`;
+    html += `</div>`;
+  }
+
   container.innerHTML = html;
+}
+
+function getPaginationRange(current, total) {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 4) return [1, 2, 3, 4, 5, "...", total];
+  if (current >= total - 3) return [1, "...", total - 4, total - 3, total - 2, total - 1, total];
+  return [1, "...", current - 1, current, current + 1, "...", total];
+}
+
+function goToPage(page) {
+  const totalPages = Math.ceil(reports.length / REPORTS_PER_PAGE);
+  if (page < 1 || page > totalPages) return;
+  currentPage = page;
+  renderReportsList();
+  document.getElementById("listView").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function showList() {
