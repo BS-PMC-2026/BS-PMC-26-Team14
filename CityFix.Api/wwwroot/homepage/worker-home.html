@@ -806,6 +806,63 @@ body {
   margin-bottom: 12px;
   line-height: 1.7;
 }
+.filters-card {
+  background: white;
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group label {
+  color: #334155;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.filter-group select {
+  height: 44px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 15px;
+  background: white;
+}
+
+.reset-filter-btn {
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: #0b63f6;
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.completed-badge {
+  display: inline-block;
+  background: #e5e7eb;
+  color: #374151;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.completed-card {
+  opacity: 0.85;
+}
 </style>
 </head>
 
@@ -874,8 +931,39 @@ body {
       <section id="listView">
         <h1 class="page-title">All Reports</h1>
 
-        <div class="worker-home-actions"></div>
+<div class="filters-card">
+  <div class="filter-group">
+    <label>Status</label>
+    <select id="statusFilter" onchange="renderReportsList()">
+      <option value="">All Statuses</option>
+      <option value="Open">Open</option>
+      <option value="In Treatment">In Treatment</option>
+      <option value="Completed">Completed</option>
+    </select>
+  </div>
 
+  <div class="filter-group">
+    <label>Category</label>
+    <select id="categoryFilter" onchange="renderReportsList()">
+      <option value="">All Categories</option>
+    </select>
+  </div>
+
+  <div class="filter-group">
+    <label>Priority</label>
+    <select id="priorityFilter" onchange="renderReportsList()">
+      <option value="">All Priorities</option>
+      <option value="High">High</option>
+      <option value="High Priority">High Priority</option>
+      <option value="Medium Priority">Medium Priority</option>
+      <option value="Low Priority">Low Priority</option>
+    </select>
+  </div>
+
+  <button class="reset-filter-btn" onclick="resetReportFilters()">
+    Reset
+  </button>
+</div>
         <div id="reportsContainer">
           <p class="empty-msg">Loading reports...</p>
         </div>
@@ -1154,11 +1242,41 @@ async function loadOpenReports() {
     }
 
     renderReportsList();
+    fillCategoryFilter();
 
   } catch (error) {
     container.innerHTML = `<p class="empty-msg">Connection error with server</p>`;
     console.error(error);
   }
+}
+function fillCategoryFilter() {
+  const categoryFilter = document.getElementById("categoryFilter");
+
+  if (!categoryFilter) return;
+
+  const currentValue = categoryFilter.value;
+
+  const categories = [...new Set(
+    reports
+      .map(r => r.category)
+      .filter(c => c && c.trim() !== "")
+  )];
+
+  categoryFilter.innerHTML =
+    `<option value="">All Categories</option>` +
+    categories.map(c =>
+      `<option value="${c}">${c}</option>`
+    ).join("");
+
+  categoryFilter.value = currentValue;
+}
+
+function resetReportFilters() {
+  document.getElementById("statusFilter").value = "";
+  document.getElementById("categoryFilter").value = "";
+  document.getElementById("priorityFilter").value = "";
+
+  renderReportsList();
 }
 
 function renderReportsList() {
@@ -1170,8 +1288,31 @@ function renderReportsList() {
   }
 
   let html = `<div class="reports-list">`;
+  const statusFilter = document.getElementById("statusFilter")?.value || "";
+const categoryFilter = document.getElementById("categoryFilter")?.value || "";
+const priorityFilter = document.getElementById("priorityFilter")?.value || "";
 
-  reports.forEach(report => {
+const filteredReports = reports.filter(report => {
+  const matchStatus =
+    !statusFilter || report.status === statusFilter;
+
+  const matchCategory =
+    !categoryFilter || report.category === categoryFilter;
+
+  const matchPriority =
+    !priorityFilter ||
+    report.priority === priorityFilter ||
+    getPriorityText(report.priority) === priorityFilter;
+
+  return matchStatus && matchCategory && matchPriority;
+});
+
+if (filteredReports.length === 0) {
+  container.innerHTML = `<p class="empty-msg">No reports match the selected filters</p>`;
+  return;
+}
+
+  filteredReports.forEach(report => {
 
     const isInTreatment = report.status === "In Treatment";
     const isCompleted = report.status === "Completed";
