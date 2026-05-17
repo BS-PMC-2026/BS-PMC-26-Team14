@@ -31,25 +31,25 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 42px 20px;
+      padding: 18px 20px;
     }
 
     .card {
       width: 100%;
-      max-width: 860px;
+      max-width: 810px;
       background: #ffffff;
       border-radius: 22px;
       box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
-      padding: 42px 48px 38px;
+      padding: 28px 42px 26px;
       position: relative;
     }
 
     .back-btn {
       position: absolute;
-      top: 28px;
-      left: 30px;
-      width: 38px;
-      height: 38px;
+      top: 20px;
+      left: 26px;
+      width: 36px;
+      height: 36px;
       border-radius: 10px;
       background: #0b63f6;
       color: white;
@@ -57,25 +57,25 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 23px;
       font-weight: 800;
       box-shadow: 0 6px 14px rgba(11, 99, 246, 0.28);
     }
 
     .top-icon {
-      width: 86px;
-      height: 86px;
+      width: 70px;
+      height: 70px;
       border-radius: 50%;
       background: #dbeafe;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 0 auto 18px;
+      margin: 0 auto 10px;
     }
 
     .top-icon svg {
-      width: 42px;
-      height: 42px;
+      width: 35px;
+      height: 35px;
       stroke: #2563eb;
       fill: none;
       stroke-width: 2.2;
@@ -85,23 +85,23 @@
 
     .title {
       text-align: center;
-      font-size: 42px;
+      font-size: 35px;
       font-weight: 800;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
       color: #111827;
     }
 
     .subtitle {
       text-align: center;
       color: #64748b;
-      font-size: 18px;
-      margin-bottom: 34px;
+      font-size: 15px;
+      margin-bottom: 18px;
     }
 
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 18px 18px;
+      gap: 12px 14px;
     }
 
     .form-group {
@@ -114,9 +114,9 @@
     }
 
     .form-group label {
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 800;
-      margin-bottom: 8px;
+      margin-bottom: 5px;
       color: #111827;
     }
 
@@ -126,14 +126,14 @@
 
     .input-wrap input {
       width: 100%;
-      height: 52px;
+      height: 44px;
       border: 1px solid #d7dee8;
       border-radius: 12px;
       background: #ffffff;
-      font-size: 16px;
+      font-size: 14px;
       color: #111827;
       outline: none;
-      padding: 0 14px 0 44px;
+      padding: 0 14px 0 40px;
       transition: 0.2s ease;
     }
 
@@ -148,11 +148,11 @@
 
     .input-wrap svg {
       position: absolute;
-      left: 14px;
+      left: 13px;
       top: 50%;
       transform: translateY(-50%);
-      width: 20px;
-      height: 20px;
+      width: 17px;
+      height: 17px;
       stroke: #94a3b8;
       fill: none;
       stroke-width: 2;
@@ -162,18 +162,18 @@
     }
 
     .checkbox-row {
-      margin-top: 20px;
+      margin-top: 12px;
       display: flex;
       align-items: center;
       gap: 10px;
       color: #334155;
-      font-size: 15px;
+      font-size: 13px;
       flex-wrap: wrap;
     }
 
     .checkbox-row input {
-      width: 16px;
-      height: 16px;
+      width: 15px;
+      height: 15px;
       accent-color: #2563eb;
     }
 
@@ -189,13 +189,13 @@
 
     .submit-btn {
       width: 100%;
-      margin-top: 22px;
-      height: 54px;
+      margin-top: 14px;
+      height: 46px;
       border: none;
       border-radius: 12px;
       background: #2563eb;
       color: white;
-      font-size: 19px;
+      font-size: 17px;
       font-weight: 800;
       cursor: pointer;
       transition: 0.2s ease;
@@ -209,10 +209,10 @@
 
     .bottom-links {
       text-align: center;
-      margin-top: 24px;
-      line-height: 2;
+      margin-top: 14px;
+      line-height: 1.7;
       color: #64748b;
-      font-size: 15px;
+      font-size: 14px;
     }
 
     .bottom-links a {
@@ -236,15 +236,15 @@
 
     .success-box {
       display: none;
-      margin-top: 20px;
+      margin-top: 12px;
       background: #eff6ff;
       border: 1px solid #93c5fd;
       color: #1d4ed8;
       border-radius: 14px;
-      padding: 16px;
+      padding: 12px;
       text-align: center;
-      line-height: 1.8;
-      font-size: 16px;
+      line-height: 1.6;
+      font-size: 14px;
       font-weight: 600;
     }
 
@@ -475,6 +475,23 @@
 
 <script>
 
+    function getEnglishMessage(message, fallback) {
+      const text = (message || "").toString();
+
+      if (!text.trim()) return fallback;
+
+      if (/[א-ת]/.test(text)) {
+        if (text.includes("סיסמה")) return "Password is invalid";
+        if (text.includes("אימייל") || text.includes("מייל") || text.includes("דואר")) return "Email is invalid or already exists";
+        if (text.includes("קיים")) return "This account already exists";
+        if (text.includes("חובה")) return "Please fill in all required fields";
+        if (text.includes("הצלחה") || text.includes("נוצר")) return "Registration successful. Your account has been created.";
+        return fallback;
+      }
+
+      return text;
+    }
+
     function togglePasswordVisibility(button) {
       const wrapper =
         button.closest(".input-wrap") ||
@@ -531,11 +548,11 @@
 
       if (response.ok) {
         successBox.style.display = "block";
-        successBox.innerText = result.message;
+        successBox.innerText = "Registration successful. Your account has been created.";
 
         window.location.href = "/LogIn/customer-login.html";
       } else {
-        alert(result.message || "Registration error");
+        alert(getEnglishMessage(result.message, "Registration error"));
       }
     } catch (error) {
       alert("Connection error with server");
