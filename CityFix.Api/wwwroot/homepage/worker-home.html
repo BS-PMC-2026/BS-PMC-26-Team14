@@ -8,9 +8,6 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 * {
@@ -41,122 +38,90 @@ body {
   left: 0;
   top: 0;
   bottom: 0;
-  display: flex;
-  flex-direction: column;
 }
-.sidebar-logo {
-  height: 78px;
+
+.logo {
+  height: 82px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 0 24px;
+  gap: 12px;
+  padding: 0 28px;
   border-bottom: 1px solid #e5e7eb;
-  flex-shrink: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
 }
-.sidebar-logo i {
-  width: 28px;
-  height: 28px;
-  color: #0526ff;
-  flex-shrink: 0;
+
+.logo-icon {
+  width: 38px;
+  height: 38px;
+  color: #0b63e5;
 }
-.sidebar-logo span {
-  font-family: 'Inter', Arial, sans-serif;
+
+.menu {
+  padding: 28px 14px;
+}
+
+.menu a {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 22px;
+  color: #334155;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 17px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.menu a:hover {
+  background: #f1f5f9;
+}
+
+.menu a.active {
+  background: #eaf2ff;
+  color: #0066ff;
   font-weight: 700;
-  font-size: 20px;
-  color: #101828;
-  letter-spacing: -0.4px;
 }
-.sidebar-nav {
-  padding: 16px 14px 0;
-  flex: 1;
-}
-.sidebar-section-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+
+.menu a.active::after {
+  content: "";
+  position: absolute;
+  right: -14px;
   height: 44px;
-  padding: 0 12px;
-  font-family: 'Inter', Arial, sans-serif;
-  font-weight: 600;
-  font-size: 11px;
-  color: #5f5f5f;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  margin-bottom: 4px;
+  width: 4px;
+  background: #0066ff;
+  border-radius: 4px;
 }
-.sidebar-section-title i {
-  width: 16px;
-  height: 16px;
-  color: #5f5f5f;
+
+.menu i {
+  width: 22px;
+  height: 22px;
 }
-.sidebar-nav a {
+
+.logout-area {
+  position: absolute;
+  bottom: 28px;
+  left: 14px;
+  right: 14px;
+}
+
+.logout-area a {
+  height: 52px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  height: 52px;
-  padding: 0 16px;
-  color: #364153;
+  gap: 16px;
+  padding: 0 22px;
   text-decoration: none;
-  border-radius: 10px;
-  font-family: 'Inter', Arial, sans-serif;
-  font-weight: 500;
-  font-size: 15px;
-  margin-bottom: 4px;
-  transition: background 0.15s, color 0.15s;
+  color: #334155;
+  border-radius: 8px;
+  font-size: 17px;
 }
-.sidebar-nav a i {
-  width: 20px;
-  height: 20px;
-  color: #364153;
-  flex-shrink: 0;
-  transition: color 0.15s;
-}
-.sidebar-nav a:hover {
-  background: #d7e9ff;
-  color: #0526ff;
-}
-.sidebar-nav a:hover i {
-  color: #0526ff;
-}
-.sidebar-nav a.active {
-  background: #0526ff;
-  color: #ffffff;
-  font-weight: 600;
-}
-.sidebar-nav a.active i {
-  color: #ffffff;
-}
-.sidebar-logout {
-  padding: 16px 14px;
-  border-top: 1px solid #e5e7eb;
-  flex-shrink: 0;
-}
-.sidebar-logout a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  height: 52px;
-  padding: 0 16px;
-  color: #364153;
-  text-decoration: none;
-  border-radius: 10px;
-  font-family: 'Inter', Arial, sans-serif;
-  font-weight: 500;
-  font-size: 15px;
-  transition: background 0.15s, color 0.15s;
-}
-.sidebar-logout a i {
-  width: 20px;
-  height: 20px;
-  color: #364153;
-  transition: color 0.15s;
-}
-.sidebar-logout a:hover {
-  background: #d7e9ff;
-  color: #0526ff;
-}
-.sidebar-logout a:hover i {
-  color: #0526ff;
+
+.logout-area a:hover {
+  background: #f1f5f9;
 }
 
 /* MAIN */
@@ -167,7 +132,7 @@ body {
 }
 
 .topbar {
-  height: 78px;
+  height: 82px;
   background: white;
   border-bottom: 1px solid #e5e7eb;
   display: flex;
@@ -818,63 +783,6 @@ body {
   line-height: 1.7;
   font-size: 14px;
 }
-.filters-card {
-  background: white;
-  border: 1px solid #dbe2ea;
-  border-radius: 12px;
-  padding: 18px;
-  margin-bottom: 24px;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  align-items: end;
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.filter-group label {
-  color: #334155;
-  font-size: 15px;
-  font-weight: 800;
-}
-
-.filter-group select {
-  height: 44px;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 0 12px;
-  font-size: 15px;
-  background: white;
-}
-
-.reset-filter-btn {
-  height: 44px;
-  border: none;
-  border-radius: 8px;
-  background: #0b63f6;
-  color: white;
-  font-size: 15px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.completed-badge {
-  display: inline-block;
-  background: #e5e7eb;
-  color: #374151;
-  padding: 5px 10px;
-  border-radius: 8px;
-  font-weight: bold;
-}
-
-.completed-card {
-  opacity: 0.85;
-}
 </style>
 </head>
 
@@ -883,17 +791,12 @@ body {
 <div class="page">
 
   <aside class="sidebar">
-    <div class="sidebar-logo">
-      <i data-lucide="building-2"></i>
+    <div class="logo">
+      <i data-lucide="building-2" class="logo-icon"></i>
       <span>CityFix</span>
     </div>
 
-    <nav class="sidebar-nav">
-      <div class="sidebar-section-title">
-        <i data-lucide="hard-hat"></i>
-        <span>Worker Area</span>
-      </div>
-
+    <div class="menu">
       <a href="#" class="active" onclick="showList()">
         <i data-lucide="file-text"></i>
         <span>All Reports</span>
@@ -910,12 +813,12 @@ body {
       </a>
 
       <a href="../profile/worker-profile.html">
-        <i data-lucide="user-circle"></i>
+        <i data-lucide="user"></i>
         <span>Profile</span>
       </a>
-    </nav>
+    </div>
 
-    <div class="sidebar-logout">
+    <div class="logout-area">
       <a href="#" onclick="logout()">
         <i data-lucide="log-out"></i>
         <span>Logout</span>
@@ -948,39 +851,8 @@ body {
       <section id="listView">
         <h1 class="page-title">All Reports</h1>
 
-<div class="filters-card">
-  <div class="filter-group">
-    <label>Status</label>
-    <select id="statusFilter" onchange="renderReportsList()">
-      <option value="">All Statuses</option>
-      <option value="Open">Open</option>
-      <option value="In Treatment">In Treatment</option>
-      <option value="Completed">Completed</option>
-    </select>
-  </div>
+        <div class="worker-home-actions"></div>
 
-  <div class="filter-group">
-    <label>Category</label>
-    <select id="categoryFilter" onchange="renderReportsList()">
-      <option value="">All Categories</option>
-    </select>
-  </div>
-
-  <div class="filter-group">
-    <label>Priority</label>
-    <select id="priorityFilter" onchange="renderReportsList()">
-      <option value="">All Priorities</option>
-      <option value="High">High</option>
-      <option value="High Priority">High Priority</option>
-      <option value="Medium Priority">Medium Priority</option>
-      <option value="Low Priority">Low Priority</option>
-    </select>
-  </div>
-
-  <button class="reset-filter-btn" onclick="resetReportFilters()">
-    Reset
-  </button>
-</div>
         <div id="reportsContainer">
           <p class="empty-msg">Loading reports...</p>
         </div>
@@ -1210,41 +1082,11 @@ async function loadOpenReports() {
     }
 
     renderReportsList();
-    fillCategoryFilter();
 
   } catch (error) {
     container.innerHTML = `<p class="empty-msg">Connection error with server</p>`;
     console.error(error);
   }
-}
-function fillCategoryFilter() {
-  const categoryFilter = document.getElementById("categoryFilter");
-
-  if (!categoryFilter) return;
-
-  const currentValue = categoryFilter.value;
-
-  const categories = [...new Set(
-    reports
-      .map(r => r.category)
-      .filter(c => c && c.trim() !== "")
-  )];
-
-  categoryFilter.innerHTML =
-    `<option value="">All Categories</option>` +
-    categories.map(c =>
-      `<option value="${c}">${c}</option>`
-    ).join("");
-
-  categoryFilter.value = currentValue;
-}
-
-function resetReportFilters() {
-  document.getElementById("statusFilter").value = "";
-  document.getElementById("categoryFilter").value = "";
-  document.getElementById("priorityFilter").value = "";
-
-  renderReportsList();
 }
 
 function renderReportsList() {
@@ -1256,31 +1098,8 @@ function renderReportsList() {
   }
 
   let html = `<div class="reports-list">`;
-  const statusFilter = document.getElementById("statusFilter")?.value || "";
-const categoryFilter = document.getElementById("categoryFilter")?.value || "";
-const priorityFilter = document.getElementById("priorityFilter")?.value || "";
 
-const filteredReports = reports.filter(report => {
-  const matchStatus =
-    !statusFilter || report.status === statusFilter;
-
-  const matchCategory =
-    !categoryFilter || report.category === categoryFilter;
-
-  const matchPriority =
-    !priorityFilter ||
-    report.priority === priorityFilter ||
-    getPriorityText(report.priority) === priorityFilter;
-
-  return matchStatus && matchCategory && matchPriority;
-});
-
-if (filteredReports.length === 0) {
-  container.innerHTML = `<p class="empty-msg">No reports match the selected filters</p>`;
-  return;
-}
-
-  filteredReports.forEach(report => {
+  reports.forEach(report => {
 
     const isInTreatment = report.status === "In Treatment";
     const isCompleted = report.status === "Completed";
