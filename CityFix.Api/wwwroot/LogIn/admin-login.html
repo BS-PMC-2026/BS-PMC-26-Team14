@@ -396,6 +396,24 @@
 
   <script>
 
+    function getEnglishErrorMessage(message) {
+      const text = (message || "").toString();
+
+      if (!text.trim()) return "Login error";
+
+      if (/[א-ת]/.test(text)) {
+        if (text.includes("סיסמה")) return "Incorrect password";
+        if (text.includes("אימייל") || text.includes("מייל") || text.includes("דואר")) return "Email is incorrect";
+        if (text.includes("לא נמצא") || text.includes("נמצא")) return "Account not found";
+        if (text.includes("שגוי") || text.includes("נכונה")) return "Email or password is incorrect";
+        if (text.includes("מנהל")) return "Admin account error";
+        if (text.includes("שגיאה")) return "Login error";
+        return "Login error";
+      }
+
+      return text;
+    }
+
     function togglePasswordVisibility(button) {
       const wrapper =
         button.closest(".input-wrap") ||
@@ -462,7 +480,7 @@
         if (!response.ok) {
           messageBox.style.display = "block";
           messageBox.className = "message-box error";
-          messageBox.textContent = result.message || "Login error";
+          messageBox.textContent = getEnglishErrorMessage(result.message);
           return;
         }
 
@@ -478,7 +496,7 @@
 
         messageBox.style.display = "block";
         messageBox.className = "message-box success";
-        messageBox.textContent = result.message || "Logged in successfully";
+        messageBox.textContent = "Logged in successfully";
 
         setTimeout(() => {
           window.location.href = "home.html";
