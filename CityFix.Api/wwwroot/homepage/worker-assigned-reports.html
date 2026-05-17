@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Assigned Reports - CityFix</title>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+  direction: ltr;
+}
+
+.page {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  min-height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+}
+
+.logo {
+  height: 82px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 28px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.logo-icon {
+  width: 38px;
+  height: 38px;
+  color: #0b63e5;
+}
+
+.menu {
+  padding: 28px 14px;
+}
+
+.menu a {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 22px;
+  color: #334155;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 17px;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.menu a:hover {
+  background: #f1f5f9;
+}
+
+.menu a.active {
+  background: #eaf2ff;
+  color: #0066ff;
+  font-weight: 700;
+}
+
+.menu a.active::after {
+  content: "";
+  position: absolute;
+  right: -14px;
+  height: 44px;
+  width: 4px;
+  background: #0066ff;
+  border-radius: 4px;
+}
+
+.menu i {
+  width: 22px;
+  height: 22px;
+}
+
+.logout-area {
+  position: absolute;
+  bottom: 28px;
+  left: 14px;
+  right: 14px;
+}
+
+.logout-area a {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 22px;
+  text-decoration: none;
+  color: #334155;
+  border-radius: 8px;
+  font-size: 17px;
+}
+
+.logout-area a:hover {
+  background: #f1f5f9;
+}
+
+/* MAIN */
+.main {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+  min-height: 100vh;
+}
+
+.topbar {
+  height: 82px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+}
+
+.menu-icon {
+  width: 28px;
+  height: 28px;
+  color: #334155;
+}
+
+.worker-box {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar i {
+  width: 28px;
+  height: 28px;
+  color: #64748b;
+}
+
+.worker-name {
+  font-weight: 800;
+  font-size: 17px;
+}
+
+.worker-role {
+  color: #64748b;
+  font-size: 14px;
+}
+
+/* CONTENT */
+.content {
+  padding: 34px 44px 44px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 30px;
+  font-weight: 800;
+  margin-bottom: 10px;
+  color: #020617;
+}
+
+.page-subtitle {
+  color: #64748b;
+  font-size: 17px;
+  line-height: 1.6;
+  max-width: 850px;
+}
+
+/* FILTERS */
+.filters-card {
+  background: white;
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group label {
+  color: #334155;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.filter-group select {
+  height: 44px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 15px;
+  color: #0f172a;
+  background: #ffffff;
+  outline: none;
+}
+
+.filter-group select:focus {
+  border-color: #0b63f6;
+}
+
+.reset-btn {
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: #0b63f6;
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.reset-btn:hover {
+  background: #004fd1;
+}
+
+/* SUMMARY */
+.summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.summary-box {
+  background: white;
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  padding: 18px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+}
+
+.summary-box h3 {
+  margin: 0 0 6px;
+  color: #0b63f6;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.summary-box span {
+  color: #64748b;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+/* REPORTS LIST */
+.reports-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  gap: 20px;
+}
+
+.report-card {
+  background: white;
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+  transition: 0.2s;
+}
+
+.report-card:hover {
+  border-color: #0b63f6;
+  transform: translateY(-2px);
+}
+
+.report-info h3 {
+  margin: 0 0 12px;
+  color: #111827;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.report-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #475569;
+  font-size: 16px;
+}
+
+.meta-item {
+  color: #475569;
+  line-height: 1.5;
+}
+
+.meta-item strong {
+  color: #334155;
+}
+
+.badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  width: fit-content;
+}
+
+.status-open {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-progress {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.status-done {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.status-closed {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.priority-low {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.priority-medium {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.priority-high {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.details-btn {
+  margin-top: 18px;
+  height: 42px;
+  border: none;
+  border-radius: 8px;
+  background: #0b63f6;
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 0 16px;
+}
+
+.details-btn:hover {
+  background: #004fd1;
+}
+
+.loading,
+.empty-message,
+.error-message {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid #dbe2ea;
+  color: #64748b;
+  font-size: 20px;
+  text-align: center;
+}
+
+.loading {
+  color: #0b63f6;
+  font-weight: 800;
+}
+
+.error-message {
+  border-color: #fecaca;
+  color: #dc2626;
+  font-weight: 800;
+}
+
+@media(max-width: 1000px) {
+  .sidebar {
+    position: static;
+    width: 100%;
+    min-height: auto;
+  }
+
+  .page {
+    display: block;
+  }
+
+  .main {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .filters-card,
+  .summary-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .logout-area {
+    position: static;
+    padding: 0 14px 20px;
+  }
+}
+
+@media(max-width: 650px) {
+  .content {
+    padding: 24px 18px;
+  }
+
+  .filters-card,
+  .summary-row {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <aside class="sidebar">
+    <div class="logo">
+      <i data-lucide="building-2" class="logo-icon"></i>
+      <span>CityFix</span>
+    </div>
+
+    <div class="menu">
+      
+
+      <a href="worker-home.html">
+        <i data-lucide="file-text"></i>
+        <span>All Reports</span>
+      </a>
+
+      <a href="worker-assigned-reports.html" class="active">
+        <i data-lucide="clipboard-list"></i>
+        <span>Assigned Reports</span>
+      </a>
+
+      <a href="worker-reports-map.html">
+        <i data-lucide="map"></i>
+        <span>Map View</span>
+      </a>
+
+      <a href="../profile/worker-profile.html">
+        <i data-lucide="user"></i>
+        <span>Profile</span>
+      </a>
+    </div>
+
+    <div class="logout-area">
+      <a href="#" onclick="logout()">
+        <i data-lucide="log-out"></i>
+        <span>Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="topbar">
+      <i data-lucide="menu" class="menu-icon"></i>
+
+      <div class="worker-box">
+        <div class="avatar">
+          <i data-lucide="user"></i>
+        </div>
+
+        <div>
+          <div class="worker-name" id="topWorkerName">Worker</div>
+          <div class="worker-role">Worker</div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="page-header">
+        <h1 class="page-title">Assigned Reports</h1>
+        <p class="page-subtitle">
+        </p>
+      </div>
+
+      <section class="filters-card">
+        <div class="filter-group">
+          <label for="statusFilter">Status</label>
+          <select id="statusFilter" onchange="applyFilters()">
+            <option value="">All</option>
+            <option value="Open">Open</option>
+            <option value="InProgress">In Treatment</option>
+            <option value="Done">Done</option>
+            <option value="Closed">Closed</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="priorityFilter">Priority</label>
+          <select id="priorityFilter" onchange="applyFilters()">
+            <option value="">All</option>
+            <option value="Low">Low Priority</option>
+            <option value="Medium">Medium Priority</option>
+            <option value="High">High Priority</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="sortFilter">Sort by Date</label>
+          <select id="sortFilter" onchange="applyFilters()">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+          </select>
+        </div>
+
+        <button class="reset-btn" onclick="resetFilters()">Reset</button>
+      </section>
+
+      <section class="summary-row">
+        <div class="summary-box">
+          <h3 id="totalCount">0</h3>
+          <span>Total Assigned</span>
+        </div>
+
+        <div class="summary-box">
+          <h3 id="openCount">0</h3>
+          <span>Open</span>
+        </div>
+
+        <div class="summary-box">
+          <h3 id="progressCount">0</h3>
+          <span>In Treatment</span>
+        </div>
+
+        <div class="summary-box">
+          <h3 id="doneCount">0</h3>
+          <span>Done / Closed</span>
+        </div>
+      </section>
+
+      <section id="reportsContainer" class="reports-list">
+        <div class="loading">Loading assigned reports...</div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+let allReports = [];
+
+const fullName = localStorage.getItem("workerFullName") || "Worker";
+const workerEmail = localStorage.getItem("workerEmail") || "";
+
+document.getElementById("topWorkerName").innerText = fullName;
+
+document.addEventListener("DOMContentLoaded", function () {
+  loadAssignedReports();
+  lucide.createIcons();
+});
+
+async function loadAssignedReports() {
+  const reportsContainer = document.getElementById("reportsContainer");
+
+  try {
+    const savedWorkerEmail = localStorage.getItem("workerEmail");
+
+    if (!savedWorkerEmail) {
+      alert("יש להתחבר מחדש למערכת");
+      window.location.href = "../LogIn/worker-login.html";
+      return;
+    }
+
+    const response = await fetch(
+      "/api/Auth/assigned-reports?workerEmail=" + encodeURIComponent(savedWorkerEmail),
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to load reports");
+    }
+
+    allReports = await response.json();
+
+    normalizeReports();
+    updateSummary(allReports);
+    applyFilters();
+
+  } catch (error) {
+    console.error("Error loading assigned reports:", error);
+
+    reportsContainer.innerHTML = `
+      <div class="error-message">
+        אירעה שגיאה בטעינת הקריאות. ודא שהשרת עובד ושה־API קיים.
+      </div>
+    `;
+
+    updateSummary([]);
+  }
+}
+
+function normalizeReports() {
+  allReports = allReports.map(report => {
+    let status = report.status || "Open";
+
+    if (status === "In Treatment") {
+      status = "InProgress";
+    }
+
+    let priority = report.priority || "Medium";
+
+    if (priority === "גבוהה") {
+      priority = "High";
+    } else if (priority === "בינונית") {
+      priority = "Medium";
+    } else if (priority === "נמוכה") {
+      priority = "Low";
+    }
+
+    return {
+      id: report.id,
+      title: report.title || report.category || "Report",
+      category: report.category || report.title || "Report",
+      status: status,
+      priority: priority,
+      createdAt: report.createdAt,
+      description: report.description || "",
+      notes: report.notes || "",
+      customerEmail: report.customerEmail || "",
+      location: report.location || "",
+      latitude: report.latitude,
+      longitude: report.longitude
+    };
+  });
+}
+
+function applyFilters() {
+  const statusValue = document.getElementById("statusFilter").value;
+  const priorityValue = document.getElementById("priorityFilter").value;
+  const sortValue = document.getElementById("sortFilter").value;
+
+  let filteredReports = [...allReports];
+
+  if (statusValue !== "") {
+    filteredReports = filteredReports.filter(report => report.status === statusValue);
+  }
+
+  if (priorityValue !== "") {
+    filteredReports = filteredReports.filter(report => report.priority === priorityValue);
+  }
+
+  filteredReports.sort((a, b) => {
+    const dateA = new Date(a.createdAt);
+    const dateB = new Date(b.createdAt);
+
+    if (sortValue === "oldest") {
+      return dateA - dateB;
+    }
+
+    return dateB - dateA;
+  });
+
+  renderReports(filteredReports);
+}
+
+function renderReports(reports) {
+  const reportsContainer = document.getElementById("reportsContainer");
+
+  if (!reports || reports.length === 0) {
+    reportsContainer.innerHTML = `
+      <div class="empty-message">
+        אין קריאות שהוקצו לך כרגע.
+      </div>
+    `;
+    return;
+  }
+
+  reportsContainer.innerHTML = reports.map(report => {
+    return `
+      <div class="report-card">
+        <div class="report-info">
+          <h3>${escapeHtml(report.category)}</h3>
+
+          <div class="report-meta">
+            <div class="meta-item">
+              <strong>Report ID:</strong> RPT-${escapeHtml(String(report.id || ""))}
+            </div>
+
+            <div class="meta-item">
+              <strong>Priority:</strong>
+              <span class="badge ${getPriorityClass(report.priority)}">
+                ${getPriorityText(report.priority)}
+              </span>
+            </div>
+
+            <div class="meta-item">
+              <strong>Status:</strong>
+              <span class="badge ${getStatusClass(report.status)}">
+                ${getStatusText(report.status)}
+              </span>
+            </div>
+
+            <div class="meta-item">
+              <strong>Customer:</strong> ${escapeHtml(report.customerEmail || "-")}
+            </div>
+
+            <div class="meta-item">
+              <strong>Description:</strong> ${escapeHtml(report.description || "-")}
+            </div>
+
+            <div class="meta-item">
+              <strong>Date:</strong> ${formatDate(report.createdAt)}
+            </div>
+          </div>
+
+          <button class="details-btn" onclick="openReportDetails('${report.id}')">
+            View Details
+          </button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function updateSummary(reports) {
+  document.getElementById("totalCount").textContent = reports.length;
+
+  document.getElementById("openCount").textContent =
+    reports.filter(r => r.status === "Open").length;
+
+  document.getElementById("progressCount").textContent =
+    reports.filter(r => r.status === "InProgress").length;
+
+  document.getElementById("doneCount").textContent =
+    reports.filter(r => r.status === "Done" || r.status === "Closed").length;
+}
+
+function getStatusText(status) {
+  switch (status) {
+    case "Open":
+      return "פתוח";
+    case "InProgress":
+      return "בטיפול";
+    case "Done":
+      return "טופל";
+    case "Closed":
+      return "סגור";
+    default:
+      return status || "לא ידוע";
+  }
+}
+
+function getStatusClass(status) {
+  switch (status) {
+    case "Open":
+      return "status-open";
+    case "InProgress":
+      return "status-progress";
+    case "Done":
+      return "status-done";
+    case "Closed":
+      return "status-closed";
+    default:
+      return "status-open";
+  }
+}
+
+function getPriorityText(priority) {
+  switch (priority) {
+    case "Low":
+      return "Low Priority";
+    case "Medium":
+      return "Medium Priority";
+    case "High":
+      return "High Priority";
+    default:
+      return priority || "Priority";
+  }
+}
+
+function getPriorityClass(priority) {
+  switch (priority) {
+    case "Low":
+      return "priority-low";
+    case "Medium":
+      return "priority-medium";
+    case "High":
+      return "priority-high";
+    default:
+      return "priority-medium";
+  }
+}
+
+function formatDate(dateString) {
+  if (!dateString) {
+    return "Reported recently";
+  }
+
+  const date = new Date(dateString);
+
+  if (isNaN(date.getTime())) {
+    return "Reported recently";
+  }
+
+  return date.toLocaleDateString() + " " + date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function resetFilters() {
+  document.getElementById("statusFilter").value = "";
+  document.getElementById("priorityFilter").value = "";
+  document.getElementById("sortFilter").value = "newest";
+  applyFilters();
+}
+
+function openReportDetails(reportId) {
+  if (!reportId || reportId === "undefined") {
+    alert("לא נמצא מזהה לקריאה");
+    return;
+  }
+
+  window.location.href = "worker-home.html?reportId=" + encodeURIComponent(reportId);
+}
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "../index.html";
+}
+
+function escapeHtml(value) {
+  if (value === null || value === undefined) {
+    return "";
+  }
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+</script>
+
+</body>
+</html>

@@ -6,6 +6,7 @@ using CityFix.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+
 namespace CityFix.Api.Controllers
 {
     [ApiController]
@@ -37,8 +38,10 @@ namespace CityFix.Api.Controllers
                 Address = dto.Address,
                 PasswordHash = HashPassword(dto.Password)
             };
- if (!ModelState.IsValid)
-        return BadRequest("Invalid data");
+
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid data");
+
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
 
@@ -62,8 +65,10 @@ namespace CityFix.Api.Controllers
                 PasswordHash = HashPassword(dto.Password),
                 ApprovalStatus = "Pending"
             };
-if (!ModelState.IsValid)
-    return BadRequest("Invalid data");
+
+            if (!ModelState.IsValid)
+                return BadRequest("Invalid data");
+
             _context.Workers.Add(worker);
             await _context.SaveChangesAsync();
 
@@ -86,15 +91,15 @@ if (!ModelState.IsValid)
             if (!VerifyPassword(dto.Password, customer.PasswordHash))
                 return Unauthorized(new { message = "סיסמה שגויה" });
 
-         return Ok(new
-{
-    message = "התחברת בהצלחה",
-    role = "Customer",
-    fullName = customer.FullName,
-    email = customer.Email,
-    phone = customer.Phone,
-    address = customer.Address
-});
+            return Ok(new
+            {
+                message = "התחברת בהצלחה",
+                role = "Customer",
+                fullName = customer.FullName,
+                email = customer.Email,
+                phone = customer.Phone,
+                address = customer.Address
+            });
         }
 
         [HttpPost("login-worker")]
@@ -114,16 +119,17 @@ if (!ModelState.IsValid)
 
             if (worker.ApprovalStatus == "Rejected")
                 return BadRequest(new { message = "בקשת ההרשמה נדחתה" });
-return Ok(new
-{
-    message = "התחברת בהצלחה",
-    role = "Worker",
-    fullName = worker.FullName,
-    email = worker.Email,
-    phone = worker.Phone,
-    municipality = worker.Municipality,
-    department = worker.Department
-});
+
+            return Ok(new
+            {
+                message = "התחברת בהצלחה",
+                role = "Worker",
+                fullName = worker.FullName,
+                email = worker.Email,
+                phone = worker.Phone,
+                municipality = worker.Municipality,
+                department = worker.Department
+            });
         }
 
         [HttpPost("login-admin")]
@@ -354,38 +360,40 @@ return Ok(new
             switch (user.Value.UserType)
             {
                 case "Customer":
-                {
-                    var customer = await _context.Customers.FindAsync(user.Value.UserId);
-                    if (customer == null)
                     {
-                        return BadRequest(new { message = "המשתמש לא נמצא" });
+                        var customer = await _context.Customers.FindAsync(user.Value.UserId);
+                        if (customer == null)
+                        {
+                            return BadRequest(new { message = "המשתמש לא נמצא" });
+                        }
+
+                        customer.PasswordHash = HashPassword(dto.NewPassword);
+                        break;
                     }
 
-                    customer.PasswordHash = HashPassword(dto.NewPassword);
-                    break;
-                }
                 case "Worker":
-                {
-                    var worker = await _context.Workers.FindAsync(user.Value.UserId);
-                    if (worker == null)
                     {
-                        return BadRequest(new { message = "המשתמש לא נמצא" });
+                        var worker = await _context.Workers.FindAsync(user.Value.UserId);
+                        if (worker == null)
+                        {
+                            return BadRequest(new { message = "המשתמש לא נמצא" });
+                        }
+
+                        worker.PasswordHash = HashPassword(dto.NewPassword);
+                        break;
                     }
 
-                    worker.PasswordHash = HashPassword(dto.NewPassword);
-                    break;
-                }
                 case "Admin":
-                {
-                    var admin = await _context.Admins.FindAsync(user.Value.UserId);
-                    if (admin == null)
                     {
-                        return BadRequest(new { message = "המשתמש לא נמצא" });
-                    }
+                        var admin = await _context.Admins.FindAsync(user.Value.UserId);
+                        if (admin == null)
+                        {
+                            return BadRequest(new { message = "המשתמש לא נמצא" });
+                        }
 
-                    admin.PasswordHash = HashPassword(dto.NewPassword);
-                    break;
-                }
+                        admin.PasswordHash = HashPassword(dto.NewPassword);
+                        break;
+                    }
             }
 
             resetCode.IsUsed = true;
@@ -395,389 +403,467 @@ return Ok(new
 
             return Ok(new { message = "הסיסמה אופסה בהצלחה" });
         }
+
         [HttpGet("customer-profile")]
-public async Task<IActionResult> GetCustomerProfile([FromQuery] string email)
-{
-    if (string.IsNullOrWhiteSpace(email))
-        return BadRequest(new { message = "האימייל נדרש" });
+        public async Task<IActionResult> GetCustomerProfile([FromQuery] string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return BadRequest(new { message = "האימייל נדרש" });
 
-    var normalizedEmail = email.Trim().ToLowerInvariant();
+            var normalizedEmail = email.Trim().ToLowerInvariant();
 
-    var customer = await _context.Customers
-        .AsNoTracking()
-        .FirstOrDefaultAsync(x => x.Email.ToLower() == normalizedEmail);
+            var customer = await _context.Customers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Email.ToLower() == normalizedEmail);
 
-    if (customer == null)
-        return NotFound(new { message = "התושב לא נמצא" });
+            if (customer == null)
+                return NotFound(new { message = "התושב לא נמצא" });
 
-    return Ok(new
-    {
-        fullName = customer.FullName,
-        email = customer.Email,
-        phone = customer.Phone,
-        address = customer.Address
-    });
-}
+            return Ok(new
+            {
+                fullName = customer.FullName,
+                email = customer.Email,
+                phone = customer.Phone,
+                address = customer.Address
+            });
+        }
 
-public class UpdateCustomerProfileDto
-{
-    public string Email { get; set; } = "";
-    public string FullName { get; set; } = "";
-    public string Phone { get; set; } = "";
-    public string Address { get; set; } = "";
-    public string CurrentPassword { get; set; } = "";
-    public string NewPassword { get; set; } = "";
-}
+        public class UpdateCustomerProfileDto
+        {
+            public string Email { get; set; } = "";
+            public string FullName { get; set; } = "";
+            public string Phone { get; set; } = "";
+            public string Address { get; set; } = "";
+            public string CurrentPassword { get; set; } = "";
+            public string NewPassword { get; set; } = "";
+        }
 
-[HttpPut("update-customer-profile")]
-public async Task<IActionResult> UpdateCustomerProfile([FromBody] UpdateCustomerProfileDto dto)
-{
-    var customer = await _context.Customers
-        .FirstOrDefaultAsync(x => x.Email == dto.Email);
+        [HttpPut("update-customer-profile")]
+        public async Task<IActionResult> UpdateCustomerProfile([FromBody] UpdateCustomerProfileDto dto)
+        {
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(x => x.Email == dto.Email);
 
-    if (customer == null)
-        return NotFound(new { message = "התושב לא נמצא" });
+            if (customer == null)
+                return NotFound(new { message = "התושב לא נמצא" });
 
-    customer.FullName = dto.FullName;
-    customer.Phone = dto.Phone;
-    customer.Address = dto.Address;
+            customer.FullName = dto.FullName;
+            customer.Phone = dto.Phone;
+            customer.Address = dto.Address;
 
-    if (!string.IsNullOrWhiteSpace(dto.NewPassword))
-    {
-        if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
-            return BadRequest(new { message = "יש להזין סיסמה נוכחית" });
+            if (!string.IsNullOrWhiteSpace(dto.NewPassword))
+            {
+                if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
+                    return BadRequest(new { message = "יש להזין סיסמה נוכחית" });
 
-        if (!VerifyPassword(dto.CurrentPassword, customer.PasswordHash))
-            return BadRequest(new { message = "הסיסמה הנוכחית שגויה" });
+                if (!VerifyPassword(dto.CurrentPassword, customer.PasswordHash))
+                    return BadRequest(new { message = "הסיסמה הנוכחית שגויה" });
 
-        customer.PasswordHash = HashPassword(dto.NewPassword);
-    }
+                customer.PasswordHash = HashPassword(dto.NewPassword);
+            }
 
-    await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
-    return Ok(new
-    {
-        message = "הפרופיל עודכן בהצלחה",
-        role = "Customer",
-        fullName = customer.FullName,
-        email = customer.Email,
-        phone = customer.Phone,
-        address = customer.Address
-    });
-}
+            return Ok(new
+            {
+                message = "הפרופיל עודכן בהצלחה",
+                role = "Customer",
+                fullName = customer.FullName,
+                email = customer.Email,
+                phone = customer.Phone,
+                address = customer.Address
+            });
+        }
 
-public class UpdateWorkerProfileDto
-{
-    public string Email { get; set; } = "";
-    public string FullName { get; set; } = "";
-    public string Phone { get; set; } = "";
-    public string Municipality { get; set; } = "";
-    public string Department { get; set; } = "";
-    public string CurrentPassword { get; set; } = "";
-    public string NewPassword { get; set; } = "";
-}
+        public class UpdateWorkerProfileDto
+        {
+            public string Email { get; set; } = "";
+            public string FullName { get; set; } = "";
+            public string Phone { get; set; } = "";
+            public string Municipality { get; set; } = "";
+            public string Department { get; set; } = "";
+            public string CurrentPassword { get; set; } = "";
+            public string NewPassword { get; set; } = "";
+        }
 
-public class AcceptReportDto
+        public class AcceptReportDto
+        {
+            public string WorkerEmail { get; set; } = "";
+        }
+
+        public class WorkerUploadImageDto
+        {
+            public string WorkerEmail { get; set; } = "";
+            public string ImageBase64 { get; set; } = "";
+            public string Note { get; set; } = "";
+        }
+        public class UpdateReportStatusDto
 {
     public string WorkerEmail { get; set; } = "";
+    public string NewStatus { get; set; } = "";
 }
 
-public class WorkerUploadImageDto
-{
-    public string WorkerEmail { get; set; } = "";
-    public string ImageBase64 { get; set; } = "";
-    public string Note { get; set; } = "";
-}
-
-[HttpGet("worker-profile")]
-public async Task<IActionResult> GetWorkerProfile([FromQuery] string email)
-{
-    if (string.IsNullOrWhiteSpace(email))
-        return BadRequest(new { message = "האימייל נדרש" });
-
-    var normalizedEmail = email.Trim().ToLowerInvariant();
-
-    var worker = await _context.Workers
-        .AsNoTracking()
-        .FirstOrDefaultAsync(x => x.Email.ToLower() == normalizedEmail);
-
-    if (worker == null)
-        return NotFound(new { message = "העובד לא נמצא" });
-
-    return Ok(new
-    {
-        fullName = worker.FullName,
-        email = worker.Email,
-        phone = worker.Phone,
-        municipality = worker.Municipality,
-        department = worker.Department
-    });
-}
-
-[HttpPut("update-worker-profile")]
-public async Task<IActionResult> UpdateWorkerProfile([FromBody] UpdateWorkerProfileDto dto)
-{
-    var worker = await _context.Workers
-        .FirstOrDefaultAsync(x => x.Email == dto.Email);
-
-    if (worker == null)
-        return NotFound(new { message = "העובד לא נמצא" });
-
-    worker.FullName = dto.FullName;
-    worker.Phone = dto.Phone;
-    worker.Municipality = dto.Municipality;
-    worker.Department = dto.Department;
-
-    if (!string.IsNullOrWhiteSpace(dto.NewPassword))
-    {
-        if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
-            return BadRequest(new { message = "יש להזין סיסמה נוכחית" });
-
-        if (!VerifyPassword(dto.CurrentPassword, worker.PasswordHash))
-            return BadRequest(new { message = "הסיסמה הנוכחית שגויה" });
-
-        worker.PasswordHash = HashPassword(dto.NewPassword);
-    }
-
-    await _context.SaveChangesAsync();
-
-    return Ok(new
-    {
-        message = "פרופיל העובד עודכן בהצלחה",
-        role = "Worker",
-        fullName = worker.FullName,
-        email = worker.Email,
-        phone = worker.Phone,
-        municipality = worker.Municipality,
-        department = worker.Department
-    });
-}
-[HttpPost("create-report")]
-public async Task<IActionResult> CreateReport([FromBody] CreateReportDto dto)
-{
-    if (!ModelState.IsValid)
-        return BadRequest(new { message = "נתונים לא תקינים" });
-if (dto.Latitude == 0 || dto.Longitude == 0)
-{
-    return BadRequest(new { message = "מיקום לא תקין" });
-}
-
-if (dto.Latitude < -90 || dto.Latitude > 90 ||
-    dto.Longitude < -180 || dto.Longitude > 180)
-{
-    return BadRequest(new { message = "קואורדינטות לא חוקיות" });
-}
-
-// גבולות ישראל
-if (dto.Latitude < 29.45 || dto.Latitude > 33.35 ||
-    dto.Longitude < 34.25 || dto.Longitude > 35.65)
-{
-    return BadRequest(new { message = "המיקום חייב להיות בתוך ישראל" });
-}
-    var customerExists = await _context.Customers
-        .AnyAsync(c => c.Email.ToLower() == dto.CustomerEmail.ToLower());
-
-    if (!customerExists)
-        return NotFound(new { message = "הלקוח לא נמצא במערכת" });
-
-var geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-
-var report = new Report
-{
-    CustomerEmail = dto.CustomerEmail,
-    Category = dto.Category,
-    Priority = dto.Priority,
-    Description = dto.Description,
-    Notes = dto.Notes,
-    ImageBase64 = dto.ImageBase64,
-    Latitude = dto.Latitude,
-    Longitude = dto.Longitude,
-    LocationPoint = geometryFactory.CreatePoint(
-    new Coordinate(dto.Longitude, dto.Latitude)
-    ),
-    Status = "Open",
-    CreatedAt = DateTime.UtcNow
-};
-
-    _context.Reports.Add(report);
-    await _context.SaveChangesAsync();
-
-    return Ok(new
-    {
-        message = "הדיווח נשמר בהצלחה",
-        reportId = report.Id
-    });
-}
-
-
-[HttpPost("accept-report/{reportId}")]
-public async Task<IActionResult> AcceptReport(int reportId, [FromBody] AcceptReportDto dto)
-{
-    if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
-        return BadRequest(new { message = "אימייל עובד נדרש" });
-
-    var workerEmail = dto.WorkerEmail.Trim().ToLowerInvariant();
-
-    var worker = await _context.Workers
-        .FirstOrDefaultAsync(w => w.Email.ToLower() == workerEmail);
-
-    if (worker == null)
-        return NotFound(new { message = "העובד לא נמצא במערכת" });
-
-    if (worker.ApprovalStatus != "Approved")
-        return BadRequest(new { message = "העובד עדיין לא מאושר במערכת" });
-
-    var report = await _context.Reports
-        .FirstOrDefaultAsync(r => r.Id == reportId);
-
-    if (report == null)
-        return NotFound(new { message = "הדיווח לא נמצא" });
-
-    if (report.Status != "Open")
-        return BadRequest(new { message = "הדיווח כבר נלקח לטיפול או שאינו פתוח" });
-
-    report.Status = "In Treatment";
-    report.AssignedWorkerEmail = worker.Email;
-    report.AcceptedAt = DateTime.UtcNow;
-
-    await _context.SaveChangesAsync();
-
-    return Ok(new
-    {
-        message = "הדיווח התקבל לטיפול בהצלחה",
-        reportId = report.Id,
-        status = report.Status,
-        assignedWorkerEmail = report.AssignedWorkerEmail,
-        acceptedAt = report.AcceptedAt
-    });
-}
-
-
-[HttpPut("worker-upload-image/{reportId}")]
-public async Task<IActionResult> WorkerUploadImage(int reportId, [FromBody] WorkerUploadImageDto dto)
-{
-    if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
-        return BadRequest(new { message = "אימייל עובד נדרש" });
-
-    if (string.IsNullOrWhiteSpace(dto.ImageBase64))
-        return BadRequest(new { message = "חובה לבחור תמונה" });
-
-    var workerEmail = dto.WorkerEmail.Trim().ToLowerInvariant();
-
-    var report = await _context.Reports.FirstOrDefaultAsync(r => r.Id == reportId);
-
-    if (report == null)
-        return NotFound(new { message = "הדיווח לא נמצא" });
-
-    if (report.Status != "In Treatment")
-        return BadRequest(new { message = "אפשר להעלות תמונה רק לדיווח שנמצא בטיפול" });
-
-    if (string.IsNullOrWhiteSpace(report.AssignedWorkerEmail))
-        return BadRequest(new { message = "הדיווח עדיין לא שויך לעובד" });
-
-    if (report.AssignedWorkerEmail.ToLower() != workerEmail)
-        return BadRequest(new { message = "רק העובד שקיבל את הדיווח יכול להעלות תמונה" });
-
-    report.WorkerImageBase64 = dto.ImageBase64;
-    report.WorkerImageNote = dto.Note;
-    report.WorkerImageUploadedAt = DateTime.UtcNow;
-
-    await _context.SaveChangesAsync();
-
-    return Ok(new
-    {
-        message = "התמונה נשמרה בהצלחה",
-        reportId = report.Id,
-        status = report.Status,
-        workerImageBase64 = report.WorkerImageBase64,
-        workerImageNote = report.WorkerImageNote,
-        workerImageUploadedAt = report.WorkerImageUploadedAt
-    });
-}
-
-[HttpGet("reports-map")]
-public async Task<IActionResult> GetReportsMap(
-    [FromQuery] string? status,
-    [FromQuery] string? fromDate,
-    [FromQuery] string? toDate)
-{
-    var query = _context.Reports.AsQueryable();
-
-    if (!string.IsNullOrWhiteSpace(status))
-    {
-        var statuses = status.Split(',', StringSplitOptions.RemoveEmptyEntries)
-            .Select(s => s.Trim()).ToList();
-        query = query.Where(r => statuses.Contains(r.Status));
-    }
-
-    if (DateTime.TryParse(fromDate, out var from))
-        query = query.Where(r => r.CreatedAt >= from);
-
-    if (DateTime.TryParse(toDate, out var to))
-        query = query.Where(r => r.CreatedAt <= to.AddDays(1));
-
-    var reports = await query
-        .OrderByDescending(r => r.CreatedAt)
-        .Select(r => new
+        [HttpGet("worker-profile")]
+        public async Task<IActionResult> GetWorkerProfile([FromQuery] string email)
         {
-            id = r.Id,
-            category = r.Category,
-            status = r.Status,
-            createdAt = r.CreatedAt,
-            latitude = r.Latitude,
-            longitude = r.Longitude,
-            location = r.Location,
-            description = r.Description,
-            priority = r.Priority
-        })
-        .ToListAsync();
+            if (string.IsNullOrWhiteSpace(email))
+                return BadRequest(new { message = "האימייל נדרש" });
 
-    return Ok(reports);
-}
+            var normalizedEmail = email.Trim().ToLowerInvariant();
 
-[HttpGet("open-reports")]
-public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
-{
-    workerEmail = workerEmail?.Trim().ToLower();
+            var worker = await _context.Workers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Email.ToLower() == normalizedEmail);
 
-    var reports = await _context.Reports
-        .Where(r =>
-            r.Status == "Open" ||
-            (!string.IsNullOrEmpty(workerEmail) &&
-             r.AssignedWorkerEmail != null &&
-             r.AssignedWorkerEmail.ToLower() == workerEmail)
-        )
-        .OrderByDescending(r => r.CreatedAt)
-        .Select(r => new
+            if (worker == null)
+                return NotFound(new { message = "העובד לא נמצא" });
+
+            return Ok(new
+            {
+                fullName = worker.FullName,
+                email = worker.Email,
+                phone = worker.Phone,
+                municipality = worker.Municipality,
+                department = worker.Department
+            });
+        }
+
+        [HttpPut("update-worker-profile")]
+        public async Task<IActionResult> UpdateWorkerProfile([FromBody] UpdateWorkerProfileDto dto)
         {
-            id = r.Id,
-            customerEmail = r.CustomerEmail,
-            category = r.Category,
-            priority = r.Priority,
-            description = r.Description,
-            notes = r.Notes,
-            imageBase64 = r.ImageBase64,
-            latitude = r.Latitude,
-            longitude = r.Longitude,
-            status = r.Status,
-            assignedWorkerEmail = r.AssignedWorkerEmail,
-            acceptedAt = r.AcceptedAt,
-            createdAt = r.CreatedAt,
-            workerImageBase64 = r.WorkerImageBase64,
-            workerImageNote = r.WorkerImageNote,
-            workerImageUploadedAt = r.WorkerImageUploadedAt,
-        })
-        .ToListAsync();
+            var worker = await _context.Workers
+                .FirstOrDefaultAsync(x => x.Email == dto.Email);
 
-    return Ok(reports);
-}
+            if (worker == null)
+                return NotFound(new { message = "העובד לא נמצא" });
 
+            worker.FullName = dto.FullName;
+            worker.Phone = dto.Phone;
+            worker.Municipality = dto.Municipality;
+            worker.Department = dto.Department;
+
+            if (!string.IsNullOrWhiteSpace(dto.NewPassword))
+            {
+                if (string.IsNullOrWhiteSpace(dto.CurrentPassword))
+                    return BadRequest(new { message = "יש להזין סיסמה נוכחית" });
+
+                if (!VerifyPassword(dto.CurrentPassword, worker.PasswordHash))
+                    return BadRequest(new { message = "הסיסמה הנוכחית שגויה" });
+
+                worker.PasswordHash = HashPassword(dto.NewPassword);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "פרופיל העובד עודכן בהצלחה",
+                role = "Worker",
+                fullName = worker.FullName,
+                email = worker.Email,
+                phone = worker.Phone,
+                municipality = worker.Municipality,
+                department = worker.Department
+            });
+        }
+
+        [HttpPost("create-report")]
+        public async Task<IActionResult> CreateReport([FromBody] CreateReportDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new { message = "נתונים לא תקינים" });
+
+            if (dto.Latitude == 0 || dto.Longitude == 0)
+            {
+                return BadRequest(new { message = "מיקום לא תקין" });
+            }
+
+            if (dto.Latitude < -90 || dto.Latitude > 90 ||
+                dto.Longitude < -180 || dto.Longitude > 180)
+            {
+                return BadRequest(new { message = "קואורדינטות לא חוקיות" });
+            }
+
+            if (dto.Latitude < 29.45 || dto.Latitude > 33.35 ||
+                dto.Longitude < 34.25 || dto.Longitude > 35.65)
+            {
+                return BadRequest(new { message = "המיקום חייב להיות בתוך ישראל" });
+            }
+
+            var customerExists = await _context.Customers
+                .AnyAsync(c => c.Email.ToLower() == dto.CustomerEmail.ToLower());
+
+            if (!customerExists)
+                return NotFound(new { message = "הלקוח לא נמצא במערכת" });
+
+            var geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+
+            var report = new Report
+            {
+                CustomerEmail = dto.CustomerEmail,
+                Category = dto.Category,
+                Priority = dto.Priority,
+                Description = dto.Description,
+                Notes = dto.Notes,
+                ImageBase64 = dto.ImageBase64,
+                Latitude = dto.Latitude,
+                Longitude = dto.Longitude,
+                LocationPoint = geometryFactory.CreatePoint(
+                    new Coordinate(dto.Longitude, dto.Latitude)
+                ),
+                Status = "Open",
+                CreatedAt = DateTime.UtcNow
+            };
+
+            _context.Reports.Add(report);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "הדיווח נשמר בהצלחה",
+                reportId = report.Id
+            });
+        }
+
+        [HttpPost("accept-report/{reportId}")]
+        public async Task<IActionResult> AcceptReport(int reportId, [FromBody] AcceptReportDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
+                return BadRequest(new { message = "אימייל עובד נדרש" });
+
+            var workerEmail = dto.WorkerEmail.Trim().ToLowerInvariant();
+
+            var worker = await _context.Workers
+                .FirstOrDefaultAsync(w => w.Email.ToLower() == workerEmail);
+
+            if (worker == null)
+                return NotFound(new { message = "העובד לא נמצא במערכת" });
+
+            if (worker.ApprovalStatus != "Approved")
+                return BadRequest(new { message = "העובד עדיין לא מאושר במערכת" });
+
+            var report = await _context.Reports
+                .FirstOrDefaultAsync(r => r.Id == reportId);
+
+            if (report == null)
+                return NotFound(new { message = "הדיווח לא נמצא" });
+
+            if (report.Status != "Open")
+                return BadRequest(new { message = "הדיווח כבר נלקח לטיפול או שאינו פתוח" });
+
+            report.Status = "In Treatment";
+            report.AssignedWorkerEmail = worker.Email;
+            report.AcceptedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "הדיווח התקבל לטיפול בהצלחה",
+                reportId = report.Id,
+                status = report.Status,
+                assignedWorkerEmail = report.AssignedWorkerEmail,
+                acceptedAt = report.AcceptedAt
+            });
+        }
+
+        [HttpPut("worker-upload-image/{reportId}")]
+        public async Task<IActionResult> WorkerUploadImage(int reportId, [FromBody] WorkerUploadImageDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
+                return BadRequest(new { message = "אימייל עובד נדרש" });
+
+            if (string.IsNullOrWhiteSpace(dto.ImageBase64))
+                return BadRequest(new { message = "חובה לבחור תמונה" });
+
+            var workerEmail = dto.WorkerEmail.Trim().ToLowerInvariant();
+
+            var report = await _context.Reports.FirstOrDefaultAsync(r => r.Id == reportId);
+
+            if (report == null)
+                return NotFound(new { message = "הדיווח לא נמצא" });
+
+            if (report.Status != "In Treatment")
+                return BadRequest(new { message = "אפשר להעלות תמונה רק לדיווח שנמצא בטיפול" });
+
+            if (string.IsNullOrWhiteSpace(report.AssignedWorkerEmail))
+                return BadRequest(new { message = "הדיווח עדיין לא שויך לעובד" });
+
+            if (report.AssignedWorkerEmail.ToLower() != workerEmail)
+                return BadRequest(new { message = "רק העובד שקיבל את הדיווח יכול להעלות תמונה" });
+
+            report.WorkerImageBase64 = dto.ImageBase64;
+            report.WorkerImageNote = dto.Note;
+            report.WorkerImageUploadedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "התמונה נשמרה בהצלחה",
+                reportId = report.Id,
+                status = report.Status,
+                workerImageBase64 = report.WorkerImageBase64,
+                workerImageNote = report.WorkerImageNote,
+                workerImageUploadedAt = report.WorkerImageUploadedAt
+            });
+        }
+
+        [HttpGet("reports-map")]
+        public async Task<IActionResult> GetReportsMap(
+            [FromQuery] string? status,
+            [FromQuery] string? fromDate,
+            [FromQuery] string? toDate)
+        {
+            var query = _context.Reports.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                var statuses = status.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => s.Trim()).ToList();
+
+                query = query.Where(r => statuses.Contains(r.Status));
+            }
+
+            if (DateTime.TryParse(fromDate, out var from))
+                query = query.Where(r => r.CreatedAt >= from);
+
+            if (DateTime.TryParse(toDate, out var to))
+                query = query.Where(r => r.CreatedAt <= to.AddDays(1));
+
+            var reports = await query
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new
+                {
+                    id = r.Id,
+                    category = r.Category,
+                    status = r.Status,
+                    createdAt = r.CreatedAt,
+                    latitude = r.Latitude,
+                    longitude = r.Longitude,
+                    location = r.Location,
+                    description = r.Description,
+                    priority = r.Priority
+                })
+                .ToListAsync();
+
+            return Ok(reports);
+        }
+
+        [HttpGet("open-reports")]
+        public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
+        {
+            workerEmail = workerEmail?.Trim().ToLowerInvariant();
+
+            var reports = await _context.Reports
+                .AsNoTracking()
+                .Where(r =>
+                    r.Status == "Open" ||
+                    (!string.IsNullOrEmpty(workerEmail) &&
+                     r.AssignedWorkerEmail != null &&
+                     r.AssignedWorkerEmail.ToLower() == workerEmail)
+                )
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new
+                {
+                    id = r.Id,
+                    customerEmail = r.CustomerEmail,
+                    category = r.Category,
+                    priority = r.Priority,
+                    description = r.Description,
+                    notes = r.Notes,
+                    latitude = r.Latitude,
+                    longitude = r.Longitude,
+                    status = r.Status,
+                    assignedWorkerEmail = r.AssignedWorkerEmail,
+                    acceptedAt = r.AcceptedAt,
+                    createdAt = r.CreatedAt
+                })
+                .ToListAsync();
+
+            return Ok(reports);
+        }
+
+        [HttpGet("report-details/{reportId}")]
+        public async Task<IActionResult> GetReportDetails(int reportId, [FromQuery] string? workerEmail)
+        {
+            var report = await _context.Reports
+                .AsNoTracking()
+                .Where(r => r.Id == reportId)
+                .Select(r => new
+                {
+                    id = r.Id,
+                    customerEmail = r.CustomerEmail,
+                    category = r.Category,
+                    priority = r.Priority,
+                    description = r.Description,
+                    notes = r.Notes,
+                    location = r.Location,
+                    imageBase64 = r.ImageBase64,
+                    latitude = r.Latitude,
+                    longitude = r.Longitude,
+                    status = r.Status,
+                    assignedWorkerEmail = r.AssignedWorkerEmail,
+                    acceptedAt = r.AcceptedAt,
+                    createdAt = r.CreatedAt,
+                    workerImageBase64 = r.WorkerImageBase64,
+                    workerImageNote = r.WorkerImageNote,
+                    workerImageUploadedAt = r.WorkerImageUploadedAt
+                })
+                .FirstOrDefaultAsync();
+
+            if (report == null)
+            {
+                return NotFound(new { message = "הדיווח לא נמצא" });
+            }
+
+            return Ok(report);
+        }
+
+        [HttpGet("assigned-reports")]
+        public async Task<IActionResult> GetAssignedReports([FromQuery] string workerEmail)
+        {
+            if (string.IsNullOrWhiteSpace(workerEmail))
+            {
+                return BadRequest(new { message = "Worker email is required" });
+            }
+
+            var normalizedWorkerEmail = workerEmail.Trim().ToLowerInvariant();
+
+            var reports = await _context.Reports
+                .AsNoTracking()
+                .Where(r =>
+                    r.AssignedWorkerEmail != null &&
+                    r.AssignedWorkerEmail.ToLower() == normalizedWorkerEmail)
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new
+                {
+                    id = r.Id,
+                    title = r.Category,
+                    category = r.Category,
+                    description = r.Description,
+                    notes = r.Notes,
+                    status = r.Status,
+                    priority = r.Priority,
+                    createdAt = r.CreatedAt,
+                    customerEmail = r.CustomerEmail,
+                    location = r.Location,
+                    latitude = r.Latitude,
+                    longitude = r.Longitude,
+                    assignedWorkerEmail = r.AssignedWorkerEmail,
+                    acceptedAt = r.AcceptedAt
+                })
+                .ToListAsync();
+
+            return Ok(reports);
+        }
 
         private async Task<(string UserType, int UserId)?> FindUserByEmailAsync(string email)
         {
             var customer = await _context.Customers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Email.ToLower() == email);
+
             if (customer != null)
             {
                 return ("Customer", customer.Id);
@@ -786,6 +872,7 @@ public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
             var worker = await _context.Workers
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Email.ToLower() == email);
+
             if (worker != null)
             {
                 return ("Worker", worker.Id);
@@ -794,6 +881,7 @@ public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
             var admin = await _context.Admins
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Email.ToLower() == email);
+
             if (admin != null)
             {
                 return ("Admin", admin.Id);
@@ -801,7 +889,6 @@ public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
 
             return null;
         }
-        
 
         private static string HashPassword(string password)
         {
@@ -815,5 +902,81 @@ public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
             var hashedPassword = HashPassword(password);
             return hashedPassword == savedHash;
         }
+        [HttpPut("update-report-status/{reportId}")]
+public async Task<IActionResult> UpdateReportStatus(
+    int reportId,
+    [FromBody] UpdateReportStatusDto dto)
+{
+    if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
+        return Unauthorized(new { message = "יש להתחבר כעובד" });
+
+    var worker = await _context.Workers
+        .FirstOrDefaultAsync(w =>
+            w.Email.ToLower() == dto.WorkerEmail.ToLower() &&
+            w.ApprovalStatus == "Approved");
+
+    if (worker == null)
+        return Unauthorized(new { message = "אין הרשאה לעדכן סטטוס" });
+
+    var allowedStatuses = new[]
+    {
+        "Open",
+        "In Treatment",
+        "Completed"
+    };
+
+    if (!allowedStatuses.Contains(dto.NewStatus))
+        return BadRequest(new { message = "סטטוס לא חוקי" });
+
+    var report = await _context.Reports.FindAsync(reportId);
+
+    if (report == null)
+        return NotFound(new { message = "הקריאה לא נמצאה" });
+
+    if (report.AssignedWorkerEmail != null &&
+        report.AssignedWorkerEmail.ToLower() != dto.WorkerEmail.ToLower())
+    {
+        return Forbid();
+    }
+
+    var oldStatus = report.Status;
+
+    report.Status = dto.NewStatus;
+    
+
+    var history = new ReportStatusHistory
+    {
+        ReportId = report.Id,
+        OldStatus = oldStatus,
+        NewStatus = dto.NewStatus,
+        ChangedByWorkerEmail = dto.WorkerEmail,
+        ChangedAt = DateTime.UtcNow
+    };
+
+    _context.ReportStatusHistories.Add(history);
+
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "סטטוס הקריאה עודכן בהצלחה",
+        reportId = report.Id,
+        oldStatus,
+        newStatus = report.Status,
+        changedBy = dto.WorkerEmail,
+        changedAt = history.ChangedAt
+    });
+}
+
+[HttpGet("report-status-history/{reportId}")]
+public async Task<IActionResult> GetReportStatusHistory(int reportId)
+{
+    var history = await _context.ReportStatusHistories
+        .Where(h => h.ReportId == reportId)
+        .OrderByDescending(h => h.ChangedAt)
+        .ToListAsync();
+
+    return Ok(history);
+}
     }
 }
