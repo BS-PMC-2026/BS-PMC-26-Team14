@@ -840,6 +840,19 @@ body {
 .completed-card {
   opacity: 0.85;
 }
+
+@media(max-width: 1000px) {
+  .filters-card {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media(max-width: 650px) {
+  .filters-card {
+    grid-template-columns: 1fr;
+  }
+}
+
 </style>
 </head>
 
@@ -909,6 +922,48 @@ body {
         <h1 class="page-title">All Reports</h1>
 
         <div class="worker-home-actions"></div>
+
+        <!-- FILTERS -->
+        <div class="filters-card" id="filtersCard">
+          <div class="filter-group">
+            <label for="statusFilter">Filter by Status</label>
+            <select id="statusFilter" onchange="renderReportsList()">
+              <option value="all">All Statuses</option>
+              <option value="Open">Open</option>
+              <option value="In Treatment">In Treatment</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="priorityFilter">Filter by Priority</label>
+            <select id="priorityFilter" onchange="renderReportsList()">
+              <option value="all">All Priorities</option>
+              <option value="גבוהה">High Priority</option>
+              <option value="בינונית">Medium Priority</option>
+              <option value="נמוכה">Low Priority</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="categoryFilter">Filter by Category</label>
+            <select id="categoryFilter" onchange="renderReportsList()">
+              <option value="all">All Categories</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="sortFilter">Sort Reports</label>
+            <select id="sortFilter" onchange="renderReportsList()">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="priorityHigh">Priority: High to Low</option>
+              <option value="priorityLow">Priority: Low to High</option>
+            </select>
+          </div>
+
+          <button class="reset-filter-btn" onclick="resetFilters()">Reset Filters</button>
+        </div>
 
         <div id="reportsContainer">
           <p class="empty-msg">Loading reports...</p>
@@ -1146,6 +1201,76 @@ async function loadOpenReports() {
   }
 }
 
+function getPriorityRank(priority) {
+  if (priority === "גבוהה") return 3;
+  if (priority === "בינונית") return 2;
+  if (priority === "נמוכה") return 1;
+  return 0;
+}
+
+function populateCategoryFilter() {
+  const categoryFilter = document.getElementById("categoryFilter");
+  if (!categoryFilter || !Array.isArray(reports)) return;
+
+  const currentValue = categoryFilter.value;
+  const categories = [...new Set(reports.map(report => report.category).filter(Boolean))];
+
+  categoryFilter.innerHTML = `<option value="all">All Categories</option>`;
+
+  categories.forEach(category => {
+    categoryFilter.innerHTML += `<option value="${category}">${category}</option>`;
+  });
+
+  categoryFilter.value = categories.includes(currentValue) ? currentValue : "all";
+}
+
+function getFilteredReports() {
+  const statusValue = document.getElementById("statusFilter")?.value || "all";
+  const priorityValue = document.getElementById("priorityFilter")?.value || "all";
+  const categoryValue = document.getElementById("categoryFilter")?.value || "all";
+  const sortValue = document.getElementById("sortFilter")?.value || "newest";
+
+  let filteredReports = [...reports];
+
+  if (statusValue !== "all") {
+    filteredReports = filteredReports.filter(report => report.status === statusValue);
+  }
+
+  if (priorityValue !== "all") {
+    filteredReports = filteredReports.filter(report => report.priority === priorityValue);
+  }
+
+  if (categoryValue !== "all") {
+    filteredReports = filteredReports.filter(report => report.category === categoryValue);
+  }
+
+  filteredReports.sort((a, b) => {
+    if (sortValue === "oldest") {
+      return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+    }
+
+    if (sortValue === "priorityHigh") {
+      return getPriorityRank(b.priority) - getPriorityRank(a.priority);
+    }
+
+    if (sortValue === "priorityLow") {
+      return getPriorityRank(a.priority) - getPriorityRank(b.priority);
+    }
+
+    return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
+  });
+
+  return filteredReports;
+}
+
+function resetFilters() {
+  document.getElementById("statusFilter").value = "all";
+  document.getElementById("priorityFilter").value = "all";
+  document.getElementById("categoryFilter").value = "all";
+  document.getElementById("sortFilter").value = "newest";
+  renderReportsList();
+}
+
 function renderReportsList() {
   const container = document.getElementById("reportsContainer");
 
@@ -1154,9 +1279,18 @@ function renderReportsList() {
     return;
   }
 
+  populateCategoryFilter();
+
+  const filteredReports = getFilteredReports();
+
+  if (filteredReports.length === 0) {
+    container.innerHTML = `<p class="empty-msg">No reports match the selected filters</p>`;
+    return;
+  }
+
   let html = `<div class="reports-list">`;
 
-  reports.forEach(report => {
+  filteredReports.forEach(report => {
 
     const isInTreatment = report.status === "In Treatment";
     const isCompleted = report.status === "Completed";
