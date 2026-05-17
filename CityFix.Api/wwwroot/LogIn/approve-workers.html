@@ -4,11 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Approve Workers - CityFix</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Heebo', sans-serif;
       background: #f0efff;
@@ -16,21 +23,101 @@
       padding: 20px;
       color: #0f172a;
     }
+
     .container {
       max-width: 1000px;
       margin: 0 auto;
       background: #fff;
       border-radius: 18px;
-      padding: 30px;
+      padding: 78px 30px 30px;
       box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+      position: relative;
+      min-height: 410px;
     }
-    h1 { text-align: center; font-size: 32px; color: #8b2cf5; margin-bottom: 30px; }
-    .table-wrapper { overflow-x: auto; }
+
+    .top-actions {
+      position: absolute;
+      top: 22px;
+      left: 30px;
+      right: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .back-square,
+    .logout-btn {
+      pointer-events: auto;
+    }
+
+    .back-square {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #a855f7, #8b00ff);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(139, 0, 255, 0.25);
+      text-decoration: none;
+      transition: 0.2s ease;
+    }
+
+    .back-square:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 11px 20px rgba(139, 0, 255, 0.32);
+    }
+
+    .back-square svg {
+      width: 18px;
+      height: 18px;
+      stroke: white;
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .logout-btn {
+      border: none;
+      border-radius: 10px;
+      padding: 9px 18px;
+      background: #8b2cf5;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(139, 44, 245, 0.22);
+      transition: 0.2s ease;
+    }
+
+    .logout-btn:hover {
+      background: #7c1fc9;
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(139, 44, 245, 0.30);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 32px;
+      color: #8b2cf5;
+      margin-bottom: 58px;
+      font-weight: 800;
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 20px;
     }
+
     th {
       background: #f3f4f6;
       padding: 12px;
@@ -38,12 +125,21 @@
       font-weight: 700;
       border-bottom: 2px solid #e5e7eb;
     }
+
     td {
       padding: 12px;
       border-bottom: 1px solid #e5e7eb;
     }
-    tr:hover { background: #f9fafb; }
-    .actions { display: flex; gap: 8px; }
+
+    tr:hover {
+      background: #f9fafb;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
     .btn {
       padding: 8px 12px;
       border: none;
@@ -52,31 +148,116 @@
       cursor: pointer;
       font-weight: 600;
     }
+
     .btn-approve {
       background: #16a34a;
       color: #fff;
     }
-    .btn-approve:hover { background: #15803d; }
+
+    .btn-approve:hover {
+      background: #15803d;
+    }
+
     .btn-reject {
       background: #dc2626;
       color: #fff;
     }
-    .btn-reject:hover { background: #b91c1c; }
-    .message { text-align: center; padding: 12px; border-radius: 8px; margin-bottom: 20px; }
-    .message.error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
-    .message.success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-    .empty { text-align: center; padding: 40px; color: #9ca3af; }
-    .back-link { display: inline-block; margin-top: 20px; color: #8b2cf5; text-decoration: none; }
-    .back-link:hover { text-decoration: underline; }
+
+    .btn-reject:hover {
+      background: #b91c1c;
+    }
+
+    .message {
+      display: none;
+      text-align: center;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .message.error {
+      display: block;
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .message.success {
+      display: block;
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    .empty {
+      text-align: center;
+      padding: 40px;
+      color: #9ca3af;
+      font-size: 18px;
+    }
+
+    .back-link {
+      display: none;
+    }
+
+    @media (max-width: 760px) {
+      body {
+        padding: 14px;
+      }
+
+      .container {
+        padding: 72px 16px 24px;
+      }
+
+      .top-actions {
+        left: 16px;
+        right: 16px;
+      }
+
+      h1 {
+        font-size: 26px;
+        margin-bottom: 36px;
+      }
+
+      th,
+      td {
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .logout-btn {
+        padding: 8px 14px;
+        font-size: 14px;
+      }
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
+
+    <div class="top-actions">
+      <a href="home.html" class="back-square" title="Back">
+        <svg viewBox="0 0 24 24">
+          <path d="M15 18l-6-6 6-6"></path>
+        </svg>
+      </a>
+
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
     <h1>Worker Registration Requests</h1>
+
     <div id="messageBox" class="message"></div>
+
     <div class="table-wrapper" id="tableContainer">
       <p class="empty">Loading...</p>
     </div>
+
     <a href="home.html" class="back-link">← Back</a>
     <a href="#" class="back-link" onclick="logout(); return false;">Logout</a>
   </div>
@@ -95,7 +276,7 @@
         const workers = await response.json();
 
         const container = document.getElementById("tableContainer");
-        
+
         if (!Array.isArray(workers) || workers.length === 0) {
           container.innerHTML = '<p class="empty">No pending requests</p>';
           return;
@@ -136,14 +317,18 @@
 
         html += `</tbody></table>`;
         container.innerHTML = html;
+
       } catch (error) {
-        document.getElementById("messageBox").innerHTML = `<div class="error">Error loading data</div>`;
+        showMessage("Error loading data", "error");
       }
     }
 
     async function approveWorker(workerId) {
       try {
-        const response = await fetch(`${BASE_URL}/approve-worker/${workerId}`, { method: "POST" });
+        const response = await fetch(`${BASE_URL}/approve-worker/${workerId}`, {
+          method: "POST"
+        });
+
         const data = await response.json();
 
         if (response.ok) {
@@ -152,6 +337,7 @@
         } else {
           showMessage(data.message, "error");
         }
+
       } catch (error) {
         showMessage("Save error", "error");
       }
@@ -159,7 +345,10 @@
 
     async function rejectWorker(workerId) {
       try {
-        const response = await fetch(`${BASE_URL}/reject-worker/${workerId}`, { method: "POST" });
+        const response = await fetch(`${BASE_URL}/reject-worker/${workerId}`, {
+          method: "POST"
+        });
+
         const data = await response.json();
 
         if (response.ok) {
@@ -168,6 +357,7 @@
         } else {
           showMessage(data.message, "error");
         }
+
       } catch (error) {
         showMessage("Save error", "error");
       }
@@ -190,4 +380,3 @@
   </script>
 </body>
 </html>
-

@@ -88,7 +88,7 @@
     }
 
     .profile-btn {
-      background: #2563eb;
+      background: #8b2cf5;
       color: white;
       box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
     }
@@ -187,23 +187,37 @@
       margin-top: 30px;
       padding-top: 30px;
       border-top: 2px solid #e5e7eb;
+      text-align: center;
     }
 
-    .admin-title {
-      font-size: 20px;
-      font-weight: 800;
-      color: #8b2cf5;
-      margin-bottom: 14px;
-    }
-
-    .approve-btn {
+    .system-management-btn {
       background: #8b2cf5;
       color: white;
       box-shadow: 0 8px 18px rgba(139, 44, 245, 0.22);
+      margin-bottom: 14px;
     }
 
-    .approve-btn:hover {
+    .system-management-btn:hover {
       background: #7c1fc9;
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(139, 44, 245, 0.30);
+    }
+
+    .approve-text-btn {
+      display: block;
+      margin: 0 auto;
+      border: none;
+      background: transparent;
+      color: #8b2cf5;
+      font-size: 20px;
+      font-weight: 800;
+      cursor: pointer;
+      padding: 8px 12px;
+    }
+
+    .approve-text-btn:hover {
+      text-decoration: underline;
+      color: #7c1fc9;
     }
 
     @media (max-width: 760px) {
@@ -237,6 +251,14 @@
 
       .btn {
         flex: 1;
+      }
+
+      .system-management-btn {
+        width: 100%;
+      }
+
+      .approve-text-btn {
+        font-size: 18px;
       }
     }
   </style>
@@ -282,8 +304,13 @@
         </div>
 
         <div class="admin-section" id="adminSection">
-          <h3 class="admin-title">System Management</h3>
-          <button class="btn approve-btn" onclick="goToApproveWorkers()">Approve Worker Requests</button>
+          <button class="btn system-management-btn" onclick="goToApproveWorkers()">
+            System Management
+          </button>
+
+          <button class="approve-text-btn" onclick="goToApproveWorkers()">
+            Approve Worker Requests
+          </button>
         </div>
       </div>
     </div>
@@ -327,7 +354,6 @@
       localStorage.removeItem("userEmail");
       window.location.href = "login.html";
     }
-
   </script>
 </body>
 </html>
