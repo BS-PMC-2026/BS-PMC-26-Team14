@@ -144,6 +144,7 @@
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px;
+      align-items: stretch;
     }
 
     .section {
@@ -151,6 +152,9 @@
       border: 1px solid #dbeafe;
       border-radius: 20px;
       padding: 24px;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
     }
 
     .section h2 {
@@ -165,6 +169,12 @@
       font-size: 15px;
       line-height: 1.7;
       margin-bottom: 18px;
+    }
+
+    .section form {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
     }
 
     .form-group {
@@ -211,11 +221,13 @@
       font-weight: 800;
       cursor: pointer;
       transition: 0.2s ease;
-      margin-top: 4px;
+      margin-top: auto;
     }
 
     .action-btn:hover {
       opacity: 0.95;
+      transform: translateY(-1px);
+      box-shadow: 0 10px 22px rgba(139, 44, 245, 0.22);
     }
 
     .message-box {
@@ -277,6 +289,10 @@
 
       .current-info {
         grid-template-columns: 1fr;
+      }
+
+      .section {
+        height: auto;
       }
     }
 
@@ -548,5 +564,3 @@
   </script>
 </body>
 </html>
-
-
