@@ -323,7 +323,14 @@
        if (!response.ok) {
   messageBox.style.display = "block";
   messageBox.className = "message-box error";
-  messageBox.textContent = result.message || "Login error";
+
+  if (result.message.includes("אישור")) {
+    messageBox.textContent =
+      "Your account is still waiting for administrator approval";
+  } else {
+    messageBox.textContent = result.message || "Login error";
+  }
+
   return;
 }
 
