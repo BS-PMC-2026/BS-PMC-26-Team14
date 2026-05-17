@@ -783,6 +783,63 @@ body {
   line-height: 1.7;
   font-size: 14px;
 }
+.filters-card {
+  background: white;
+  border: 1px solid #dbe2ea;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  align-items: end;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-group label {
+  color: #334155;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.filter-group select {
+  height: 44px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 15px;
+  background: white;
+}
+
+.reset-filter-btn {
+  height: 44px;
+  border: none;
+  border-radius: 8px;
+  background: #0b63f6;
+  color: white;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.completed-badge {
+  display: inline-block;
+  background: #e5e7eb;
+  color: #374151;
+  padding: 5px 10px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.completed-card {
+  opacity: 0.85;
+}
 </style>
 </head>
 
