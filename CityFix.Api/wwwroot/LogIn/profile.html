@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>פרופיל מנהל - CityFix</title>
+  <title>Admin Profile - CityFix</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -316,82 +316,82 @@
       </div>
 
       <div class="top-actions">
-        <a class="btn home-btn" href="home.html">חזרה לדף הראשי</a>
-        <button class="btn logout-btn" onclick="logout()">התנתקות</button>
+        <a class="btn home-btn" href="home.html">Back to Dashboard</a>
+        <button class="btn logout-btn" onclick="logout()">Logout</button>
       </div>
     </div>
 
     <div class="main">
       <div class="card">
         <div class="header">
-          <h2 class="title">פרופיל מנהל</h2>
-          <p class="subtitle">כאן ניתן לעדכן את שם המשתמש, כתובת האימייל והסיסמה שלך.</p>
+          <h2 class="title">Admin Profile</h2>
+          <p class="subtitle">Here you can update your username, email address, and password.</p>
         </div>
 
         <div id="messageBox" class="message-box"></div>
 
         <div class="current-info">
           <div class="info-box">
-            <div class="info-label">שם נוכחי</div>
+            <div class="info-label">Current Name</div>
             <div class="info-value" id="currentName">-</div>
           </div>
           <div class="info-box">
-            <div class="info-label">אימייל נוכחי</div>
+            <div class="info-label">Current Email</div>
             <div class="info-value" id="currentEmailValue">-</div>
           </div>
         </div>
 
         <div class="content">
           <section class="section">
-            <h2>עדכון פרטי פרופיל</h2>
-            <p class="note">עדכן את פרטי המשתמש שלך. לאחר השמירה, המידע ישמר גם במערכת וגם בדפדפן שלך.</p>
+            <h2>Update Profile Details</h2>
+            <p class="note">Update your user details. After saving, the information will be stored in both the system and your browser.</p>
 
             <form id="profileForm">
               <div class="form-group">
-                <label for="username">שם משתמש</label>
+                <label for="username">Username</label>
                 <div class="input-wrap">
                   <input type="text" id="username" required minlength="2" />
                 </div>
               </div>
 
               <div class="form-group">
-                <label for="email">אימייל</label>
+                <label for="email">Email</label>
                 <div class="input-wrap">
                   <input type="email" id="email" required />
                 </div>
               </div>
 
-              <button type="submit" class="action-btn">שמור שינויים</button>
+              <button type="submit" class="action-btn">Save Changes</button>
             </form>
           </section>
 
           <section class="section">
-            <h2>שינוי סיסמה</h2>
-            <p class="note">מומלץ לבחור סיסמה חזקה שאינה בשימוש במקומות אחרים.</p>
+            <h2>Change Password</h2>
+            <p class="note">It is recommended to choose a strong password that is not used elsewhere.</p>
 
             <form id="passwordForm">
               <div class="form-group">
-                <label for="currentPassword">סיסמה נוכחית</label>
+                <label for="currentPassword">Current Password</label>
                 <div class="input-wrap">
                   <input type="password" id="currentPassword" required />
                 </div>
               </div>
 
               <div class="form-group">
-                <label for="newPassword">סיסמה חדשה</label>
+                <label for="newPassword">New Password</label>
                 <div class="input-wrap">
                   <input type="password" id="newPassword" required minlength="6" />
                 </div>
               </div>
 
               <div class="form-group">
-                <label for="confirmNewPassword">אימות סיסמה חדשה</label>
+                <label for="confirmNewPassword">Confirm New Password</label>
                 <div class="input-wrap">
                   <input type="password" id="confirmNewPassword" required minlength="6" />
                 </div>
               </div>
 
-              <button type="submit" class="action-btn">עדכן סיסמה</button>
+              <button type="submit" class="action-btn">Update Password</button>
             </form>
           </section>
         </div>
@@ -441,7 +441,7 @@
         const data = await response.json();
 
         if (!response.ok) {
-          showMessage(data.message || "שגיאה בטעינת הפרופיל", "error");
+          showMessage(data.message || "Error loading profile", "error");
           return;
         }
 
@@ -453,7 +453,7 @@
         localStorage.setItem("userEmail", email);
         syncProfileView(username, email);
       } catch (error) {
-        showMessage("לא ניתן לטעון את הפרופיל כרגע", "error");
+        showMessage("Unable to load profile at this time", "error");
       }
     }
 
@@ -479,7 +479,7 @@
         const data = await response.json();
 
         if (!response.ok) {
-          showMessage(data.message || "שגיאה בעדכון שם המשתמש והאימייל", "error");
+          showMessage(data.message || "Error updating username and email", "error");
           return;
         }
 
@@ -488,9 +488,9 @@
         localStorage.setItem("userName", updatedUsername);
         localStorage.setItem("userEmail", currentEmail);
         syncProfileView(updatedUsername, currentEmail);
-        showMessage(data.message || "שם המשתמש והאימייל עודכנו בהצלחה", "success");
+        showMessage(data.message || "Username and email updated successfully", "success");
       } catch (error) {
-        showMessage("שגיאה בעדכון שם המשתמש והאימייל", "error");
+        showMessage("Error updating username and email", "error");
       }
     });
 
@@ -503,7 +503,7 @@
       const confirmNewPassword = document.getElementById("confirmNewPassword").value;
 
       if (newPassword !== confirmNewPassword) {
-        showMessage("הסיסמה החדשה ואימות הסיסמה אינם תואמים", "error");
+        showMessage("New password and confirmation do not match", "error");
         return;
       }
 
@@ -526,14 +526,14 @@
         const data = await response.json();
 
         if (!response.ok) {
-          showMessage(data.message || "שגיאה בעדכון הסיסמה", "error");
+          showMessage(data.message || "Error updating password", "error");
           return;
         }
 
         document.getElementById("passwordForm").reset();
-        showMessage(data.message || "הסיסמה עודכנה בהצלחה", "success");
+        showMessage(data.message || "Password updated successfully", "success");
       } catch (error) {
-        showMessage("שגיאה בעדכון הסיסמה", "error");
+        showMessage("Error updating password", "error");
       }
     });
 

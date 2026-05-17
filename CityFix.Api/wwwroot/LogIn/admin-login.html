@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>התחברות מנהל - CityFix</title>
+  <title>Admin Login - CityFix</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -242,12 +242,12 @@
       </svg>
     </div>
 
-    <h1 class="title">התחברות מנהל</h1>
-    <p class="subtitle">כניסה לפאנל ניהול המערכת</p>
+    <h1 class="title">Admin Login</h1>
+    <p class="subtitle">Access the system management panel</p>
 
     <form id="adminLoginForm">
       <div class="form-group">
-        <label for="email">אימייל</label>
+        <label for="email">Email</label>
         <div class="input-wrap">
           <input type="email" id="email" placeholder="admin@cityfix.com" required />
           <svg viewBox="0 0 24 24">
@@ -258,7 +258,7 @@
       </div>
 
       <div class="form-group">
-        <label for="password">סיסמה</label>
+        <label for="password">Password</label>
         <div class="input-wrap">
           <input type="password" id="password" placeholder="••••••••" required />
           <svg viewBox="0 0 24 24">
@@ -269,21 +269,21 @@
       </div>
 
       <div class="options-row">
-        <a href="forgot-password.html?return=admin-login.html" class="forgot-link">שכחתי סיסמה</a>
+        <a href="forgot-password.html?return=admin-login.html" class="forgot-link">Forgot password</a>
 
         <label class="remember">
           <input type="checkbox" id="rememberMe" />
-          <span>זכור אותי</span>
+          <span>Remember me</span>
         </label>
       </div>
 
-      <button type="submit" class="submit-btn">התחבר</button>
+      <button type="submit" class="submit-btn">Login</button>
 
       <div id="messageBox" class="message-box"></div>
     </form>
 
     <div class="bottom-links">
-      <div><a class="back-link" href="login.html">← חזרה לבחירת סוג משתמש</a></div>
+      <div><a class="back-link" href="login.html">← Back to User Type Selection</a></div>
     </div>
   </div>
 
@@ -303,7 +303,7 @@
       password: document.getElementById("password").value
     };
 
-    console.log("נשלח login admin", data);
+    console.log("Sending admin login", data);
 
     try {
       const response = await fetch("/api/Auth/login-admin", {
@@ -327,7 +327,7 @@
       if (!response.ok) {
         messageBox.style.display = "block";
         messageBox.className = "message-box error";
-        messageBox.textContent = result.message || "שגיאה בהתחברות";
+        messageBox.textContent = result.message || "Login error";
         return;
       }
 
@@ -343,7 +343,7 @@
 
       messageBox.style.display = "block";
       messageBox.className = "message-box success";
-      messageBox.textContent = result.message || "התחברת בהצלחה";
+      messageBox.textContent = result.message || "Logged in successfully";
 
       setTimeout(() => {
         window.location.href = "home.html";
@@ -352,7 +352,7 @@
     } catch (error) {
       messageBox.style.display = "block";
       messageBox.className = "message-box error";
-      messageBox.textContent = "בעיה בחיבור לשרת";
+      messageBox.textContent = "Connection error with server";
       console.error("login-admin error:", error);
     }
   });

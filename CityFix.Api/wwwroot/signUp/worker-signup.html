@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>הרשמת עובד - CityFix</title>
+  <title>Worker Sign Up - CityFix</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -257,19 +257,19 @@
         </svg>
       </div>
 
-      <h1 class="title">הרשמת עובד</h1>
-      <p class="subtitle">הצטרף לצוות והתחל לטפל בדיווחים</p>
+      <h1 class="title">Worker Sign Up</h1>
+      <p class="subtitle">Join the team and start handling reports</p>
 
       <div class="approval-note">
-        לאחר שליחת הטופס, החשבון לא יופעל מיד.  
-        בקשת ההרשמה שלך תישלח לבדיקה ומחכה לאישור מנהל המערכת.
+        After submitting the form, the account will not be activated immediately.
+        Your registration request will be sent for review and awaits system administrator approval.
       </div>
 
       <form id="workerForm">
         <div class="form-grid">
 
           <div class="form-group">
-            <label>תעודת זהות *</label>
+            <label>ID Number *</label>
             <div class="input-wrap">
               <input type="text" placeholder="123456789" required>
               <svg viewBox="0 0 24 24">
@@ -282,9 +282,9 @@
           </div>
 
           <div class="form-group">
-            <label>שם מלא *</label>
+            <label>Full Name *</label>
             <div class="input-wrap">
-              <input type="text" placeholder="דני לוי" required>
+              <input type="text" placeholder="John Doe" required>
               <svg viewBox="0 0 24 24">
                 <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
                 <path d="M4 20a8 8 0 0 1 16 0"/>
@@ -293,7 +293,7 @@
           </div>
 
           <div class="form-group">
-            <label>טלפון *</label>
+            <label>Phone *</label>
             <div class="input-wrap">
               <input type="text" placeholder="050-1234567" required>
               <svg viewBox="0 0 24 24">
@@ -303,7 +303,7 @@
           </div>
 
           <div class="form-group">
-            <label>אימייל *</label>
+            <label>Email *</label>
             <div class="input-wrap">
               <input type="email" placeholder="worker@cityfix.com" required>
               <svg viewBox="0 0 24 24">
@@ -314,10 +314,10 @@
           </div>
 
         <div class="form-group">
-  <label>עירייה / רשות מקומית *</label>
+  <label>Municipality *</label>
   <div class="input-wrap">
     <select id="municipality" required>
-      <option value="">בחר רשות מקומית</option>
+      <option value="">Select Municipality</option>
     </select>
     <svg viewBox="0 0 24 24">
       <path d="M7 10l5 5 5-5"></path>
@@ -325,15 +325,15 @@
   </div>
 </div>
           <div class="form-group">
-            <label>מחלקה *</label>
+            <label>Department *</label>
             <div class="input-wrap">
               <select required>
-                <option value="">בחר מחלקה</option>
-                <option>כבישים</option>
-                <option>תאורה</option>
-                <option>תברואה</option>
-                <option>גינון</option>
-                <option>תחזוקה כללית</option>
+                <option value="">Select Department</option>
+                <option>Roads</option>
+                <option>Lighting</option>
+                <option>Sanitation</option>
+                <option>Gardening</option>
+                <option>General Maintenance</option>
               </select>
               <svg viewBox="0 0 24 24">
                 <path d="M7 10l5 5 5-5"></path>
@@ -342,7 +342,7 @@
           </div>
 
           <div class="form-group">
-            <label>אימות סיסמה *</label>
+            <label>Confirm Password *</label>
             <div class="input-wrap">
               <input type="password" placeholder="••••••••" required>
               <svg viewBox="0 0 24 24">
@@ -353,7 +353,7 @@
           </div>
 
           <div class="form-group">
-            <label>סיסמה *</label>
+            <label>Password *</label>
             <div class="input-wrap">
               <input type="password" placeholder="••••••••" required>
               <svg viewBox="0 0 24 24">
@@ -368,21 +368,21 @@
         <div class="checkbox-row">
           <input type="checkbox" id="agree" required>
           <label for="agree">
-            אני מסכים ל<a href="#">תנאי השימוש</a> ול<a href="#">מדיניות הפרטיות</a>
+            I agree to the <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>
           </label>
         </div>
 
-        <button type="submit" class="submit-btn">הרשם עכשיו</button>
+        <button type="submit" class="submit-btn">Sign Up Now</button>
 
         <div class="success-box" id="successBox">
-          בקשת ההרשמה נשלחה בהצלחה.  
-          החשבון שלך ממתין כעת לאישור מנהל המערכת.
+          Registration request sent successfully.
+          Your account is now awaiting system administrator approval.
         </div>
       </form>
 
       <div class="bottom-links">
-        <div>כבר יש לך חשבון? <a class="login-link" href="/CityFix.Api/wwwroot/LogIn/login.html">התחבר</a></div>
-        <div><a class="back-link" href="signup-choice.html">← חזרה לבחירת סוג הרשמה</a></div>
+        <div>Already have an account? <a class="login-link" href="/CityFix.Api/wwwroot/LogIn/login.html">Login</a></div>
+        <div><a class="back-link" href="signup-choice.html">← Back to Sign Up Choice</a></div>
       </div>
     </div>
   </div>
@@ -419,13 +419,13 @@
 
       if (response.ok) {
         successBox.style.display = "block";
-        successBox.innerText = "בקשת ההרשמה נשלחה בהצלחה. החשבון ממתין לאישור מנהל.";
+        successBox.innerText = "Registration request sent successfully. Account awaiting administrator approval.";
 window.location.href = "/LogIn/worker-login.html";
       } else {
-        alert(result.message || "שגיאה בהרשמה");
+        alert(result.message || "Registration error");
       }
     } catch (error) {
-      alert("בעיה בחיבור לשרת");
+      alert("Connection error with server");
       console.error(error);
     }
 
@@ -505,7 +505,7 @@ window.location.href = "/LogIn/worker-login.html";
   const municipalitySelect = document.getElementById("municipality");
 
   municipalities
-    .sort((a, b) => a.localeCompare(b, "he"))
+    .sort((a, b) => a.localeCompare(b))
     .forEach(name => {
       const option = document.createElement("option");
       option.value = name;

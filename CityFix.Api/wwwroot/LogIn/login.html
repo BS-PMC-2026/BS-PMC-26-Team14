@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>התחברות למערכת - CityFix</title>
+  <title>Login - CityFix</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -198,8 +198,8 @@
 </head>
 <body>
   <div class="page">
-    <h1 class="title">התחברות למערכת</h1>
-    <p class="subtitle">בחר את סוג המשתמש שלך</p>
+    <h1 class="title">Login</h1>
+    <p class="subtitle">Choose your user type</p>
 
     <div class="cards">
       <div class="card admin" onclick="goToAdminLogin()">
@@ -209,9 +209,9 @@
             <path d="M9.5 12.5l1.7 1.7 3.3-3.7"></path>
           </svg>
         </div>
-        <h2>מנהל</h2>
-        <p>ניהול המערכת והפעילויות</p>
-        <a class="login-link" href="admin-login.html">כניסה ←</a>
+        <h2>Admin</h2>
+        <p>System and activity management</p>
+        <a class="login-link" href="admin-login.html">Login →</a>
       </div>
 
       <div class="card customer" onclick="goToCustomerLogin()">
@@ -221,9 +221,9 @@
             <path d="M5 20v-1a7 7 0 0 1 14 0v1"></path>
           </svg>
         </div>
-        <h2>תושב</h2>
-        <p>דיווח על בעיות עירוניות</p>
-        <a class="login-link" href="customer-login.html">כניסה ←</a>
+        <h2>Citizen</h2>
+        <p>Report city issues</p>
+        <a class="login-link" href="customer-login.html">Login →</a>
       </div>
 
       <div class="card worker" onclick="goToWorkerLogin()">
@@ -233,13 +233,13 @@
             <path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
           </svg>
         </div>
-        <h2>עובד</h2>
-        <p>טיפול בדיווחים ומשימות</p>
-        <a class="login-link" href="worker-login.html">כניסה ←</a>
+        <h2>Worker</h2>
+        <p>Handle reports and tasks</p>
+        <a class="login-link" href="worker-login.html">Login →</a>
       </div>
     </div>
 
-    <a class="back-link" href="../index.html">← חזרה לדף הבית</a>
+    <a class="back-link" href="../index.html">← Back to Home</a>
   </div>
 
   <script>

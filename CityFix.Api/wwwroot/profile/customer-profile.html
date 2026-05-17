@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>פרופיל תושב - CityFix</title>
+  <title>Citizen Profile - CityFix</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -236,12 +236,12 @@
 </head>
 <body>
 
-<a class="back-link" href="../citizen/create-report.html"> חזרה </a>
+<a class="back-link" href="../citizen/create-report.html">← Back</a>
 
   <div class="card">
     <div class="header">
-      <h1>עריכת פרופיל</h1>
-      <p>עדכן את הפרטים האישיים שלך</p>
+      <h1>Edit Profile</h1>
+      <p>Update your personal details</p>
     </div>
 
     <div class="content">
@@ -253,15 +253,15 @@
           </svg>
           <button class="camera-btn" type="button">📷</button>
         </div>
-        <div class="avatar-note">לחץ להעלאת תמונת פרופיל</div>
+        <div class="avatar-note">Click to upload profile picture</div>
       </div>
 
       <form id="profileForm">
         <div class="form-grid">
           <div class="form-group full">
-            <label>שם מלא *</label>
+            <label>Full Name *</label>
             <div class="input-wrap">
-              <input type="text" id="fullName" placeholder="הכנס שם מלא">
+              <input type="text" id="fullName" placeholder="Enter full name">
               <svg viewBox="0 0 24 24">
                 <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
                 <path d="M4 20a8 8 0 0 1 16 0"/>
@@ -270,7 +270,7 @@
           </div>
 
           <div class="form-group full">
-            <label>אימייל *</label>
+            <label>Email *</label>
             <div class="input-wrap">
               <input type="email" id="email" placeholder="name@example.com" readonly>
               <svg viewBox="0 0 24 24">
@@ -281,7 +281,7 @@
           </div>
 
           <div class="form-group full">
-            <label>טלפון *</label>
+            <label>Phone *</label>
             <div class="input-wrap">
               <input type="text" id="phone" placeholder="050-1234567">
               <svg viewBox="0 0 24 24">
@@ -291,9 +291,9 @@
           </div>
 
           <div class="form-group full">
-            <label>כתובת *</label>
+            <label>Address *</label>
             <div class="input-wrap">
-              <input type="text" id="address" placeholder="הכנס כתובת">
+              <input type="text" id="address" placeholder="Enter address">
               <svg viewBox="0 0 24 24">
                 <path d="M12 21s-6-4.35-6-10a6 6 0 0 1 12 0c0 5.65-6 10-6 10Z"/>
                 <circle cx="12" cy="11" r="2"/>
@@ -304,12 +304,12 @@
 
         <hr class="divider">
 
-        <div class="section-title">שינוי סיסמה (אופציונלי)</div>
-        <div class="password-note">השאר ריק אם אינך רוצה לשנות סיסמה</div>
+        <div class="section-title">Change Password (Optional)</div>
+        <div class="password-note">Leave empty if you don't want to change your password</div>
 
         <div class="form-grid">
           <div class="form-group full">
-            <label>סיסמה נוכחית</label>
+            <label>Current Password</label>
             <div class="input-wrap">
               <input type="password" id="currentPassword" placeholder="••••••••">
               <svg viewBox="0 0 24 24">
@@ -320,7 +320,7 @@
           </div>
 
           <div class="form-group">
-            <label>סיסמה חדשה</label>
+            <label>New Password</label>
             <div class="input-wrap">
               <input type="password" id="newPassword" placeholder="••••••••">
               <svg viewBox="0 0 24 24">
@@ -331,7 +331,7 @@
           </div>
 
           <div class="form-group">
-            <label>אימות סיסמה</label>
+            <label>Confirm Password</label>
             <div class="input-wrap">
               <input type="password" id="confirmPassword" placeholder="••••••••">
               <svg viewBox="0 0 24 24">
@@ -343,8 +343,8 @@
         </div>
 
         <div class="actions">
-          <button type="submit" class="btn save-btn">שמור שינויים</button>
-          <button type="button" class="btn cancel-btn" onclick="goBack()">ביטול</button>
+          <button type="submit" class="btn save-btn">Save Changes</button>
+          <button type="button" class="btn cancel-btn" onclick="goBack()">Cancel</button>
         </div>
       </form>
     </div>
@@ -364,7 +364,7 @@ document.getElementById("address").value = address || "";
   document.getElementById("email").value = email || "";
 
   function goBack() {
-    window.location.href = "../homepage/customer-home.html";
+    window.location.href = "../citizen/create-report.html";
   }
 
   document.getElementById("profileForm").addEventListener("submit", async function(e) {
@@ -379,7 +379,7 @@ document.getElementById("address").value = address || "";
     const confirmPasswordValue = document.getElementById("confirmPassword").value;
 
     if (newPasswordValue && newPasswordValue !== confirmPasswordValue) {
-      alert("אימות הסיסמה אינו תואם");
+      alert("Password confirmation does not match");
       return;
     }
 
@@ -404,7 +404,7 @@ document.getElementById("address").value = address || "";
       const result = await response.json();
 
       if (!response.ok) {
-        alert(result.message || "שגיאה בעדכון הפרופיל");
+        alert(result.message || "Error updating profile");
         return;
       }
 
@@ -413,10 +413,10 @@ document.getElementById("address").value = address || "";
       localStorage.setItem("userPhone", result.phone || "");
       localStorage.setItem("userAddress", result.address || "");
 
-      alert(result.message || "הפרופיל עודכן בהצלחה");
+      alert(result.message || "Profile updated successfully");
       window.location.href = "../homepage/customer-home.html";
     } catch (error) {
-      alert("שגיאה בחיבור לשרת");
+      alert("Connection error with server");
       console.error(error);
     }
   });

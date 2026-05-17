@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>אישור עובדים - CityFix</title>
+  <title>Approve Workers - CityFix</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -34,7 +34,7 @@
     th {
       background: #f3f4f6;
       padding: 12px;
-      text-align: right;
+      text-align: left;
       font-weight: 700;
       border-bottom: 2px solid #e5e7eb;
     }
@@ -72,13 +72,13 @@
 </head>
 <body>
   <div class="container">
-    <h1>אישור בקשות עובדים</h1>
+    <h1>Worker Registration Requests</h1>
     <div id="messageBox" class="message"></div>
     <div class="table-wrapper" id="tableContainer">
-      <p class="empty">טוען...</p>
+      <p class="empty">Loading...</p>
     </div>
-    <a href="home.html" class="back-link">← חזרה</a>
-    <a href="#" class="back-link" onclick="logout(); return false;">התנתקות</a>
+    <a href="home.html" class="back-link">← Back</a>
+    <a href="#" class="back-link" onclick="logout(); return false;">Logout</a>
   </div>
 
   <script>
@@ -97,7 +97,7 @@
         const container = document.getElementById("tableContainer");
         
         if (!Array.isArray(workers) || workers.length === 0) {
-          container.innerHTML = '<p class="empty">אין בקשות ממתינות</p>';
+          container.innerHTML = '<p class="empty">No pending requests</p>';
           return;
         }
 
@@ -105,13 +105,13 @@
           <table>
             <thead>
               <tr>
-                <th>שם מלא</th>
-                <th>אימייל</th>
-                <th>טלפון</th>
-                <th>מחלקה</th>
-                <th>עיר</th>
-                <th>תעודה</th>
-                <th>פעולות</th>
+                <th>Full Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Department</th>
+                <th>City</th>
+                <th>ID</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -127,8 +127,8 @@
               <td>${worker.municipality}</td>
               <td>${worker.nationalId}</td>
               <td class="actions">
-                <button class="btn btn-approve" onclick="approveWorker(${worker.id})">אישור</button>
-                <button class="btn btn-reject" onclick="rejectWorker(${worker.id})">דחייה</button>
+                <button class="btn btn-approve" onclick="approveWorker(${worker.id})">Approve</button>
+                <button class="btn btn-reject" onclick="rejectWorker(${worker.id})">Reject</button>
               </td>
             </tr>
           `;
@@ -137,7 +137,7 @@
         html += `</tbody></table>`;
         container.innerHTML = html;
       } catch (error) {
-        document.getElementById("messageBox").innerHTML = `<div class="error">שגיאה בטעינת הנתונים</div>`;
+        document.getElementById("messageBox").innerHTML = `<div class="error">Error loading data</div>`;
       }
     }
 
@@ -153,7 +153,7 @@
           showMessage(data.message, "error");
         }
       } catch (error) {
-        showMessage("שגיאה בשמירה", "error");
+        showMessage("Save error", "error");
       }
     }
 
@@ -169,7 +169,7 @@
           showMessage(data.message, "error");
         }
       } catch (error) {
-        showMessage("שגיאה בשמירה", "error");
+        showMessage("Save error", "error");
       }
     }
 
