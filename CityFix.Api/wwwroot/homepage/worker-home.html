@@ -277,137 +277,130 @@ body {
   height: 20px;
 }
 
-.report-top {
+/* REPORT HEADER */
+.report-header {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+
+.report-header-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.report-header-meta {
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* PILLS */
+.pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.pill-status-open   { background: #eff6ff; color: #0526ff; border-color: #bfdbfe; }
+.pill-status-treatment { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+.pill-status-completed { background: #dcfce7; color: #166534; border-color: #86efac; }
+.pill-priority-high   { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+.pill-priority-medium { background: #fef3c7; color: #92400e; border-color: #fde68a; }
+.pill-priority-low    { background: #dcfce7; color: #166534; border-color: #86efac; }
+.pill-info { background: #f1f5f9; color: #475569; border-color: #e2e8f0; }
+
+/* STATUS PANEL BAR */
+.status-panel-bar {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 22px;
+  gap: 16px;
 }
 
-.report-title-group {
-  display: flex;
-  align-items: center;
-  gap: 18px;
+.status-panel-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
 }
 
-.priority {
-  padding: 9px 16px;
-  border-radius: 7px;
-  font-size: 18px;
-  font-weight: 500;
+/* DETAIL BODY GRID */
+.detail-body-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 16px;
+  margin-bottom: 16px;
 }
 
-.priority.high {
-  background: #fee2e2;
-  color: #dc2626;
-}
-
-.priority.medium {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.priority.low {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.report-title {
-  font-size: 26px;
-  font-weight: 800;
-}
-
-.status-pill {
-  border: 1px solid #93c5fd;
-  color: #0066ff;
-  background: #eff6ff;
-  padding: 8px 28px;
-  border-radius: 7px;
-  font-size: 18px;
-}
-
-.report-date {
-  color: #475569;
-  font-size: 20px;
-  margin-bottom: 30px;
-}
-
-/* CARD */
-.details-card {
+.detail-section-card {
   background: white;
-  border: 1px solid #dbe2ea;
-  border-radius: 8px;
-  padding: 24px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 28px;
-  padding: 14px 0 30px;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.info-item {
-  display: flex;
-  gap: 14px;
-  align-items: flex-start;
-}
-
-.info-item i {
-  width: 25px;
-  height: 25px;
-  color: #1e3a5f;
-  margin-top: 4px;
-}
-
-.info-label {
-  font-weight: 800;
-  font-size: 17px;
-  margin-bottom: 14px;
-}
-
-.info-text {
-  font-size: 16px;
-  color: #1f2937;
-  line-height: 1.7;
-}
-
-/* BODY */
-.report-body {
-  display: grid;
-  grid-template-columns: 1fr 1.25fr;
-  gap: 44px;
-  padding: 30px 0 12px;
-}
-
-.section-title {
+.detail-section-header {
+  padding: 12px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
   display: flex;
   align-items: center;
-  gap: 14px;
-  font-weight: 800;
-  font-size: 18px;
-  margin-bottom: 18px;
+  gap: 8px;
 }
 
-.section-title i {
-  width: 24px;
-  height: 24px;
-  color: #1e3a5f;
+.detail-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0526ff;
+  flex-shrink: 0;
+}
+
+.detail-section-body {
+  padding: 16px 18px;
+}
+
+.detail-map-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-map-card #map {
+  flex: 1;
+  min-height: 320px;
 }
 
 .description {
-  font-size: 17px;
-  color: #1f2937;
+  font-size: 15px;
+  color: #334155;
   line-height: 1.8;
-  margin-bottom: 40px;
 }
 
 .photo {
   width: 100%;
-  max-width: 430px;
-  height: 220px;
+  height: 180px;
   object-fit: cover;
   border-radius: 8px;
   background: #e5e7eb;
@@ -416,72 +409,77 @@ body {
 
 .no-photo {
   width: 100%;
-  max-width: 430px;
-  height: 220px;
+  height: 180px;
   border-radius: 8px;
   background: #f1f5f9;
-  color: #64748b;
+  color: #94a3b8;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px dashed #cbd5e1;
 }
 
 #map {
   width: 100%;
-  height: 380px;
-  border-radius: 8px;
-  border: 1px solid #d7dde5;
+  height: 320px;
+  border-radius: 0 0 12px 12px;
+  border: none;
   overflow: hidden;
 }
 
-/* ACTIONS */
-.actions-line {
-  border-top: 1px solid #e5e7eb;
-  margin-top: 14px;
-  padding-top: 22px;
+/* ACTIONS BAR */
+.actions-bar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
-.action-buttons {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 26px;
-}
-
-.decline-btn,
-.accept-btn {
-  height: 62px;
-  border-radius: 7px;
-  font-size: 24px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.decline-btn {
+.btn-decline {
+  height: 48px;
+  flex: 1;
+  border: 1px solid #fca5a5;
   background: white;
-  color: #ef4444;
-  border: 1px solid #94a3b8;
+  color: #dc2626;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
 }
 
-.accept-btn {
-  background: #0b63f6;
+.btn-decline:hover { background: #fff1f2; }
+
+.btn-accept {
+  height: 48px;
+  flex: 1;
+  background: #0526ff;
   color: white;
   border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
 }
 
-.accept-btn:hover {
-  background: #004fd1;
+.btn-accept:hover { background: #0318c4; }
+
+.btn-upload {
+  height: 48px;
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0 22px;
+  transition: background 0.15s;
 }
 
-.decline-btn:hover {
-  background: #fff1f2;
-}
-
-.small-note {
-  text-align: center;
-  color: #64748b;
-  font-size: 17px;
-  margin-top: 22px;
-}
+.btn-upload:hover { background: #e2e8f0; }
 
 /* LIST */
 .reports-list {
@@ -735,16 +733,12 @@ body {
     width: 100%;
   }
 
-  .info-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .report-body {
+  .detail-body-grid {
     grid-template-columns: 1fr;
   }
 
-  .action-buttons {
-    grid-template-columns: 1fr;
+  .actions-bar {
+    flex-wrap: wrap;
   }
 
   .upload-image-layout {
@@ -757,14 +751,13 @@ body {
     padding: 24px 18px;
   }
 
-  .info-grid {
-    grid-template-columns: 1fr;
+  .pills-row {
+    gap: 6px;
   }
 
-  .report-top {
+  .status-panel-bar {
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
   }
 
   .upload-actions {
@@ -786,60 +779,44 @@ body {
   }
 
 }
-.status-panel {
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 20px;
-  margin: 24px 0 28px;
-  align-items: start;
-}
-
-.status-update-box,
-#statusHistoryBox {
-  margin-top: 24px;
-}
-
-.status-update-box h3,
-#statusHistoryBox h3 {
-  font-size: 20px;
-  margin-bottom: 14px;
-  color: #0f172a;
-}
-
 .status-controls {
   display: flex;
   gap: 10px;
 }
 
 .status-controls select {
-  height: 44px;
+  height: 40px;
   flex: 1;
-  border: 1px solid #cbd5e1;
+  border: 1px solid #e2e8f0;
   border-radius: 8px;
   padding: 0 12px;
-  font-size: 16px;
+  font-size: 14px;
+  font-family: inherit;
+  background: white;
+  color: #334155;
+  min-width: 160px;
 }
 
 .status-controls button {
-  height: 44px;
+  height: 40px;
   border: none;
   border-radius: 8px;
-  background: #0b63f6;
+  background: #0526ff;
   color: white;
   padding: 0 18px;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
 }
 
 .history-item {
   background: #f8fafc;
-  border: 1px solid #dbe2ea;
-  border-right: 5px solid #0b63f6;
+  border: 1px solid #e5e7eb;
   border-radius: 10px;
-  padding: 14px 18px;
-  margin-bottom: 12px;
+  padding: 12px 16px;
+  margin-bottom: 10px;
   line-height: 1.7;
+  font-size: 14px;
 }
 .filters-card {
   background: white;
@@ -1013,118 +990,63 @@ body {
       <section id="detailsView" class="hidden">
         <a class="back-link" onclick="showList()">← Back to All Reports</a>
 
-        <h1 class="page-title">Report Details</h1>
-
-        <div class="report-top">
-          <div class="report-title-group">
-            <span id="detailPriority" class="priority high">High Priority</span>
-            <span id="detailCategory" class="report-title">Road Damage</span>
-          </div>
-
-          <span id="detailStatus" class="status-pill">New</span>
+        <!-- Report header card -->
+        <div class="report-header">
+          <div class="report-header-title" id="detailCategory">Road Damage</div>
+          <div class="report-header-meta"><span id="detailId">RPT-42</span> · <span id="detailDate">Reported recently</span></div>
         </div>
 
-
-<div class="status-update-box hidden" id="statusPanel">    <h3>Update Report Status</h3>
-
-    <div class="status-controls">
-      <select id="statusUpdateSelect">
-        <option value="Open">Open</option>
-        <option value="In Treatment">In Treatment</option>
-        <option value="Completed">Completed</option>
-      </select>
-
-      <button onclick="updateReportStatus()">Update Status</button>
-    </div>
-  </div>
-
-
-</div>
-
-  
-<div id="statusHistoryBox"></div>
-
-        <div id="detailDate" class="report-date">Reported recently</div>
-
-        <div class="details-card">
-
-          <div class="info-grid">
-            <div class="info-item">
-              <i data-lucide="map-pin"></i>
-              <div>
-                <div class="info-label">Location</div>
-                <div class="info-text" id="detailLocation">-</div>
-              </div>
-            </div>
-
-            <div class="info-item">
-              <i data-lucide="user-round"></i>
-              <div>
-                <div class="info-label">Reported By</div>
-                <div class="info-text" id="detailCustomer">-</div>
-              </div>
-            </div>
-
-            <div class="info-item">
-              <i data-lucide="badge"></i>
-              <div>
-                <div class="info-label">Report ID</div>
-                <div class="info-text" id="detailId">-</div>
-              </div>
-            </div>
-
-            <div class="info-item">
-              <i data-lucide="triangle-alert"></i>
-              <div>
-                <div class="info-label">Category</div>
-                <div class="info-text" id="detailCategoryInfo">-</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="report-body">
-            <div>
-              <div class="section-title">
-                <i data-lucide="clipboard-list"></i>
-                <span>Description</span>
-              </div>
-
-              <div class="description" id="detailDescription">-</div>
-
-              <div class="section-title">
-                <i data-lucide="image"></i>
-                <span>Photos</span>
-              </div>
-
-              <div id="photoBox"></div>
-            </div>
-
-            <div>
-              <div class="section-title">
-                <i data-lucide="map"></i>
-                <span>Location on Map</span>
-              </div>
-
-              <div id="map"></div>
-            </div>
-          </div>
-
-          <div class="actions-line">
-            <div class="action-buttons">
-              <button class="decline-btn" onclick="declineReport()">× Decline Report</button>
-              <button class="accept-btn" onclick="acceptCurrentReport()">✓ Accept Report</button>
-            </div>
-
-            <button class="go-update-btn" onclick="openUploadImagePage()">
-              Upload Image
-            </button>
-
-            <div class="small-note">
-              You can review this report again in the 'All Reports' section.
-            </div>
-          </div>
-
+        <!-- Pills row -->
+        <div class="pills-row">
+          <span id="detailStatus" class="pill pill-status-open">● Open</span>
+          <span id="detailPriority" class="pill pill-priority-high">⚠ High Priority</span>
+          <span id="detailLocationPill" class="pill pill-info">📍 —</span>
+          <span id="detailCustomerPill" class="pill pill-info">👤 —</span>
+          <span id="detailCategoryPill" class="pill pill-info">🏷 —</span>
         </div>
+
+        <!-- Status update panel -->
+        <div class="status-panel-bar hidden" id="statusPanel">
+          <div class="status-panel-label">Update Report Status</div>
+          <div class="status-controls">
+            <select id="statusUpdateSelect">
+              <option value="Open">Open</option>
+              <option value="In Treatment">In Treatment</option>
+              <option value="Completed">Completed</option>
+            </select>
+            <button onclick="updateReportStatus()">Update</button>
+          </div>
+        </div>
+
+        <div id="statusHistoryBox"></div>
+
+        <!-- Body grid -->
+        <div class="detail-body-grid">
+          <div style="display:flex;flex-direction:column;gap:16px;">
+            <div class="detail-section-card">
+              <div class="detail-section-header"><div class="detail-dot"></div> Description</div>
+              <div class="detail-section-body">
+                <div class="description" id="detailDescription">-</div>
+              </div>
+            </div>
+            <div class="detail-section-card">
+              <div class="detail-section-header"><div class="detail-dot"></div> Photos</div>
+              <div class="detail-section-body" id="photoBox"></div>
+            </div>
+          </div>
+          <div class="detail-section-card detail-map-card">
+            <div class="detail-section-header"><div class="detail-dot"></div> Location on Map</div>
+            <div id="map"></div>
+          </div>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="actions-bar">
+          <button class="btn-decline" onclick="declineReport()">× Decline Report</button>
+          <button class="btn-accept" onclick="acceptCurrentReport()">✓ Accept Report</button>
+          <button class="btn-upload" onclick="openUploadImagePage()">⬆ Upload Image</button>
+        </div>
+
       </section>
 
       <!-- UPLOAD IMAGE VIEW -->
@@ -1256,10 +1178,16 @@ function getPriorityText(priority) {
 }
 
 function getPriorityClass(priority) {
-  if (priority === "גבוהה") return "priority high";
-  if (priority === "בינונית") return "priority medium";
-  if (priority === "נמוכה") return "priority low";
-  return "priority medium";
+  if (priority === "גבוהה") return "pill pill-priority-high";
+  if (priority === "בינונית") return "pill pill-priority-medium";
+  if (priority === "נמוכה") return "pill pill-priority-low";
+  return "pill pill-priority-medium";
+}
+
+function getStatusPillClass(status) {
+  if (status === "In Treatment") return "pill pill-status-treatment";
+  if (status === "Completed") return "pill pill-status-completed";
+  return "pill pill-status-open";
 }
 
 async function loadOpenReports() {
@@ -1446,25 +1374,26 @@ if (
     document.getElementById("uploadImageView").classList.add("hidden");
     document.getElementById("detailsView").classList.remove("hidden");
 
+    const statusText = currentReport.status === "In Treatment" ? "In Treatment" :
+      currentReport.status === "Completed" ? "Completed" : "Open";
+
     document.getElementById("detailPriority").className = getPriorityClass(currentReport.priority);
-    document.getElementById("detailPriority").innerText = getPriorityText(currentReport.priority);
+    document.getElementById("detailPriority").innerText = "⚠ " + getPriorityText(currentReport.priority);
+
+    document.getElementById("detailStatus").className = getStatusPillClass(currentReport.status);
+    document.getElementById("detailStatus").innerText = "● " + statusText;
 
     document.getElementById("detailCategory").innerText = currentReport.category || "-";
-    document.getElementById("detailCategoryInfo").innerText = currentReport.category || "-";
 
-    document.getElementById("detailStatus").innerText =
-  currentReport.status === "In Treatment" ? "In Treatment" :
-  currentReport.status === "Completed" ? "Completed" :
-  currentReport.status === "Open" ? "Open" :
-  currentReport.status;
+    document.getElementById("detailCategoryPill").innerText = "🏷 " + (currentReport.category || "-");
 
     document.getElementById("detailDate").innerText = formatDate(currentReport.createdAt);
 
-    document.getElementById("detailLocation").innerHTML =
-      `${currentReport.latitude || "-"}, ${currentReport.longitude || "-"}`;
+    document.getElementById("detailLocationPill").innerText =
+      "📍 " + (currentReport.latitude || "-") + ", " + (currentReport.longitude || "-");
 
-    document.getElementById("detailCustomer").innerHTML =
-      `${currentReport.customerEmail || "-"}<br>${currentReport.phone || ""}`;
+    document.getElementById("detailCustomerPill").innerText =
+      "👤 " + (currentReport.customerEmail || "-");
 
     document.getElementById("detailId").innerText = "RPT-" + currentReport.id;
 
@@ -1503,10 +1432,10 @@ loadStatusHistory(currentReport.id);
 
     document.getElementById("photoBox").innerHTML = photoHtml;
 
-    const acceptButton = document.querySelector(".accept-btn");
+    const acceptButton = document.querySelector(".btn-accept");
 
     if (currentReport.status === "In Treatment") {
-      acceptButton.innerText = "✓ Report already in treatment";
+      acceptButton.innerText = "✓ Already in treatment";
       acceptButton.disabled = true;
       acceptButton.classList.add("accepted-disabled");
     } else {
@@ -1817,7 +1746,6 @@ if (reportId) {
   document.getElementById("detailsView").classList.remove("hidden");
 
   document.getElementById("detailCategory").innerText = "Loading...";
-  document.getElementById("detailCategoryInfo").innerText = "Loading...";
   document.getElementById("detailDescription").innerText = "Loading report details...";
   document.getElementById("detailId").innerText = "RPT-" + reportId;
 
@@ -1861,10 +1789,10 @@ async function updateReportStatus() {
 
   currentReport.status = newStatus;
 
-  document.getElementById("detailStatus").innerText =
-  newStatus === "In Treatment" ? "In Treatment" :
-  newStatus === "Completed" ? "Completed" :
-  "Open";
+  const updatedStatusText = newStatus === "In Treatment" ? "In Treatment" :
+    newStatus === "Completed" ? "Completed" : "Open";
+  document.getElementById("detailStatus").className = getStatusPillClass(newStatus);
+  document.getElementById("detailStatus").innerText = "● " + updatedStatusText;
 
   loadStatusHistory(currentReport.id);
 }
