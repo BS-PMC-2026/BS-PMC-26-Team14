@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -605,7 +605,7 @@ async function loadAssignedReports() {
     const savedWorkerEmail = localStorage.getItem("workerEmail");
 
     if (!savedWorkerEmail) {
-      alert("יש להתחבר מחדש למערכת");
+      alert("Please log in again");
       window.location.href = "../LogIn/worker-login.html";
       return;
     }
@@ -635,7 +635,7 @@ async function loadAssignedReports() {
 
     reportsContainer.innerHTML = `
       <div class="error-message">
-        אירעה שגיאה בטעינת הקריאות. ודא שהשרת עובד ושה־API קיים.
+        An error occurred while loading reports. Make sure the server is running.
       </div>
     `;
 
@@ -713,7 +713,7 @@ function renderReports(reports) {
   if (!reports || reports.length === 0) {
     reportsContainer.innerHTML = `
       <div class="empty-message">
-        אין קריאות שהוקצו לך כרגע.
+        No reports assigned to you currently.
       </div>
     `;
     return;
@@ -782,15 +782,15 @@ function updateSummary(reports) {
 function getStatusText(status) {
   switch (status) {
     case "Open":
-      return "פתוח";
+      return "Open";
     case "InProgress":
-      return "בטיפול";
+      return "In Treatment";
     case "Done":
-      return "טופל";
+      return "Handled";
     case "Closed":
-      return "סגור";
+      return "Closed";
     default:
-      return status || "לא ידוע";
+      return status || "Unknown";
   }
 }
 
@@ -861,7 +861,7 @@ function resetFilters() {
 
 function openReportDetails(reportId) {
   if (!reportId || reportId === "undefined") {
-    alert("לא נמצא מזהה לקריאה");
+    alert("Report ID not found");
     return;
   }
 

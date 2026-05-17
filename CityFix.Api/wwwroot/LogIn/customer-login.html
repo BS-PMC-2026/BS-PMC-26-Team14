@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>התחברות תושב - CityFix</title>
+  <title>Citizen Login - CityFix</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -247,14 +247,14 @@
       </svg>
     </div>
 
-    <h1 class="title">התחברות תושב</h1>
-    <p class="subtitle">דווח על בעיות ועקוב אחר הטיפול</p>
+    <h1 class="title">Citizen Login</h1>
+    <p class="subtitle">Report issues and track treatment progress</p>
 
     <form id="customerLoginForm">
       <div class="form-group">
-        <label for="email">אימייל</label>
+        <label for="email">Email</label>
         <div class="input-wrap">
-          <input type="email" id="email" placeholder="customer@example.com" required />
+          <input type="email" id="email" placeholder="citizen@example.com" required />
           <svg viewBox="0 0 24 24">
             <path d="M4 6h16v12H4z"></path>
             <path d="m4 7 8 6 8-6"></path>
@@ -263,7 +263,7 @@
       </div>
 
       <div class="form-group">
-        <label for="password">סיסמה</label>
+        <label for="password">Password</label>
         <div class="input-wrap">
           <input type="password" id="password" placeholder="••••••••" required />
           <svg viewBox="0 0 24 24">
@@ -274,22 +274,22 @@
       </div>
 
       <div class="options-row">
-        <a href="#" class="forgot-link">שכחתי סיסמה</a>
+        <a href="forgot-password.html?return=customer-login.html" class="forgot-link">Forgot password</a>
 
         <label class="remember">
           <input type="checkbox" id="rememberMe" />
-          <span>זכור אותי</span>
+          <span>Remember me</span>
         </label>
       </div>
 
-      <button type="submit" class="submit-btn">התחבר</button>
+      <button type="submit" class="submit-btn">Login</button>
 
       <div id="messageBox" class="message-box"></div>
     </form>
 
     <div class="bottom-links">
-      <div>עדיין לא רשום? <a class="signup-link" href="../signUp/citizen-signup.html">הרשם עכשיו</a></div>
-      <div><a class="back-link" href="login.html">← חזרה לבחירת סוג משתמש</a></div>
+      <div>Not registered yet? <a class="signup-link" href="../signUp/citizen-signup.html">Sign Up Now</a></div>
+      <div><a class="back-link" href="login.html">← Back to User Type Selection</a></div>
     </div>
   </div>
 
@@ -328,7 +328,7 @@
  if (!response.ok) {
   messageBox.style.display = "block";
   messageBox.className = "message-box error";
-  messageBox.textContent = result.message || "שגיאה בהתחברות";
+  messageBox.textContent = result.message || "Login error";
   return;
 }
 
@@ -340,7 +340,7 @@ localStorage.setItem("userAddress", result.address || "");
 
 messageBox.style.display = "block";
 messageBox.className = "message-box success";
-messageBox.textContent = result.message || "התחברת בהצלחה";
+messageBox.textContent = result.message || "Logged in successfully";
 
 setTimeout(() => {
 window.location.href = "../citizen/create-report.html?v=" + Date.now();}, 1000);
@@ -348,7 +348,7 @@ window.location.href = "../citizen/create-report.html?v=" + Date.now();}, 1000);
     } catch (error) {
       messageBox.style.display = "block";
       messageBox.className = "message-box error";
-      messageBox.textContent = "בעיה בחיבור לשרת";
+      messageBox.textContent = "Connection error with server";
       console.error(error);
     }
   });

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>דף בית - תושב</title>
+<title>Home - Citizen</title>
 
 <style>
 body {
@@ -85,18 +85,18 @@ h1 {
   <div class="logo">CityFix</div>
 
   <div class="top-buttons">
-    <button class="btn profile-btn" onclick="goToProfile()">פרופיל</button>
-    <button class="btn logout-btn" onclick="logout()">התנתקות</button>
+    <button class="btn profile-btn" onclick="goToProfile()">Profile</button>
+    <button class="btn logout-btn" onclick="logout()">Logout</button>
   </div>
 </div>
 
 <div class="container">
-  <h1 id="welcomeText">ברוך הבא 🎉</h1>
+  <h1 id="welcomeText">Welcome 🎉</h1>
 
   <div class="info-box">
-    <p><b>שם משתמש:</b> <span id="userName">-</span></p>
-    <p><b>אימייל:</b> <span id="userEmail">-</span></p>
-    <p><b>סוג משתמש:</b> <span id="userRole">-</span></p>
+    <p><b>Username:</b> <span id="userName">-</span></p>
+    <p><b>Email:</b> <span id="userEmail">-</span></p>
+    <p><b>User Type:</b> <span id="userRole">-</span></p>
   </div>
 </div>
 
@@ -114,12 +114,12 @@ const fullName = localStorage.getItem("userFullName");
 const email = localStorage.getItem("userEmail");
 const role = localStorage.getItem("userRole");
 
-document.getElementById("userName").innerText = fullName || "לא זמין";
-document.getElementById("userEmail").innerText = email || "לא זמין";
+document.getElementById("userName").innerText = fullName || "N/A";
+document.getElementById("userEmail").innerText = email || "N/A";
 document.getElementById("userRole").innerText = role || "Customer";
 
 document.getElementById("welcomeText").innerText =
-  "ברוך הבא, " + (fullName || "משתמש") + " 👋";
+  "Welcome, " + (fullName || "User") + " 👋";
 </script>
 
 </body>

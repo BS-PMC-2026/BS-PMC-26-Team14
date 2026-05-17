@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>פרופיל עובד - CityFix</title>
+  <title>Worker Profile - CityFix</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -233,12 +233,12 @@
 </head>
 <body>
 
-  <a class="back-link" href="../homepage/worker-home.html">← חזרה לדף הבית</a>
+  <a class="back-link" href="../homepage/worker-home.html">← Back to Home</a>
 
   <div class="card">
     <div class="header">
-      <h1>עריכת פרופיל עובד</h1>
-      <p>עדכן את הפרטים האישיים שלך</p>
+      <h1>Edit Worker Profile</h1>
+      <p>Update your personal details</p>
     </div>
 
     <div class="content">
@@ -250,15 +250,15 @@
           </svg>
           <button class="camera-btn" type="button">📷</button>
         </div>
-        <div class="avatar-note">לחץ להעלאת תמונת פרופיל</div>
+        <div class="avatar-note">Click to upload profile picture</div>
       </div>
 
       <form id="workerProfileForm">
         <div class="form-grid">
           <div class="form-group full">
-            <label>שם מלא *</label>
+            <label>Full Name *</label>
             <div class="input-wrap">
-              <input type="text" id="fullName" placeholder="הכנס שם מלא">
+              <input type="text" id="fullName" placeholder="Enter full name">
               <svg viewBox="0 0 24 24">
                 <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
                 <path d="M4 20a8 8 0 0 1 16 0"/>
@@ -267,7 +267,7 @@
           </div>
 
           <div class="form-group full">
-            <label>אימייל *</label>
+            <label>Email *</label>
             <div class="input-wrap">
               <input type="email" id="email" placeholder="name@example.com" readonly>
               <svg viewBox="0 0 24 24">
@@ -278,7 +278,7 @@
           </div>
 
           <div class="form-group">
-            <label>טלפון *</label>
+            <label>Phone *</label>
             <div class="input-wrap">
               <input type="text" id="phone" placeholder="050-1234567">
               <svg viewBox="0 0 24 24">
@@ -288,10 +288,10 @@
           </div>
 
          <div class="form-group">
-  <label>עירייה *</label>
+  <label>Municipality *</label>
   <div class="input-wrap">
     <select id="municipality" required>
-      <option value="">בחר רשות מקומית</option>
+      <option value="">Select Municipality</option>
     </select>
     <svg viewBox="0 0 24 24">
       <path d="M7 10l5 5 5-5"></path>
@@ -300,7 +300,7 @@
 </div>
 
           <div class="form-group full">
-  <label>מחלקה *</label>
+  <label>Department *</label>
   <div class="input-wrap">
     <select id="department">
 
@@ -313,12 +313,12 @@
 
         <hr class="divider">
 
-        <div class="section-title">שינוי סיסמה (אופציונלי)</div>
-        <div class="password-note">השאר ריק אם אינך רוצה לשנות סיסמה</div>
+        <div class="section-title">Change Password (Optional)</div>
+        <div class="password-note">Leave empty if you don't want to change your password</div>
 
         <div class="form-grid">
           <div class="form-group full">
-            <label>סיסמה נוכחית</label>
+            <label>Current Password</label>
             <div class="input-wrap">
               <input type="password" id="currentPassword" placeholder="••••••••">
               <svg viewBox="0 0 24 24">
@@ -329,7 +329,7 @@
           </div>
 
           <div class="form-group">
-            <label>סיסמה חדשה</label>
+            <label>New Password</label>
             <div class="input-wrap">
               <input type="password" id="newPassword" placeholder="••••••••">
               <svg viewBox="0 0 24 24">
@@ -340,7 +340,7 @@
           </div>
 
           <div class="form-group">
-            <label>אימות סיסמה</label>
+            <label>Confirm Password</label>
             <div class="input-wrap">
               <input type="password" id="confirmPassword" placeholder="••••••••">
               <svg viewBox="0 0 24 24">
@@ -352,8 +352,8 @@
         </div>
 
         <div class="actions">
-          <button type="submit" class="btn save-btn">שמור שינויים</button>
-          <button type="button" class="btn cancel-btn" onclick="goBack()">ביטול</button>
+          <button type="submit" class="btn save-btn">Save Changes</button>
+          <button type="button" class="btn cancel-btn" onclick="goBack()">Cancel</button>
         </div>
       </form>
     </div>
@@ -363,7 +363,6 @@
   <script>
   const email = localStorage.getItem("workerEmail");
 
-  // 🔹 רשימת ערים (כמו ב־SignUp)
   const municipalities = [
     "אבו גוש","אבו סנאן","אבן יהודה","אום אל-פחם","אופקים","אור יהודה","אור עקיבא",
     "אילת","אלעד","אריאל","אשדוד","אשקלון","באקה אל-גרבייה","באר יעקב","באר שבע",
@@ -377,19 +376,18 @@
   ];
 
   const departments = [
-  "כבישים",
-  "תאורה",
-  "תברואה",
-  "גינון",
-  "מים וביוב",
-  "פיקוח עירוני",
-  "תחזוקה כללית"
+  "Roads",
+  "Lighting",
+  "Sanitation",
+  "Gardening",
+  "Water and Sewage",
+  "Urban Inspection",
+  "General Maintenance"
 ];
 
-  // 🔹 מילוי select של עיריות
   const municipalitySelect = document.getElementById("municipality");
   municipalities
-    .sort((a, b) => a.localeCompare(b, "he"))
+    .sort((a, b) => a.localeCompare(b))
     .forEach(name => {
       const option = document.createElement("option");
       option.value = name;
@@ -397,7 +395,6 @@
       municipalitySelect.appendChild(option);
     });
 
-  // 🔹 מילוי select של מחלקות
   const departmentSelect = document.getElementById("department");
   departments.forEach(dep => {
     const option = document.createElement("option");
@@ -406,10 +403,9 @@
     departmentSelect.appendChild(option);
   });
 
-  // 🔹 טעינת פרופיל מהשרת
   async function loadWorkerProfile() {
     if (!email) {
-      alert("לא נמצא אימייל עובד");
+      alert("Worker email not found");
       return;
     }
 
@@ -418,7 +414,7 @@
       const result = await response.json();
 
       if (!response.ok) {
-        alert(result.message || "שגיאה בטעינת פרטי העובד");
+        alert(result.message || "Error loading worker details");
         return;
       }
 
@@ -426,7 +422,6 @@
       document.getElementById("email").value = result.email || "";
       document.getElementById("phone").value = result.phone || "";
 
-      // 🔥 חשוב: זה אחרי יצירת ה-options
       document.getElementById("municipality").value = result.municipality || "";
       document.getElementById("department").value = result.department || "";
 
@@ -438,7 +433,7 @@
       localStorage.setItem("workerRole", "Worker");
 
     } catch (error) {
-      alert("שגיאה בחיבור לשרת");
+      alert("Connection error with server");
       console.error(error);
     }
   }
@@ -462,7 +457,7 @@
     const confirmPasswordValue = document.getElementById("confirmPassword").value;
 
     if (newPasswordValue && newPasswordValue !== confirmPasswordValue) {
-      alert("אימות הסיסמה אינו תואם");
+      alert("Password confirmation does not match");
       return;
     }
 
@@ -488,7 +483,7 @@
       const result = await response.json();
 
       if (!response.ok) {
-        alert(result.message || "שגיאה בעדכון פרופיל עובד");
+        alert(result.message || "Error updating worker profile");
         return;
       }
 
@@ -498,11 +493,11 @@
       localStorage.setItem("workerMunicipality", result.municipality || "");
       localStorage.setItem("workerDepartment", result.department || "");
 
-      alert(result.message || "פרופיל העובד עודכן בהצלחה");
+      alert(result.message || "Worker profile updated successfully");
       window.location.href = "../homepage/worker-home.html";
 
     } catch (error) {
-      alert("שגיאה בחיבור לשרת");
+      alert("Connection error with server");
       console.error(error);
     }
   });

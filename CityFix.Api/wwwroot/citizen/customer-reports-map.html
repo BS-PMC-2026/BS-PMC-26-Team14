@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
 <script src="https://unpkg.com/lucide@latest"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>מפת דיווחים - CityFix</title>
+<title>Reports Map - CityFix</title>
 
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -16,10 +16,9 @@ body { font-family: Arial, sans-serif; background: #f8fafc; color: #111827; }
 .sidebar {
   width: 260px;
   background: #fff;
-  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
   min-height: 100vh;
   padding: 0;
-  direction: rtl;
   position: relative;
 }
 
@@ -60,7 +59,7 @@ body { font-family: Arial, sans-serif; background: #f8fafc; color: #111827; }
 .menu a.active {
   background: #eaf2ff;
   color: #0b63e5;
-  border-left: 4px solid #0b63e5;
+  border-right: 4px solid #0b63e5;
   font-weight: 700;
 }
 
@@ -157,7 +156,7 @@ h1 { font-size: 28px; margin-bottom: 20px; }
   display: flex;
   align-items: center;
   gap: 18px;
-  margin-right: auto;
+  margin-left: auto;
 }
 
 .legend-item {
@@ -232,7 +231,7 @@ h1 { font-size: 28px; margin-bottom: 20px; }
 .map-wrap { position: relative; flex: 1; display: flex; flex-direction: column; }
 
 /* POPUP */
-.leaflet-popup-content { direction: rtl; text-align: right; min-width: 180px; }
+.leaflet-popup-content { direction: ltr; text-align: left; min-width: 180px; }
 .popup-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: #111827; }
 .popup-badge {
   display: inline-block;
@@ -270,34 +269,34 @@ h1 { font-size: 28px; margin-bottom: 20px; }
   <div class="menu">
     <div class="menu-title">
       <i data-lucide="user"></i>
-      <span>אזור לקוח</span>
+      <span>Customer Area</span>
     </div>
 
     <a href="create-report.html">
       <i data-lucide="file-text"></i>
-      <span>יצירת דיווח</span>
+      <span>Create Report</span>
     </a>
 
     <a href="#">
       <i data-lucide="clipboard-list"></i>
-      <span>הדיווחים שלי</span>
+      <span>My Reports</span>
     </a>
 
     <a class="active" href="customer-reports-map.html">
       <i data-lucide="map"></i>
-      <span>מפת דיווחים</span>
+      <span>Reports Map</span>
     </a>
 
     <a href="../profile/customer-profile.html">
       <i data-lucide="user-circle"></i>
-      <span>פרופיל</span>
+      <span>Profile</span>
     </a>
   </div>
 
   <div class="menu logout">
     <a href="#" onclick="logout()">
       <i data-lucide="log-out"></i>
-      <span>התנתקות</span>
+      <span>Logout</span>
     </a>
   </div>
 </aside>
@@ -312,27 +311,27 @@ h1 { font-size: 28px; margin-bottom: 20px; }
   </div>
 
   <div class="content">
-    <h1>מפת דיווחים</h1>
+    <h1>Reports Map</h1>
 
     <!-- STATS -->
     <div class="stats-bar">
       <div class="stat-chip">
-        <span>סה"כ</span>
+        <span>Total</span>
         <span class="count count-total" id="statTotal">0</span>
       </div>
       <div class="stat-chip">
         <span class="legend-dot dot-open" style="width:12px;height:12px;border-radius:50%;display:inline-block;"></span>
-        <span>פתוח</span>
+        <span>Open</span>
         <span class="count count-open" id="statOpen">0</span>
       </div>
       <div class="stat-chip">
         <span class="legend-dot dot-treatment" style="width:12px;height:12px;border-radius:50%;display:inline-block;"></span>
-        <span>בטיפול</span>
+        <span>In Treatment</span>
         <span class="count count-treatment" id="statTreatment">0</span>
       </div>
       <div class="stat-chip">
         <span class="legend-dot dot-completed" style="width:12px;height:12px;border-radius:50%;display:inline-block;"></span>
-        <span>הושלם</span>
+        <span>Completed</span>
         <span class="count count-completed" id="statCompleted">0</span>
       </div>
     </div>
@@ -340,43 +339,43 @@ h1 { font-size: 28px; margin-bottom: 20px; }
     <!-- FILTER BAR -->
     <div class="filter-bar">
       <div class="filter-group">
-        <label for="filterStatus">סטטוס:</label>
+        <label for="filterStatus">Status:</label>
         <select id="filterStatus" onchange="applyFilters()">
-          <option value="">הכל</option>
-          <option value="Open">פתוח</option>
-          <option value="In Treatment">בטיפול</option>
-          <option value="Completed">הושלם</option>
+          <option value="">All</option>
+          <option value="Open">Open</option>
+          <option value="In Treatment">In Treatment</option>
+          <option value="Completed">Completed</option>
         </select>
       </div>
 
       <div class="filter-group">
-        <label for="filterFrom">מתאריך:</label>
+        <label for="filterFrom">From Date:</label>
         <input type="date" id="filterFrom" onchange="applyFilters()">
       </div>
 
       <div class="filter-group">
-        <label for="filterTo">עד תאריך:</label>
+        <label for="filterTo">To Date:</label>
         <input type="date" id="filterTo" onchange="applyFilters()">
       </div>
 
-      <button class="btn-reset" onclick="resetFilters()">איפוס</button>
+      <button class="btn-reset" onclick="resetFilters()">Reset</button>
 
-      <div class="legend" style="margin-right:auto;">
+      <div class="legend" style="margin-left:auto;">
         <div class="legend-item">
-          <span class="legend-dot dot-open"></span> פתוח
+          <span class="legend-dot dot-open"></span> Open
         </div>
         <div class="legend-item">
-          <span class="legend-dot dot-treatment"></span> בטיפול
+          <span class="legend-dot dot-treatment"></span> In Treatment
         </div>
         <div class="legend-item">
-          <span class="legend-dot dot-completed"></span> הושלם
+          <span class="legend-dot dot-completed"></span> Completed
         </div>
       </div>
     </div>
 
     <!-- MAP -->
     <div class="map-wrap">
-      <div id="loadingOverlay" class="loading-overlay">טוען דיווחים...</div>
+      <div id="loadingOverlay" class="loading-overlay">Loading reports...</div>
       <div id="map"></div>
     </div>
   </div>
@@ -386,7 +385,7 @@ h1 { font-size: 28px; margin-bottom: 20px; }
 <script>
 lucide.createIcons();
 
-const userName = localStorage.getItem("userFullName") || "משתמש";
+const userName = localStorage.getItem("userFullName") || "User";
 const userEmail = localStorage.getItem("userEmail") || "";
 document.getElementById("userName").innerText = userName;
 
@@ -430,9 +429,9 @@ const icons = {
 };
 
 const statusLabel = {
-  "Open":         "פתוח",
-  "In Treatment": "בטיפול",
-  "Completed":    "הושלם"
+  "Open":         "Open",
+  "In Treatment": "In Treatment",
+  "Completed":    "Completed"
 };
 
 const badgeClass = {
@@ -443,7 +442,7 @@ const badgeClass = {
 
 function formatDate(iso) {
   const d = new Date(iso);
-  return d.toLocaleDateString("he-IL", { year: "numeric", month: "2-digit", day: "2-digit" });
+  return d.toLocaleDateString("en-US", { year: "numeric", month: "2-digit", day: "2-digit" });
 }
 
 // All reports loaded from server
@@ -529,12 +528,12 @@ async function loadReports() {
   const start = Date.now();
   try {
     const res = await fetch("/api/Auth/reports-map");
-    if (!res.ok) throw new Error("שגיאה בטעינת הדיווחים");
+    if (!res.ok) throw new Error("Error loading reports");
     allReports = await res.json();
     renderMarkers(allReports);
   } catch (e) {
     console.error(e);
-    document.getElementById("loadingOverlay").innerText = "שגיאה בטעינת הדיווחים. נסה לרענן.";
+    document.getElementById("loadingOverlay").innerText = "Error loading reports. Please refresh.";
     return;
   }
   const elapsed = Date.now() - start;
