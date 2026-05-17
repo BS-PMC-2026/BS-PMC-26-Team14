@@ -308,6 +308,12 @@ textarea{height:110px;resize:none}
   background: #084fbb;
 }
 
+.detect-location-btn i {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
 .location-detected-box {
   max-width: 520px;
   margin: 0 auto 18px;
@@ -508,7 +514,7 @@ textarea{height:110px;resize:none}
   </div>
 
   <button type="button" class="detect-location-btn" onclick="detectCurrentLocation()">
-    <span>📍</span>
+    <i data-lucide="locate"></i>
     Detect My Location
   </button>
 </div>

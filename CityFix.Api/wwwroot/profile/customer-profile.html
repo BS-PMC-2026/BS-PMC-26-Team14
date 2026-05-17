@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
     * {
@@ -84,7 +85,7 @@
       margin-bottom: 10px;
     }
 
-    .avatar svg {
+    .avatar > svg {
       width: 54px;
       height: 54px;
       stroke: #2563eb;
@@ -106,6 +107,14 @@
       color: white;
       font-size: 16px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .camera-btn i {
+      width: 18px;
+      height: 18px;
     }
 
     .avatar-note {
@@ -295,7 +304,7 @@
             <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
             <path d="M4 20a8 8 0 0 1 16 0"/>
           </svg>
-          <button class="camera-btn" type="button">📷</button>
+          <button class="camera-btn" type="button"><i data-lucide="plus"></i></button>
         </div>
         <div class="avatar-note">Click to upload profile picture</div>
       </div>
@@ -529,6 +538,8 @@ document.getElementById("address").value = address || "";
       console.error(error);
     }
   });
+
+  lucide.createIcons();
 </script>
 </body>
 </html>
