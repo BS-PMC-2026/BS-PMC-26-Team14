@@ -170,6 +170,50 @@
       pointer-events: none;
     }
 
+    .input-wrap.password-wrap input {
+      padding-right: 48px;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border: none;
+      border-radius: 9px;
+      background: #eff6ff;
+      color: #2563eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: 0.2s ease;
+      z-index: 3;
+    }
+
+    .password-toggle:hover {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 6px 14px rgba(37, 99, 235, 0.22);
+    }
+
+    .password-toggle svg {
+      position: static !important;
+      left: auto !important;
+      top: auto !important;
+      transform: none !important;
+      width: 17px !important;
+      height: 17px !important;
+      stroke: currentColor !important;
+      fill: none !important;
+      stroke-width: 2 !important;
+      stroke-linecap: round !important;
+      stroke-linejoin: round !important;
+      pointer-events: none !important;
+    }
+
     .divider {
       margin: 26px 0 20px;
       border: none;
@@ -310,34 +354,76 @@
         <div class="form-grid">
           <div class="form-group full">
             <label>Current Password</label>
-            <div class="input-wrap">
+            <div class="input-wrap password-wrap">
               <input type="password" id="currentPassword" placeholder="••••••••">
               <svg viewBox="0 0 24 24">
                 <rect x="5" y="11" width="14" height="10" rx="2"></rect>
                 <path d="M8 11V8a4 4 0 1 1 8 0v3"></path>
               </svg>
+
+              <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
+                <svg class="eye-open" viewBox="0 0 24 24">
+                  <path d="M1.5 12s4-7 10.5-7 10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+
+                <svg class="eye-off" viewBox="0 0 24 24" style="display:none">
+                  <path d="M17.94 17.94A10.8 10.8 0 0 1 12 19C5.5 19 1.5 12 1.5 12a19.1 19.1 0 0 1 5.06-5.94"></path>
+                  <path d="M10.58 10.58A2 2 0 0 0 13.42 13.42"></path>
+                  <path d="M9.9 4.24A10.7 10.7 0 0 1 12 4.99c6.5 0 10.5 7 10.5 7a19.4 19.4 0 0 1-2.44 3.27"></path>
+                  <path d="M3 3l18 18"></path>
+                </svg>
+              </button>
             </div>
           </div>
 
           <div class="form-group">
             <label>New Password</label>
-            <div class="input-wrap">
+            <div class="input-wrap password-wrap">
               <input type="password" id="newPassword" placeholder="••••••••">
               <svg viewBox="0 0 24 24">
                 <rect x="5" y="11" width="14" height="10" rx="2"></rect>
                 <path d="M8 11V8a4 4 0 1 1 8 0v3"></path>
               </svg>
+
+              <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
+                <svg class="eye-open" viewBox="0 0 24 24">
+                  <path d="M1.5 12s4-7 10.5-7 10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+
+                <svg class="eye-off" viewBox="0 0 24 24" style="display:none">
+                  <path d="M17.94 17.94A10.8 10.8 0 0 1 12 19C5.5 19 1.5 12 1.5 12a19.1 19.1 0 0 1 5.06-5.94"></path>
+                  <path d="M10.58 10.58A2 2 0 0 0 13.42 13.42"></path>
+                  <path d="M9.9 4.24A10.7 10.7 0 0 1 12 4.99c6.5 0 10.5 7 10.5 7a19.4 19.4 0 0 1-2.44 3.27"></path>
+                  <path d="M3 3l18 18"></path>
+                </svg>
+              </button>
             </div>
           </div>
 
           <div class="form-group">
             <label>Confirm Password</label>
-            <div class="input-wrap">
+            <div class="input-wrap password-wrap">
               <input type="password" id="confirmPassword" placeholder="••••••••">
               <svg viewBox="0 0 24 24">
                 <rect x="5" y="11" width="14" height="10" rx="2"></rect>
                 <path d="M8 11V8a4 4 0 1 1 8 0v3"></path>
               </svg>
+
+              <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
+                <svg class="eye-open" viewBox="0 0 24 24">
+                  <path d="M1.5 12s4-7 10.5-7 10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+
+                <svg class="eye-off" viewBox="0 0 24 24" style="display:none">
+                  <path d="M17.94 17.94A10.8 10.8 0 0 1 12 19C5.5 19 1.5 12 1.5 12a19.1 19.1 0 0 1 5.06-5.94"></path>
+                  <path d="M10.58 10.58A2 2 0 0 0 13.42 13.42"></path>
+                  <path d="M9.9 4.24A10.7 10.7 0 0 1 12 4.99c6.5 0 10.5 7 10.5 7a19.4 19.4 0 0 1-2.44 3.27"></path>
+                  <path d="M3 3l18 18"></path>
+                </svg>
+              </button>
             </div>
           </div>
         </div>
@@ -351,6 +437,29 @@
   </div>
 
   <script>
+  function togglePasswordVisibility(button) {
+    const wrapper = button.closest(".input-wrap");
+    if (!wrapper) return;
+
+    const input = wrapper.querySelector("input");
+    if (!input) return;
+
+    const shouldShow = input.type === "password";
+    input.type = shouldShow ? "text" : "password";
+
+    const eyeOpen = button.querySelector(".eye-open");
+    const eyeOff = button.querySelector(".eye-off");
+
+    if (eyeOpen && eyeOff) {
+      eyeOpen.style.display = shouldShow ? "none" : "block";
+      eyeOff.style.display = shouldShow ? "block" : "none";
+    }
+
+    button.setAttribute(
+      "aria-label",
+      shouldShow ? "Hide password" : "Show password"
+    );
+  }
     
   const fullName = localStorage.getItem("userFullName");
   const email = localStorage.getItem("userEmail");
