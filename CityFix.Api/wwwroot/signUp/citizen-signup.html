@@ -18,9 +18,12 @@
 
     body {
       font-family: 'Heebo', sans-serif;
-      background: linear-gradient(90deg, #eaf8fd 0%, #dff4fb 100%);
       min-height: 100vh;
-      color: #0f172a;
+      color: #111827;
+      background:
+        radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.16), transparent 32%),
+        linear-gradient(135deg, #eef2ff 0%, #f8fafc 45%, #fff7ed 100%);
     }
 
     .page {
@@ -28,21 +31,40 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 30px 16px;
+      padding: 42px 20px;
     }
 
     .card {
       width: 100%;
-      max-width: 760px;
+      max-width: 860px;
       background: #ffffff;
-      border-radius: 18px;
-      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.10);
-      padding: 28px 26px 30px;
+      border-radius: 22px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
+      padding: 42px 48px 38px;
+      position: relative;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 28px;
+      left: 30px;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #0b63f6;
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 800;
+      box-shadow: 0 6px 14px rgba(11, 99, 246, 0.28);
     }
 
     .top-icon {
-      width: 84px;
-      height: 84px;
+      width: 86px;
+      height: 86px;
       border-radius: 50%;
       background: #dbeafe;
       display: flex;
@@ -63,24 +85,23 @@
 
     .title {
       text-align: center;
-      font-size: 34px;
+      font-size: 42px;
       font-weight: 800;
       margin-bottom: 8px;
-      color: #0f172a;
+      color: #111827;
     }
 
     .subtitle {
       text-align: center;
-      color: #475569;
+      color: #64748b;
       font-size: 18px;
-      margin-bottom: 24px;
+      margin-bottom: 34px;
     }
 
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 18px 16px;
-      margin-top: 10px;
+      gap: 18px 18px;
     }
 
     .form-group {
@@ -94,9 +115,9 @@
 
     .form-group label {
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 800;
       margin-bottom: 8px;
-      color: #0f172a;
+      color: #111827;
     }
 
     .input-wrap {
@@ -105,14 +126,20 @@
 
     .input-wrap input {
       width: 100%;
-      height: 48px;
+      height: 52px;
       border: 1px solid #d7dee8;
       border-radius: 12px;
       background: #ffffff;
       font-size: 16px;
-      color: #0f172a;
+      color: #111827;
       outline: none;
-      padding: 0 14px 0 42px;
+      padding: 0 14px 0 44px;
+      transition: 0.2s ease;
+    }
+
+    .input-wrap input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
     }
 
     .input-wrap input::placeholder {
@@ -135,7 +162,7 @@
     }
 
     .checkbox-row {
-      margin-top: 18px;
+      margin-top: 20px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -152,7 +179,7 @@
 
     .checkbox-row a {
       color: #2563eb;
-      font-weight: 700;
+      font-weight: 800;
       text-decoration: none;
     }
 
@@ -162,27 +189,30 @@
 
     .submit-btn {
       width: 100%;
-      margin-top: 20px;
-      height: 50px;
+      margin-top: 22px;
+      height: 54px;
       border: none;
       border-radius: 12px;
       background: #2563eb;
       color: white;
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 800;
       cursor: pointer;
       transition: 0.2s ease;
-      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.25);
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.26);
     }
 
     .submit-btn:hover {
       background: #1d4ed8;
+      transform: translateY(-1px);
     }
 
     .bottom-links {
       text-align: center;
-      margin-top: 22px;
+      margin-top: 24px;
       line-height: 2;
+      color: #64748b;
+      font-size: 15px;
     }
 
     .bottom-links a {
@@ -191,12 +221,17 @@
 
     .login-link {
       color: #2563eb;
-      font-weight: 700;
+      font-weight: 800;
     }
 
     .back-link {
       color: #334155;
-      font-size: 17px;
+      font-size: 16px;
+    }
+
+    .back-link:hover,
+    .login-link:hover {
+      text-decoration: underline;
     }
 
     .success-box {
@@ -210,42 +245,55 @@
       text-align: center;
       line-height: 1.8;
       font-size: 16px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     @media (max-width: 700px) {
+      .page {
+        padding: 28px 14px;
+      }
+
+      .card {
+        padding: 34px 20px 28px;
+      }
+
       .form-grid {
         grid-template-columns: 1fr;
       }
 
       .title {
-        font-size: 28px;
+        font-size: 32px;
       }
 
       .subtitle {
         font-size: 16px;
       }
-
-      .card {
-        padding: 22px 16px 24px;
-      }
     }
   </style>
 </head>
+
 <body>
   <div class="page">
+
     <div class="card">
+
+      <a class="back-btn" href="signup-choice.html">‹</a>
+
       <div class="top-icon">
         <svg viewBox="0 0 24 24">
-          <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
-          <path d="M4 20a8 8 0 0 1 16 0"/>
+          <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path>
+          <path d="M4 20a8 8 0 0 1 16 0"></path>
         </svg>
       </div>
 
       <h1 class="title">Citizen Sign Up</h1>
-      <p class="subtitle">Create a new account and start reporting issues</p>
+
+      <p class="subtitle">
+        Create a new account and start reporting issues
+      </p>
 
       <form id="citizenForm">
+
         <div class="form-grid">
 
           <div class="form-group">
@@ -253,7 +301,7 @@
             <div class="input-wrap">
               <input type="text" placeholder="050-1234567" required>
               <svg viewBox="0 0 24 24">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.46-1.29a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"/>
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.46-1.29a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"></path>
               </svg>
             </div>
           </div>
@@ -263,8 +311,8 @@
             <div class="input-wrap">
               <input type="text" placeholder="John Smith" required>
               <svg viewBox="0 0 24 24">
-                <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
-                <path d="M4 20a8 8 0 0 1 16 0"/>
+                <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path>
+                <path d="M4 20a8 8 0 0 1 16 0"></path>
               </svg>
             </div>
           </div>
@@ -274,8 +322,8 @@
             <div class="input-wrap">
               <input type="email" placeholder="example@email.com" required>
               <svg viewBox="0 0 24 24">
-                <path d="M4 6h16v12H4z"/>
-                <path d="m4 7 8 6 8-6"/>
+                <path d="M4 6h16v12H4z"></path>
+                <path d="m4 7 8 6 8-6"></path>
               </svg>
             </div>
           </div>
@@ -285,8 +333,8 @@
             <div class="input-wrap">
               <input type="text" placeholder="123 Main St, City" required>
               <svg viewBox="0 0 24 24">
-                <path d="M12 21s-6-4.35-6-10a6 6 0 1 1 12 0c0 5.65-6 10-6 10Z"/>
-                <circle cx="12" cy="11" r="2"/>
+                <path d="M12 21s-6-4.35-6-10a6 6 0 1 1 12 0c0 5.65-6 10-6 10Z"></path>
+                <circle cx="12" cy="11" r="2"></circle>
               </svg>
             </div>
           </div>
@@ -296,8 +344,8 @@
             <div class="input-wrap">
               <input type="password" placeholder="••••••••" required>
               <svg viewBox="0 0 24 24">
-                <rect x="5" y="11" width="14" height="10" rx="2"/>
-                <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+                <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+                <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
               </svg>
             </div>
           </div>
@@ -307,8 +355,8 @@
             <div class="input-wrap">
               <input type="password" placeholder="••••••••" required>
               <svg viewBox="0 0 24 24">
-                <rect x="5" y="11" width="14" height="10" rx="2"/>
-                <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
+                <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+                <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
               </svg>
             </div>
           </div>
@@ -322,19 +370,30 @@
           </label>
         </div>
 
-        <button type="submit" class="submit-btn">Sign Up Now</button>
+        <button type="submit" class="submit-btn">
+          Sign Up Now
+        </button>
 
         <div class="success-box" id="successBox">
           Registration successful.
           Your account has been created and you can start using the system.
         </div>
+
       </form>
 
       <div class="bottom-links">
-        <div>Already have an account? <a class="login-link" href="/CityFix.Api/wwwroot/LogIn/login.html">Login</a></div>
-        <div><a class="back-link" href="signup-choice.html">← Back to Sign Up Choice</a></div>
+        <div>
+          Already have an account?
+          <a class="login-link" href="/LogIn/customer-login.html">Login</a>
+        </div>
+
+        <div>
+          <a class="back-link" href="signup-choice.html">← Back to Sign Up Choice</a>
+        </div>
       </div>
+
     </div>
+
   </div>
 
 <script>
@@ -368,7 +427,8 @@
       if (response.ok) {
         successBox.style.display = "block";
         successBox.innerText = result.message;
-window.location.href = "/LogIn/customer-login.html";
+
+        window.location.href = "/LogIn/customer-login.html";
       } else {
         alert(result.message || "Registration error");
       }
@@ -378,5 +438,6 @@ window.location.href = "/LogIn/customer-login.html";
     }
   });
 </script>
+
 </body>
 </html>

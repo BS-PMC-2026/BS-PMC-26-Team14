@@ -394,40 +394,36 @@
           body: JSON.stringify(data)
         });
 
-        let result = {};
-        try {
-          result = await response.json();
-        } catch {
-          result = {};
-        }
+        const result = await response.json();
 
-        if (!response.ok) {
-          messageBox.style.display = "block";
-          messageBox.className = "message-box error";
-          messageBox.textContent = result.message || "Login error";
-          return;
-        }
+       if (!response.ok) {
+  messageBox.style.display = "block";
+  messageBox.className = "message-box error";
 
-        if (document.getElementById("rememberMe").checked) {
-          localStorage.setItem("workerSavedEmail", data.email);
-        } else {
-          localStorage.removeItem("workerSavedEmail");
-        }
+  if (result.message.includes("אישור")) {
+    messageBox.textContent =
+      "Your account is still waiting for administrator approval";
+  } else {
+    messageBox.textContent = result.message || "Login error";
+  }
 
-        localStorage.setItem("workerFullName", result.fullName || "");
-        localStorage.setItem("workerEmail", result.email || "");
-        localStorage.setItem("workerRole", result.role || "Worker");
-        localStorage.setItem("workerPhone", result.phone || "");
-        localStorage.setItem("workerMunicipality", result.municipality || "");
-        localStorage.setItem("workerDepartment", result.department || "");
+  return;
+}
 
-        messageBox.style.display = "block";
-        messageBox.className = "message-box success";
-        messageBox.textContent = result.message || "Logged in successfully";
+localStorage.setItem("workerFullName", result.fullName || "");
+localStorage.setItem("workerEmail", result.email || "");
+localStorage.setItem("workerRole", result.role || "Worker");
+localStorage.setItem("workerPhone", result.phone || "");
+localStorage.setItem("workerMunicipality", result.municipality || "");
+localStorage.setItem("workerDepartment", result.department || "");
 
-        setTimeout(() => {
-          window.location.href = "../homepage/worker-home.html";
-        }, 1000);
+messageBox.style.display = "block";
+messageBox.className = "message-box success";
+messageBox.textContent = result.message || "Logged in successfully";
+
+setTimeout(() => {
+  window.location.href = "../homepage/worker-home.html";
+}, 1000);
 
       } catch (error) {
         messageBox.style.display = "block";

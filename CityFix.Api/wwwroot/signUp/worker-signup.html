@@ -18,9 +18,12 @@
 
     body {
       font-family: 'Heebo', sans-serif;
-      background: linear-gradient(90deg, #eefaf2 0%, #dff5e8 100%);
       min-height: 100vh;
-      color: #0f172a;
+      color: #111827;
+      background:
+        radial-gradient(circle at top left, rgba(34, 197, 94, 0.15), transparent 35%),
+        radial-gradient(circle at bottom right, rgba(22, 163, 74, 0.12), transparent 30%),
+        linear-gradient(135deg, #ecfdf5 0%, #f8fafc 45%, #f0fdf4 100%);
     }
 
     .page {
@@ -28,32 +31,51 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 30px 16px;
+      padding: 42px 20px;
     }
 
     .card {
       width: 100%;
-      max-width: 760px;
-      background: #ffffff;
-      border-radius: 18px;
-      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
-      padding: 28px 26px 30px;
+      max-width: 900px;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.16);
+      padding: 44px 50px 40px;
+      position: relative;
+    }
+
+    .back-btn {
+      position: absolute;
+      top: 28px;
+      left: 30px;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: #16a34a;
+      color: white;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 800;
+      box-shadow: 0 6px 14px rgba(22, 163, 74, 0.28);
     }
 
     .top-icon {
-      width: 84px;
-      height: 84px;
+      width: 92px;
+      height: 92px;
       border-radius: 50%;
-      background: #d1fae5;
+      background: #dcfce7;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 0 auto 18px;
+      margin: 0 auto 20px;
     }
 
     .top-icon svg {
-      width: 44px;
-      height: 44px;
+      width: 46px;
+      height: 46px;
       stroke: #16a34a;
       fill: none;
       stroke-width: 2.2;
@@ -63,37 +85,37 @@
 
     .title {
       text-align: center;
-      font-size: 34px;
+      font-size: 44px;
       font-weight: 800;
-      margin-bottom: 8px;
-      color: #0f172a;
+      margin-bottom: 10px;
+      color: #111827;
     }
 
     .subtitle {
       text-align: center;
-      color: #475569;
+      color: #64748b;
       font-size: 18px;
-      margin-bottom: 10px;
+      margin-bottom: 18px;
     }
 
     .approval-note {
-      max-width: 500px;
-      margin: 0 auto 24px;
+      max-width: 620px;
+      margin: 0 auto 30px;
       background: #f0fdf4;
       border: 1px solid #86efac;
       color: #166534;
-      border-radius: 12px;
-      padding: 12px 14px;
+      border-radius: 16px;
+      padding: 16px 18px;
       text-align: center;
       font-size: 15px;
-      line-height: 1.6;
+      line-height: 1.8;
+      font-weight: 500;
     }
 
     .form-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 18px 16px;
-      margin-top: 10px;
+      gap: 20px 18px;
     }
 
     .form-group {
@@ -107,9 +129,9 @@
 
     .form-group label {
       font-size: 15px;
-      font-weight: 700;
+      font-weight: 800;
       margin-bottom: 8px;
-      color: #0f172a;
+      color: #111827;
     }
 
     .input-wrap {
@@ -119,15 +141,22 @@
     .input-wrap input,
     .input-wrap select {
       width: 100%;
-      height: 48px;
+      height: 54px;
       border: 1px solid #d7dee8;
       border-radius: 12px;
       background: #ffffff;
       font-size: 16px;
-      color: #0f172a;
+      color: #111827;
       outline: none;
-      padding: 0 14px 0 42px;
+      padding: 0 14px 0 44px;
       appearance: none;
+      transition: 0.2s ease;
+    }
+
+    .input-wrap input:focus,
+    .input-wrap select:focus {
+      border-color: #16a34a;
+      box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.12);
     }
 
     .input-wrap input::placeholder {
@@ -150,7 +179,7 @@
     }
 
     .checkbox-row {
-      margin-top: 18px;
+      margin-top: 20px;
       display: flex;
       align-items: center;
       gap: 10px;
@@ -167,7 +196,7 @@
 
     .checkbox-row a {
       color: #16a34a;
-      font-weight: 700;
+      font-weight: 800;
       text-decoration: none;
     }
 
@@ -177,26 +206,30 @@
 
     .submit-btn {
       width: 100%;
-      margin-top: 20px;
-      height: 50px;
+      margin-top: 24px;
+      height: 56px;
       border: none;
       border-radius: 12px;
-      background: #08a63b;
+      background: #16a34a;
       color: white;
-      font-size: 18px;
+      font-size: 19px;
       font-weight: 800;
       cursor: pointer;
       transition: 0.2s ease;
+      box-shadow: 0 8px 18px rgba(22, 163, 74, 0.24);
     }
 
     .submit-btn:hover {
-      background: #099134;
+      background: #15803d;
+      transform: translateY(-1px);
     }
 
     .bottom-links {
       text-align: center;
-      margin-top: 22px;
+      margin-top: 26px;
       line-height: 2;
+      color: #64748b;
+      font-size: 15px;
     }
 
     .bottom-links a {
@@ -205,12 +238,17 @@
 
     .login-link {
       color: #16a34a;
-      font-weight: 700;
+      font-weight: 800;
     }
 
     .back-link {
       color: #334155;
-      font-size: 17px;
+      font-size: 16px;
+    }
+
+    .login-link:hover,
+    .back-link:hover {
+      text-decoration: underline;
     }
 
     .success-box {
@@ -224,170 +262,225 @@
       text-align: center;
       line-height: 1.8;
       font-size: 16px;
-      font-weight: 500;
+      font-weight: 600;
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 760px) {
+
+      .page {
+        padding: 26px 14px;
+      }
+
+      .card {
+        padding: 34px 20px 28px;
+      }
+
       .form-grid {
         grid-template-columns: 1fr;
       }
 
       .title {
-        font-size: 28px;
+        font-size: 34px;
       }
 
       .subtitle {
         font-size: 16px;
       }
 
-      .card {
-        padding: 22px 16px 24px;
+      .approval-note {
+        font-size: 14px;
       }
     }
   </style>
 </head>
+
 <body>
-  <div class="page">
-    <div class="card">
-      <div class="top-icon">
-        <svg viewBox="0 0 24 24">
-          <rect x="5" y="7" width="14" height="12" rx="2"></rect>
-          <path d="M9 7V5a3 3 0 0 1 6 0v2"></path>
-          <path d="M5 11h14"></path>
-        </svg>
-      </div>
 
-      <h1 class="title">Worker Sign Up</h1>
-      <p class="subtitle">Join the team and start handling reports</p>
+<div class="page">
 
-      <div class="approval-note">
-        After submitting the form, the account will not be activated immediately.
-        Your registration request will be sent for review and awaits system administrator approval.
-      </div>
+  <div class="card">
 
-      <form id="workerForm">
-        <div class="form-grid">
+    <a class="back-btn" href="signup-choice.html">‹</a>
 
-          <div class="form-group">
-            <label>ID Number *</label>
-            <div class="input-wrap">
-              <input type="text" placeholder="123456789" required>
-              <svg viewBox="0 0 24 24">
-                <rect x="3" y="5" width="18" height="14" rx="2"></rect>
-                <path d="M7 9h4"></path>
-                <path d="M7 13h3"></path>
-                <circle cx="16" cy="12" r="2"></circle>
-              </svg>
-            </div>
-          </div>
+    <div class="top-icon">
+      <svg viewBox="0 0 24 24">
+        <rect x="5" y="7" width="14" height="12" rx="2"></rect>
+        <path d="M9 7V5a3 3 0 0 1 6 0v2"></path>
+        <path d="M5 11h14"></path>
+      </svg>
+    </div>
 
-          <div class="form-group">
-            <label>Full Name *</label>
-            <div class="input-wrap">
-              <input type="text" placeholder="John Doe" required>
-              <svg viewBox="0 0 24 24">
-                <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"/>
-                <path d="M4 20a8 8 0 0 1 16 0"/>
-              </svg>
-            </div>
-          </div>
+    <h1 class="title">Worker Sign Up</h1>
 
-          <div class="form-group">
-            <label>Phone *</label>
-            <div class="input-wrap">
-              <input type="text" placeholder="050-1234567" required>
-              <svg viewBox="0 0 24 24">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.46-1.29a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"/>
-              </svg>
-            </div>
-          </div>
+    <p class="subtitle">
+      Join the team and start handling reports
+    </p>
 
-          <div class="form-group">
-            <label>Email *</label>
-            <div class="input-wrap">
-              <input type="email" placeholder="worker@cityfix.com" required>
-              <svg viewBox="0 0 24 24">
-                <path d="M4 6h16v12H4z"/>
-                <path d="m4 7 8 6 8-6"/>
-              </svg>
-            </div>
-          </div>
+    <div class="approval-note">
+      After submitting the form, the account will not be activated immediately.
+      Your registration request will be sent for review and awaits system administrator approval.
+    </div>
+
+    <form id="workerForm">
+
+      <div class="form-grid">
 
         <div class="form-group">
-  <label>Municipality *</label>
-  <div class="input-wrap">
-    <select id="municipality" required>
-      <option value="">Select Municipality</option>
-    </select>
-    <svg viewBox="0 0 24 24">
-      <path d="M7 10l5 5 5-5"></path>
-    </svg>
-  </div>
-</div>
-          <div class="form-group">
-            <label>Department *</label>
-            <div class="input-wrap">
-              <select required>
-                <option value="">Select Department</option>
-                <option>Roads</option>
-                <option>Lighting</option>
-                <option>Sanitation</option>
-                <option>Gardening</option>
-                <option>General Maintenance</option>
-              </select>
-              <svg viewBox="0 0 24 24">
-                <path d="M7 10l5 5 5-5"></path>
-              </svg>
-            </div>
-          </div>
+          <label>ID Number *</label>
 
-          <div class="form-group">
-            <label>Confirm Password *</label>
-            <div class="input-wrap">
-              <input type="password" placeholder="••••••••" required>
-              <svg viewBox="0 0 24 24">
-                <rect x="5" y="11" width="14" height="10" rx="2"/>
-                <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
-              </svg>
-            </div>
-          </div>
+          <div class="input-wrap">
+            <input type="text" placeholder="123456789" required>
 
-          <div class="form-group">
-            <label>Password *</label>
-            <div class="input-wrap">
-              <input type="password" placeholder="••••••••" required>
-              <svg viewBox="0 0 24 24">
-                <rect x="5" y="11" width="14" height="10" rx="2"/>
-                <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
-              </svg>
-            </div>
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+              <path d="M7 9h4"></path>
+              <path d="M7 13h3"></path>
+              <circle cx="16" cy="12" r="2"></circle>
+            </svg>
           </div>
-
         </div>
 
-        <div class="checkbox-row">
-          <input type="checkbox" id="agree" required>
-          <label for="agree">
-            I agree to the <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>
-          </label>
+        <div class="form-group">
+          <label>Full Name *</label>
+
+          <div class="input-wrap">
+            <input type="text" placeholder="John Doe" required>
+
+            <svg viewBox="0 0 24 24">
+              <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path>
+              <path d="M4 20a8 8 0 0 1 16 0"></path>
+            </svg>
+          </div>
         </div>
 
-        <button type="submit" class="submit-btn">Sign Up Now</button>
+        <div class="form-group">
+          <label>Phone *</label>
 
-        <div class="success-box" id="successBox">
-          Registration request sent successfully.
-          Your account is now awaiting system administrator approval.
+          <div class="input-wrap">
+            <input type="text" placeholder="050-1234567" required>
+
+            <svg viewBox="0 0 24 24">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.63 2.62a2 2 0 0 1-.45 2.11L8 9.91a16 16 0 0 0 6.09 6.09l1.46-1.29a2 2 0 0 1 2.11-.45c.84.3 1.72.51 2.62.63A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+          </div>
         </div>
-      </form>
 
-      <div class="bottom-links">
-        <div>Already have an account? <a class="login-link" href="/CityFix.Api/wwwroot/LogIn/login.html">Login</a></div>
-        <div><a class="back-link" href="signup-choice.html">← Back to Sign Up Choice</a></div>
+        <div class="form-group">
+          <label>Email *</label>
+
+          <div class="input-wrap">
+            <input type="email" placeholder="worker@cityfix.com" required>
+
+            <svg viewBox="0 0 24 24">
+              <path d="M4 6h16v12H4z"></path>
+              <path d="m4 7 8 6 8-6"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Municipality *</label>
+
+          <div class="input-wrap">
+            <select id="municipality" required>
+              <option value="">Select Municipality</option>
+            </select>
+
+            <svg viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Department *</label>
+
+          <div class="input-wrap">
+            <select required>
+              <option value="">Select Department</option>
+              <option>Roads</option>
+              <option>Lighting</option>
+              <option>Sanitation</option>
+              <option>Gardening</option>
+              <option>General Maintenance</option>
+            </select>
+
+            <svg viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Confirm Password *</label>
+
+          <div class="input-wrap">
+            <input type="password" placeholder="••••••••" required>
+
+            <svg viewBox="0 0 24 24">
+              <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+              <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+            </svg>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Password *</label>
+
+          <div class="input-wrap">
+            <input type="password" placeholder="••••••••" required>
+
+            <svg viewBox="0 0 24 24">
+              <rect x="5" y="11" width="14" height="10" rx="2"></rect>
+              <path d="M8 11V8a4 4 0 0 1 8 0v3"></path>
+            </svg>
+          </div>
+        </div>
+
       </div>
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="agree" required>
+
+        <label for="agree">
+          I agree to the
+          <a href="#">Terms of Use</a>
+          and
+          <a href="#">Privacy Policy</a>
+        </label>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        Sign Up Now
+      </button>
+
+      <div class="success-box" id="successBox">
+        Registration request sent successfully.
+        Your account is now awaiting system administrator approval.
+      </div>
+
+    </form>
+
+    <div class="bottom-links">
+
+      <div>
+        Already have an account?
+        <a class="login-link" href="/LogIn/worker-login.html">Login</a>
+      </div>
+
+      <div>
+        <a class="back-link" href="signup-choice.html">
+          ← Back to Sign Up Choice
+        </a>
+      </div>
+
     </div>
+
   </div>
 
- <script>
+</div>
+
+<script>
   const form = document.getElementById("workerForm");
   const successBox = document.getElementById("successBox");
 
@@ -407,6 +500,7 @@
     };
 
     try {
+
       const response = await fetch("/api/auth/register-worker", {
         method: "POST",
         headers: {
@@ -418,21 +512,29 @@
       const result = await response.json();
 
       if (response.ok) {
+
         successBox.style.display = "block";
-        successBox.innerText = "Registration request sent successfully. Account awaiting administrator approval.";
-window.location.href = "/LogIn/worker-login.html";
+
+        successBox.innerText =
+          "Registration request sent successfully. Account awaiting administrator approval.";
+
+        window.location.href = "/LogIn/worker-login.html";
+
       } else {
+
         alert(result.message || "Registration error");
+
       }
+
     } catch (error) {
+
       alert("Connection error with server");
       console.error(error);
-    }
 
-    
+    }
   });
 
-    const municipalities = [
+  const municipalities = [
     "אבו גוש",
     "אבו סנאן",
     "אבן יהודה",
@@ -445,58 +547,30 @@ window.location.href = "/LogIn/worker-login.html";
     "אריאל",
     "אשדוד",
     "אשקלון",
-    "באקה אל-גרבייה",
-    "באר יעקב",
     "באר שבע",
-    "בית שאן",
     "בית שמש",
     "בני ברק",
     "בת ים",
     "גבעתיים",
-    "דימונה",
-    "הוד השרון",
     "הרצליה",
     "חדרה",
     "חולון",
     "חיפה",
-    "טבריה",
-    "טירה",
-    "טירת כרמל",
-    "יבנה",
-    "יהוד-מונוסון",
-    "יקנעם עילית",
     "ירושלים",
-    "כפר יונה",
     "כפר סבא",
     "כרמיאל",
     "לוד",
-    "מגדל העמק",
-    "מודיעין-מכבים-רעות",
-    "מעלה אדומים",
     "נהריה",
     "נס ציונה",
-    "נצרת",
-    "נשר",
-    "נתיבות",
     "נתניה",
     "עכו",
     "עפולה",
     "פתח תקווה",
-    "צפת",
-    "קריית אתא",
-    "קריית ביאליק",
     "קריית גת",
-    "קריית ים",
-    "קריית מוצקין",
-    "קריית מלאכי",
-    "קריית אונו",
-    "קריית שמונה",
-    "ראש העין",
     "ראשון לציון",
     "רחובות",
     "רמלה",
     "רמת גן",
-    "רמת השרון",
     "רעננה",
     "שדרות",
     "תל אביב-יפו"
@@ -507,11 +581,16 @@ window.location.href = "/LogIn/worker-login.html";
   municipalities
     .sort((a, b) => a.localeCompare(b))
     .forEach(name => {
+
       const option = document.createElement("option");
+
       option.value = name;
       option.textContent = name;
+
       municipalitySelect.appendChild(option);
+
     });
 </script>
+
 </body>
 </html>
