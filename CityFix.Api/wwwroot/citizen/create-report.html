@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
 <script src="https://unpkg.com/lucide@latest"></script>
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -15,10 +15,9 @@ body{font-family:Arial,sans-serif;background:#f8fafc;color:#111827}
 .sidebar {
   width: 260px;
   background: #fff;
-  border-left: 1px solid #e5e7eb;
+  border-right: 1px solid #e5e7eb;
   min-height: 100vh;
   padding: 0;
-  direction: rtl;
 }
 
 .logo {
@@ -73,7 +72,7 @@ body{font-family:Arial,sans-serif;background:#f8fafc;color:#111827}
 .menu a.active {
   background: #eaf2ff;
   color: #0b63e5;
-  border-left: 4px solid #0b63e5;
+  border-right: 4px solid #0b63e5;
   font-weight: 700;
 }
 
@@ -117,7 +116,7 @@ h1{font-size:32px;margin-bottom:30px}
 .card{background:white;border:1px solid #d7dde5;border-radius:8px}
 .card-body{padding:28px}
 .card-footer{border-top:1px solid #e5e7eb;padding:20px;display:flex;  justify-content: space-between;
-  flex-direction: row-reverse;}
+  flex-direction: row;}
 .hidden{display:none}
 .upload-grid {
   display: grid;
@@ -140,8 +139,7 @@ h1{font-size:32px;margin-bottom:30px}
   overflow: hidden;
 }
 
-.info{margin-top:15px;background:#eef4ff;border:1px solid #c7dcff;border-radius:6px;padding:14px;color:#374151;  direction: rtl;
-}
+.info{margin-top:15px;background:#eef4ff;border:1px solid #c7dcff;border-radius:6px;padding:14px;color:#374151;}
 .form-grid{display:grid;grid-template-columns:1fr 1fr 330px;gap:30px}
 .form-left{grid-column:1/3}
 .input-row{display:grid;grid-template-columns:1fr 1fr;gap:25px;margin-bottom:22px}
@@ -160,8 +158,6 @@ textarea{height:110px;resize:none}
   grid-template-columns: 1fr 1fr auto;
   gap: 12px;
   margin-bottom: 15px;
-direction: rtl;
-
 }
 
 .location-search input {
@@ -327,34 +323,34 @@ direction: rtl;
   <div class="menu">
  <div class="menu-title">
   <i data-lucide="user"></i>
-  <span>אזור לקוח</span>
+  <span>Customer Area</span>
 </div>
 
     <a class="active" href="#">
       <i data-lucide="file-text"></i>
-      <span>יצירת דיווח</span>
+      <span>Create Report</span>
     </a>
 
     <a href="#">
       <i data-lucide="clipboard-list"></i>
-      <span>הדיווחים שלי</span>
+      <span>My Reports</span>
     </a>
 
     <a href="customer-reports-map.html">
       <i data-lucide="map"></i>
-      <span>מפת דיווחים</span>
+      <span>Reports Map</span>
     </a>
 
     <a href="../profile/customer-profile.html">
       <i data-lucide="user-circle"></i>
-      <span>פרופיל</span>
+      <span>Profile</span>
     </a>
   </div>
 
   <div class="menu logout">
     <a href="#" onclick="logout()">
       <i data-lucide="log-out"></i>
-      <span>התנתקות</span>
+      <span>Logout</span>
     </a>
   </div>
 </aside>
@@ -372,29 +368,29 @@ direction: rtl;
     </div>
 
     <div class="content">
-<h1>יצירת דיווח</h1>
+<h1>Create Report</h1>
 <div class="steps">
-  <div class="step active" id="s1"><div class="circle">1</div>מיקום</div>
+  <div class="step active" id="s1"><div class="circle">1</div>Location</div>
   <div class="line"></div>
 
-  <div class="step" id="s2"><div class="circle">2</div>העלאת תמונה</div>
+  <div class="step" id="s2"><div class="circle">2</div>Upload Image</div>
   <div class="line"></div>
 
-  <div class="step" id="s3"><div class="circle">3</div>פרטים</div>
+  <div class="step" id="s3"><div class="circle">3</div>Details</div>
 </div>
 
 <section class="card hidden" id="step2">
           <div class="card-body">
-          <h2>העלאת תמונה</h2>
-          <p style="margin:10px 0 25px;color:#374151">העלה תמונה של הבעיה</p>
+          <h2>Upload Image</h2>
+          <p style="margin:10px 0 25px;color:#374151">Upload a photo of the issue</p>
 
           <div class="upload-grid">
             <div>
 <div class="upload-box" id="uploadBox" onclick="imageInput.click()">
                     <div class="upload-icon">☁️</div>
-                <p>גרור תמונה לכאן</p>
-                <p style="margin:12px">או</p>
-                <button class="btn btn-primary" type="button">בחר תמונה</button>
+                <p>Drag image here</p>
+                <p style="margin:12px">or</p>
+                <button class="btn btn-primary" type="button">Choose Image</button>
                 <input id="imageInput" type="file" accept="image/png,image/jpeg" hidden>
               </div>
               <p style="margin-top:15px;color:#64748b">JPG, PNG up to 10MB</p>
@@ -409,137 +405,137 @@ direction: rtl;
         </div>
 
         <div class="card-footer">
-<button class="btn btn-secondary" onclick="nextStep(1)">חזור</button>
-<button class="btn btn-primary" onclick="nextStep(3)">הבא</button>
+<button class="btn btn-secondary" onclick="nextStep(1)">Back</button>
+<button class="btn btn-primary" onclick="nextStep(3)">Next</button>
         </div>
       </section>
 
 <section class="card" id="step1">
          <div class="card-body">
-          <h2>בחירת מיקום</h2>
-          <p style="margin:10px 0 15px;color:#374151">בחר מיקום על המפה</p>
+          <h2>Choose Location</h2>
+          <p style="margin:10px 0 15px;color:#374151">Choose a location on the map</p>
 
    <div class="location-search">
-  <input type="text" id="cityInput" placeholder="City / עיר לדוגמה: באר שבע">
-  <input type="text" id="streetInput" placeholder="Street / רחוב לדוגמה: רגר">
-  <button type="button" class="btn btn-primary" onclick="searchAddress()">חפש</button>
+  <input type="text" id="cityInput" placeholder="City (e.g., Beer Sheva)">
+  <input type="text" id="streetInput" placeholder="Street (e.g., Rager)">
+  <button type="button" class="btn btn-primary" onclick="searchAddress()">Search</button>
 </div>
 
 <div class="detect-location-card">
   <div class="detect-location-text">
-    <b>זיהוי מיקום אוטומטי</b>
-    <span>המערכת תזהה את המיקום הנוכחי שלך ותציג אותו על המפה</span>
+    <b>Auto Location Detection</b>
+    <span>The system will detect your current location and show it on the map</span>
   </div>
 
   <button type="button" class="detect-location-btn" onclick="detectCurrentLocation()">
     <span>📍</span>
-    זהה את המיקום שלי
+    Detect My Location
   </button>
 </div>
 
 <div id="locationDetectedBox" class="location-detected-box hidden">
   <div class="success-icon">✓</div>
   <div>
-    <h3>המיקום זוהה אוטומטית</h3>
-    <p>המיקום הנוכחי שלך זוהה ומוצג על המפה.</p>
+    <h3>Location Detected Automatically</h3>
+    <p>Your current location has been detected and shown on the map.</p>
   </div>
 </div>
           <div id="map"></div>
 
           <div class="info" id="locationText">
-            ℹ️  לחץ על המפה לבחירת מיקום
+            ℹ️  Click on the map to select a location
           </div>
         </div>
 
         <div class="card-footer">
-<button class="btn btn-secondary" onclick="cancel()">ביטול</button>
-<button class="btn btn-primary" onclick="nextStep(2)">הבא</button>
+<button class="btn btn-secondary" onclick="cancel()">Cancel</button>
+<button class="btn btn-primary" onclick="nextStep(2)">Next</button>
         </div>
       </section>
 
       <section class="card hidden" id="step3">
         <div class="card-body">
-          <h2>פרטי הדיווח</h2>
+          <h2>Report Details</h2>
           <p style="margin:10px 0 25px;color:#374151">Please provide more information about the issue</p>
 
           <div class="form-grid">
             <div class="form-left">
               <div class="input-row">
                 <div>
-                  <label>קטגוריה  </label>
+                  <label>Category</label>
    <select id="category" onchange="updateSummary()">
-  <option value="נזק בכביש">נזק בכביש</option>
-  <option value="תאורת רחוב">תאורת רחוב</option>
-  <option value="אשפה / תברואה">אשפה / תברואה</option>
-  <option value="גינון">גינון</option>
-  <option value="מים / ביוב">מים / ביוב</option>
-  <option value="תחזוקה כללית">תחזוקה כללית</option>
+  <option value="Road Damage">Road Damage</option>
+  <option value="Street Lighting">Street Lighting</option>
+  <option value="Garbage / Sanitation">Garbage / Sanitation</option>
+  <option value="Gardening">Gardening</option>
+  <option value="Water / Sewage">Water / Sewage</option>
+  <option value="General Maintenance">General Maintenance</option>
 </select>
                 </div>
 
                 <div>
-                  <label>דחיפות</label>
+                  <label>Priority</label>
 <select id="priority" onchange="updateSummary()">
-  <option value="גבוהה">גבוהה</option>
-  <option value="בינונית">בינונית</option>
-  <option value="נמוכה">נמוכה</option>
+  <option value="High">High</option>
+  <option value="Medium">Medium</option>
+  <option value="Low">Low</option>
 </select>
                 </div>
               </div>
 
               <div class="input-row">
                 <div>
-                  <label>תיאור</label>
+                  <label>Description</label>
 <textarea id="description" maxlength="500"
   oninput="updateCount();updateSummary()"
-  placeholder="תאר את הבעיה..."></textarea>
+  placeholder="Describe the issue..."></textarea>
                     <div style="text-align:left;color:#64748b"><span id="descCount">0</span> / 500</div>
                 </div>
 
                 <div>
-                  <label>תאריך ושעה</label>
+                  <label>Date and Time</label>
                   <input id="dateTime" type="text" readonly>
                 </div>
               </div>
 
-              <label>הערות נוספות</label>
+              <label>Additional Notes</label>
 <textarea id="notes" maxlength="300"
   oninput="updateNotesCount()"
-  placeholder="פרטים נוספים..."></textarea>              <div style="text-align:left;color:#64748b"><span id="notesCount">0</span> / 300</div>
+  placeholder="Additional details..."></textarea>              <div style="text-align:left;color:#64748b"><span id="notesCount">0</span> / 300</div>
             </div>
 
 <div class="summary">
-  <h3>סיכום הדיווח</h3>
+  <h3>Report Summary</h3>
 
   <div style="display:flex;gap:15px;margin:20px 0">
-    <img id="summaryImage" class="summary-img">
+    <img id="summaryImage" class="summary-img" alt="Report image">
     <div>
-      <p>קטגוריה</p>
-      <b id="sumCategory">נזק בכביש</b>
+      <p>Category</p>
+      <b id="sumCategory">Road Damage</b>
     </div>
   </div>
 
   <hr>
 
-  <p style="margin-top:18px">📍 מיקום</p>
-  <b id="sumLocation">לא נבחר מיקום</b>
+  <p style="margin-top:18px">📍 Location</p>
+  <b id="sumLocation">No location selected</b>
 
   <hr style="margin:18px 0">
 
-  <p>דחיפות</p>
-  <span class="badge" id="sumPriority">גבוהה</span>
+  <p>Priority</p>
+  <span class="badge" id="sumPriority">High</span>
 
   <hr style="margin:18px 0">
 
-  <p>🗓️ תאריך ושעה</p>
+  <p>🗓️ Date and Time</p>
   <b id="sumDate">-</b>
 </div>
           </div>
         </div>
 
         <div class="card-footer">
-<button class="btn btn-secondary" onclick="nextStep(2)">חזור</button>
-          <button class="btn btn-primary" onclick="submitReport()">שלח דיווח</button>
+<button class="btn btn-secondary" onclick="nextStep(2)">Back</button>
+          <button class="btn btn-primary" onclick="submitReport()">Submit Report</button>
         </div>
       </section>
 
@@ -582,7 +578,7 @@ function compressImage(file, callback) {
 const fullName = localStorage.getItem("userFullName");
 
 document.getElementById("userName").innerText =
-  fullName || "משתמש";
+  fullName || "User";
 
 
 const now = new Date();
@@ -597,12 +593,12 @@ function handleImageFile(file) {
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
-    alert("נא לבחור קובץ תמונה בלבד");
+    alert("Please select an image file only");
     return;
   }
 
   if (file.size > 10 * 1024 * 1024) {
-    alert("התמונה גדולה מדי. מותר עד 10MB");
+    alert("Image is too large. Maximum is 10MB");
     return;
   }
 
@@ -641,12 +637,12 @@ uploadBox.addEventListener("drop", function (e) {
 });
 function nextStep(step) {
   if (step === 2 && !selectedLocation) {
-    alert("נא לבחור מיקום על המפה קודם");
+    alert("Please select a location on the map first");
     return;
   }
 
   if (step === 3 && !selectedImageFile) {
-    alert("נא לבחור תמונה קודם");
+    alert("Please select an image first");
     return;
   }
 
@@ -683,7 +679,7 @@ function detectLocation(event) {
   event.stopPropagation();
 
   if (!navigator.geolocation) {
-    alert("הדפדפן לא תומך בזיהוי מיקום");
+    alert("Browser does not support location detection");
     return;
   }
 
@@ -691,10 +687,10 @@ function detectLocation(event) {
     pos => {
       selectedLocation = pos.coords.latitude + "," + pos.coords.longitude;
       document.getElementById("locationText").innerText =
-        "✅ המיקום נקלט אוטומטית: " + selectedLocation;
+        "✅ Location detected automatically: " + selectedLocation;
       document.getElementById("sumLocation").innerText = selectedLocation;
     },
-    () => alert("לא ניתן לקבל מיקום. בדוק הרשאות מיקום בדפדפן.")
+    () => alert("Cannot get location. Check browser location permissions.")
   );
 }
 
@@ -732,7 +728,7 @@ function detectCurrentLocation() {
   const detectedBox = document.getElementById("locationDetectedBox");
 
   if (!navigator.geolocation) {
-    alert("הדפדפן לא תומך בזיהוי מיקום אוטומטי");
+    alert("Browser does not support automatic location detection");
     return;
   }
 
@@ -745,7 +741,7 @@ function detectCurrentLocation() {
       const accuracy = position.coords.accuracy;
 
       if (!isInsideIsrael(lat, lng)) {
-        alert("המיקום שזוהה אינו בתוך ישראל");
+        alert("Detected location is not within Israel");
         return;
       }
 
@@ -762,20 +758,20 @@ function detectCurrentLocation() {
       }
 
       marker.bindPopup(`
-        <b>המיקום הנוכחי שלך</b><br>
+        <b>Your Current Location</b><br>
         ${selectedLocation}<br>
-        זוהה אוטומטית
+        Auto Detected
       `).openPopup();
 
       document.getElementById("locationText").innerHTML = `
         <div class="location-status-bar">
           <div>
-            📍 <b>מיקום:</b> ${selectedLocation}<br>
-            <span>זוהה אוטומטית</span>
+            📍 <b>Location:</b> ${selectedLocation}<br>
+            <span>Auto Detected</span>
           </div>
           <div>
-            דיוק:
-            <span class="accuracy-high">${Math.round(accuracy)} מטר</span>
+            Accuracy:
+            <span class="accuracy-high">${Math.round(accuracy)} meters</span>
           </div>
         </div>
       `;
@@ -789,7 +785,7 @@ function detectCurrentLocation() {
       }, 200);
     },
     function () {
-      alert("לא ניתן לזהות מיקום. צריך לאשר הרשאת מיקום בדפדפן.");
+      alert("Cannot detect location. Location permission needs to be granted in the browser.");
     },
     {
       enableHighAccuracy: true,
@@ -803,7 +799,7 @@ map.on("click", function (e) {
   const lat = e.latlng.lat.toFixed(6);
   const lng = e.latlng.lng.toFixed(6);
 if (!isInsideIsrael(parseFloat(lat), parseFloat(lng))) {
-  alert("נא לבחור מיקום בתוך ישראל בלבד");
+  alert("Please select a location within Israel only");
   return;
 }
   selectedLocation = lat + "," + lng;
@@ -816,7 +812,7 @@ selectedLongitude = e.latlng.lng;
   }
 
   document.getElementById("locationText").innerText =
-    "✅ נבחר מיקום: " + selectedLocation;
+    "✅ Location selected: " + selectedLocation;
 
   document.getElementById("sumLocation").innerText = selectedLocation;
 });
@@ -842,7 +838,7 @@ async function searchAddress() {
   const street = document.getElementById("streetInput").value.trim();
 
   if (!city && !street) {
-    alert("נא להזין עיר או רחוב");
+    alert("Please enter a city or street");
     return;
   }
 
@@ -855,7 +851,7 @@ async function searchAddress() {
     const results = await response.json();
 
     if (!results || results.length === 0) {
-      alert("לא נמצא מיקום מתאים");
+      alert("No matching location found");
       return;
     }
 
@@ -863,7 +859,7 @@ const lat = parseFloat(results[0].lat);
 const lng = parseFloat(results[0].lon);
 
 if (!isInsideIsrael(lat, lng)) {
-  alert("המיקום שנמצא אינו בתוך ישראל");
+  alert("Found location is not within Israel");
   return;
 }
 
@@ -879,12 +875,12 @@ selectedLongitude = lng;
     }
 
     document.getElementById("locationText").innerText =
-      "✅ נבחר מיקום: " + query + " (" + selectedLocation + ")";
+      "✅ Location selected: " + query + " (" + selectedLocation + ")";
 
     document.getElementById("sumLocation").innerText = query;
 
   } catch (error) {
-    alert("שגיאה בחיפוש המיקום");
+    alert("Error searching for location");
     console.error(error);
   }
 }
@@ -892,11 +888,11 @@ async function submitReport() {
   const description = document.getElementById("description").value.trim();
 
   if (!description) {
-    alert("נא להזין תיאור תקלה");
+    alert("Please enter a fault description");
     return;
   }
   if (selectedLatitude === null || selectedLongitude === null) {
-  alert("נא לבחור מיקום על המפה");
+  alert("Please select a location on the map");
   return;
   console.log("report sent:", report);
 }
@@ -924,15 +920,15 @@ const report = {
     const result = await response.json();
 
     if (!response.ok) {
-      alert(result.message || "שגיאה בשמירת הדיווח");
+      alert(result.message || "Error saving the report");
       return;
     }
 
-    alert(result.message || "הדיווח נשמר בהצלחה");
+    alert(result.message || "Report saved successfully");
     window.location.href = "../citizen/create-report.html";
 
   } catch (error) {
-    alert("בעיה בחיבור לשרת");
+    alert("Connection error with server");
     console.error(error);
   }
 }

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>דף ראשי - CityFix</title>
+  <title>Admin Dashboard - CityFix</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -258,39 +258,39 @@
     <div class="main">
       <div class="card">
         <div class="welcome-icon">👋</div>
-        <h2 class="title" id="welcomeTitle">ברוך הבא</h2>
+        <h2 class="title" id="welcomeTitle">Welcome</h2>
         <p class="subtitle">
-          התחברת בהצלחה למערכת CityFix.
-          מכאן תוכל להמשיך לפרופיל שלך, להתנתק, ובהמשך גם לראות פעולות ודיווחים.
+          You have successfully logged into CityFix.
+          From here you can access your profile, log out, and view actions and reports.
         </p>
 
         <div class="info-grid">
           <div class="info-box">
-            <div class="info-label">שם משתמש</div>
+            <div class="info-label">Username</div>
             <div class="info-value" id="userName">-</div>
           </div>
 
           <div class="info-box">
-            <div class="info-label">אימייל</div>
+            <div class="info-label">Email</div>
             <div class="info-value" id="userEmail">-</div>
           </div>
 
           <div class="info-box">
-            <div class="info-label">סוג משתמש</div>
+            <div class="info-label">User Type</div>
             <div class="info-value" id="userRole">-</div>
           </div>
         </div>
 
         <div class="admin-section" id="adminSection">
-          <h3 class="admin-title">ניהול המערכת</h3>
-          <button class="btn approve-btn" onclick="goToApproveWorkers()">אישור בקשות עובדים</button>
+          <h3 class="admin-title">System Management</h3>
+          <button class="btn approve-btn" onclick="goToApproveWorkers()">Approve Worker Requests</button>
         </div>
       </div>
     </div>
   </div>
 
   <script>
-    const userName = localStorage.getItem("userName") || "משתמש";
+    const userName = localStorage.getItem("userName") || "User";
     const userEmail = localStorage.getItem("userEmail") || "-";
     const userRole = localStorage.getItem("userRole") || "-";
 
@@ -298,7 +298,7 @@
       window.location.href = "login.html";
     }
 
-    document.getElementById("welcomeTitle").textContent = `ברוך הבא, ${userName}`;
+    document.getElementById("welcomeTitle").textContent = `Welcome, ${userName}`;
     document.getElementById("userName").textContent = userName;
     document.getElementById("userEmail").textContent = userEmail;
     document.getElementById("userRole").textContent = userRole;

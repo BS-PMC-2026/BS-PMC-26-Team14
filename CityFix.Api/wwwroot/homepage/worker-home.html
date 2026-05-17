@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -897,16 +897,16 @@ body {
         </div>
 
 
-<div class="status-update-box hidden" id="statusPanel">    <h3>עדכון מצב קריאה</h3>
+<div class="status-update-box hidden" id="statusPanel">    <h3>Update Report Status</h3>
 
     <div class="status-controls">
       <select id="statusUpdateSelect">
-        <option value="Open">פתוח</option>
-        <option value="In Treatment">בטיפול</option>
-        <option value="Completed">הושלם</option>
+        <option value="Open">Open</option>
+        <option value="In Treatment">In Treatment</option>
+        <option value="Completed">Completed</option>
       </select>
 
-      <button onclick="updateReportStatus()">עדכן מצב</button>
+      <button onclick="updateReportStatus()">Update Status</button>
     </div>
   </div>
 
@@ -1029,7 +1029,7 @@ body {
             <div class="upload-field">
               <label>Note (Optional)</label>
               <textarea id="workerImageNote" maxlength="500"
-                placeholder="כתוב הערה קצרה על התמונה..."></textarea>
+                placeholder="Write a short note about the image..."></textarea>
 
               <div style="margin-top:8px;color:#64748b">
                 <span id="workerImageNoteCount">0</span> / 500
@@ -1077,7 +1077,7 @@ body {
               🔵
               <div>
                 <div class="summary-label">Status</div>
-                <div>בטיפול</div>
+                <div>In Treatment</div>
               </div>
             </div>
 
@@ -1149,14 +1149,14 @@ async function loadOpenReports() {
     }
 
     if (!response.ok) {
-      container.innerHTML = `<p class="empty-msg">שגיאה בטעינת הדיווחים</p>`;
+      container.innerHTML = `<p class="empty-msg">Error loading reports</p>`;
       return;
     }
 
     renderReportsList();
 
   } catch (error) {
-    container.innerHTML = `<p class="empty-msg">בעיה בחיבור לשרת</p>`;
+    container.innerHTML = `<p class="empty-msg">Connection error with server</p>`;
     console.error(error);
   }
 }
@@ -1165,7 +1165,7 @@ function renderReportsList() {
   const container = document.getElementById("reportsContainer");
 
   if (!Array.isArray(reports) || reports.length === 0) {
-    container.innerHTML = `<p class="empty-msg">אין כרגע דיווחים פתוחים</p>`;
+    container.innerHTML = `<p class="empty-msg">No open reports currently</p>`;
     return;
   }
 
@@ -1199,10 +1199,10 @@ function renderReportsList() {
 
             ${
               isInTreatment
-                ? "בטיפול"
+                ? "In Treatment"
                 : isCompleted
-                ? "הושלם"
-                : "פתוח"
+                ? "Completed"
+                : "Open"
             }
 
           </span>
@@ -1246,7 +1246,7 @@ async function openReportDetails(reportId) {
     }
 
     if (!response.ok || !fullReport) {
-      alert(fullReport?.message || "הדיווח לא נמצא");
+      alert(fullReport?.message || "Report not found");
       return;
     }
 
@@ -1272,9 +1272,9 @@ if (
     document.getElementById("detailCategoryInfo").innerText = currentReport.category || "-";
 
     document.getElementById("detailStatus").innerText =
-  currentReport.status === "In Treatment" ? "בטיפול" :
-  currentReport.status === "Completed" ? "הושלם" :
-  currentReport.status === "Open" ? "פתוח" :
+  currentReport.status === "In Treatment" ? "In Treatment" :
+  currentReport.status === "Completed" ? "Completed" :
+  currentReport.status === "Open" ? "Open" :
   currentReport.status;
 
     document.getElementById("detailDate").innerText = formatDate(currentReport.createdAt);
@@ -1325,7 +1325,7 @@ loadStatusHistory(currentReport.id);
     const acceptButton = document.querySelector(".accept-btn");
 
     if (currentReport.status === "In Treatment") {
-      acceptButton.innerText = "✓ הדיווח כבר בטיפול";
+      acceptButton.innerText = "✓ Report already in treatment";
       acceptButton.disabled = true;
       acceptButton.classList.add("accepted-disabled");
     } else {
@@ -1340,10 +1340,10 @@ loadStatusHistory(currentReport.id);
     }, 200);
 
   } catch (error) {
-    alert("בעיה בטעינת פרטי הדיווח");
+    alert("Error loading report details");
     console.error(error);
   }
-  
+
 }
 
 function initMap(lat, lng) {
@@ -1376,22 +1376,22 @@ function initMap(lat, lng) {
 }
 
 function declineReport() {
-  alert("הדיווח לא התקבל לטיפול");
+  alert("Report was not accepted for treatment");
   showList();
 }
 
 async function acceptCurrentReport() {
   if (!currentReport) {
-    alert("לא נבחר דיווח");
+    alert("No report selected");
     return;
   }
 
   if (!workerEmail) {
-    alert("לא נמצא אימייל עובד. התחבר מחדש.");
+    alert("Worker email not found. Please login again.");
     return;
   }
 
-  if (!confirm("האם אתה בטוח שאתה רוצה לקבל את הדיווח לטיפול?")) {
+  if (!confirm("Are you sure you want to accept this report for treatment?")) {
     return;
   }
 
@@ -1414,11 +1414,11 @@ async function acceptCurrentReport() {
     }
 
     if (!response.ok) {
-      alert(result.message || "שגיאה בקבלת הדיווח");
+      alert(result.message || "Error accepting the report");
       return;
     }
 
-    alert(result.message || "הדיווח התקבל לטיפול בהצלחה");
+    alert(result.message || "Report accepted for treatment successfully");
 
     currentReport.status = "In Treatment";
     currentReport.assignedWorkerEmail = workerEmail;
@@ -1427,14 +1427,14 @@ async function acceptCurrentReport() {
     showList();
 
   } catch (error) {
-    alert("בעיה בחיבור לשרת");
+    alert("Connection error with server");
     console.error(error);
   }
 }
 
 function openUploadImageFromMenu() {
   if (!currentReport) {
-    alert("קודם צריך לבחור דיווח מתוך All Reports");
+    alert("You need to select a report from All Reports first");
     return;
   }
 
@@ -1443,12 +1443,12 @@ function openUploadImageFromMenu() {
 
 function openUploadImagePage() {
   if (!currentReport) {
-    alert("לא נבחר דיווח");
+    alert("No report selected");
     return;
   }
 
   if (currentReport.status !== "In Treatment") {
-    alert("אפשר להעלות תמונה רק לדיווח שנמצא בטיפול");
+    alert("Can only upload image for a report in treatment");
     return;
   }
 
@@ -1532,12 +1532,12 @@ function handleWorkerImage(file) {
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
-    alert("נא לבחור קובץ תמונה בלבד");
+    alert("Please select an image file only");
     return;
   }
 
   if (file.size > 10 * 1024 * 1024) {
-    alert("התמונה גדולה מדי. מותר עד 10MB");
+    alert("Image is too large. Maximum is 10MB");
     return;
   }
 
@@ -1575,12 +1575,12 @@ workerUploadBox.addEventListener("drop", function (e) {
 
 async function saveWorkerImage() {
   if (!currentReport) {
-    alert("לא נבחר דיווח");
+    alert("No report selected");
     return;
   }
 
   if (!workerImageBase64) {
-    alert("חובה לבחור תמונה");
+    alert("Image is required");
     return;
   }
 
@@ -1607,11 +1607,11 @@ async function saveWorkerImage() {
     }
 
     if (!response.ok) {
-      alert(result.message || "שגיאה בשמירת התמונה");
+      alert(result.message || "Error saving the image");
       return;
     }
 
-    alert(result.message || "התמונה נשמרה בהצלחה");
+    alert(result.message || "Image saved successfully");
 
     currentReport.workerImageBase64 = result.workerImageBase64 || workerImageBase64;
     currentReport.workerImageNote = result.workerImageNote || note;
@@ -1622,7 +1622,7 @@ async function saveWorkerImage() {
     await openReportDetails(currentReport.id);
 
   } catch (error) {
-    alert("בעיה בחיבור לשרת");
+    alert("Connection error with server");
     console.error(error);
   }
 }
@@ -1652,7 +1652,7 @@ lucide.createIcons();
 lucide.createIcons();
 async function updateReportStatus() {
   if (!currentReport) {
-    alert("לא נבחרה קריאה");
+    alert("No report selected");
     return;
   }
 
@@ -1672,18 +1672,18 @@ async function updateReportStatus() {
   const result = await response.json();
 
   if (!response.ok) {
-    alert(result.message || "שגיאה בעדכון הסטטוס");
+    alert(result.message || "Error updating status");
     return;
   }
 
-  alert("הסטטוס עודכן בהצלחה");
+  alert("Status updated successfully");
 
   currentReport.status = newStatus;
 
   document.getElementById("detailStatus").innerText =
-  newStatus === "In Treatment" ? "בטיפול" :
-  newStatus === "Completed" ? "הושלם" :
-  "פתוח";
+  newStatus === "In Treatment" ? "In Treatment" :
+  newStatus === "Completed" ? "Completed" :
+  "Open";
 
   loadStatusHistory(currentReport.id);
 }
@@ -1700,12 +1700,12 @@ async function loadStatusHistory(reportId) {
   }
 
   box.innerHTML = `
-    <h3 style="margin-top:20px;">היסטוריית שינויים</h3>
+    <h3 style="margin-top:20px;">Status History</h3>
     ${history.map(h => `
       <div class="history-item">
         <b>${h.oldStatus}</b> → <b>${h.newStatus}</b><br>
-        עובד: ${h.changedByWorkerEmail}<br>
-        זמן: ${new Date(h.changedAt).toLocaleString("he-IL")}
+        Worker: ${h.changedByWorkerEmail}<br>
+        Time: ${new Date(h.changedAt).toLocaleString("en-US")}
       </div>
     `).join("")}
   `;
