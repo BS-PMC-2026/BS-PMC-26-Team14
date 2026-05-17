@@ -40,6 +40,14 @@ jobs:
               Remove-Item $packagePath -Force
           }
           Compress-Archive -Path 'myapp\*' -DestinationPath $packagePath
+      
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: syncit-bundle-${{ github.run_number }}-${{ github.sha }}
+          path: ${{ runner.temp }}/webapp.zip
+          if-no-files-found: error
+          retention-days: 14
           
       - name: Deploy app using publish profile
         shell: pwsh
