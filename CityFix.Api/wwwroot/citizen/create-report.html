@@ -7,6 +7,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Create Report - CityFix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -22,88 +25,122 @@ body{font-family:Arial,sans-serif;background:#f8fafc;color:#111827}
   top: 0;
   bottom: 0;
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
 }
-
-.logo {
-  height: 88px;
+.sidebar-logo {
+  height: 78px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap:-5px;
-  font-size: 28px;
-  font-weight: bold;
-  color: #111827;
+  gap: 10px;
+  padding: 0 24px;
   border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
 }
-
-.logo i {
-  width: 32px;
-  height: 32px;
-  stroke: #0b63e5;
+.sidebar-logo i {
+  width: 28px;
+  height: 28px;
+  color: #0526ff;
+  flex-shrink: 0;
 }
-
-.menu {
-  padding-top: 28px;
-}
-
-.menu a {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  height: 60px;
-  padding: 0 28px;
-  color: #4b5563;
-  text-decoration: none;
-  font-size: 18px;
-  font-weight: 500;
-}
-
-.menu a:hover {
-  background: #f3f7ff;
-  color: #0b63e5;
-}
-
-.menu a i {
-  width: 23px;
-  height: 23px;
-  stroke: #6b7280;
-}
-
-.menu a:hover i {
-  stroke: #0b63e5;
-}
-
-.menu a.active {
-  background: #eaf2ff;
-  color: #0b63e5;
-  border-right: 4px solid #0b63e5;
+.sidebar-logo span {
+  font-family: 'Inter', Arial, sans-serif;
   font-weight: 700;
+  font-size: 20px;
+  color: #101828;
+  letter-spacing: -0.4px;
 }
-
-.menu a.active i {
-  stroke: #0b63e5;
+.sidebar-nav {
+  padding: 16px 14px 0;
+  flex: 1;
 }
-
-.logout {
-  position: absolute;
-  bottom: 30px;
-  width: 260px;
-}
-.menu-title {
+.sidebar-section-title {
   display: flex;
   align-items: center;
-  gap: 16px;
-  height: 60px;
-  padding: 0 28px;
-  font-size: 18px;
+  gap: 10px;
+  height: 44px;
+  padding: 0 12px;
+  font-family: 'Inter', Arial, sans-serif;
   font-weight: 600;
-  color: #0b63e5;
+  font-size: 11px;
+  color: #5f5f5f;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
 }
-
-.menu-title i {
-  width: 23px;
-  height: 23px;
-  stroke: #0b63e5;
+.sidebar-section-title i {
+  width: 16px;
+  height: 16px;
+  color: #5f5f5f;
+}
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 16px;
+  color: #364153;
+  text-decoration: none;
+  border-radius: 10px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  margin-bottom: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-nav a i {
+  width: 20px;
+  height: 20px;
+  color: #364153;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.sidebar-nav a:hover {
+  background: #d7e9ff;
+  color: #0526ff;
+}
+.sidebar-nav a:hover i {
+  color: #0526ff;
+}
+.sidebar-nav a.active {
+  background: #0526ff;
+  color: #ffffff;
+  font-weight: 600;
+}
+.sidebar-nav a.active i {
+  color: #ffffff;
+}
+.sidebar-logout {
+  padding: 16px 14px;
+  border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+.sidebar-logout a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 16px;
+  color: #364153;
+  text-decoration: none;
+  border-radius: 10px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-logout a i {
+  width: 20px;
+  height: 20px;
+  color: #364153;
+  transition: color 0.15s;
+}
+.sidebar-logout a:hover {
+  background: #d7e9ff;
+  color: #0526ff;
+}
+.sidebar-logout a:hover i {
+  color: #0526ff;
 }
 .main {
   margin-left: 260px;
@@ -111,7 +148,7 @@ body{font-family:Arial,sans-serif;background:#f8fafc;color:#111827}
   min-height: 100vh;
 }
 .topbar {
-  height: 88px;
+  height: 78px;
   background: white;
   border-bottom: 1px solid #e5e7eb;
   display: flex;
@@ -184,9 +221,8 @@ textarea{height:110px;resize:none}
     width: 100%;
   }
 
-  .logout-area {
+  .sidebar-logout {
     position: static;
-    margin: 0 14px 20px;
   }
 
   .upload-grid,
@@ -223,11 +259,6 @@ textarea{height:110px;resize:none}
 .upload-box.drag-over {
   background: #eef4ff;
   border-color: #0b63e5;
-}
-.logo img {
-  width: 85px;
-  height: 85px;
-  object-fit: contain;
 }
 
 .detect-location-card {
@@ -364,20 +395,19 @@ textarea{height:110px;resize:none}
 <div class="layout">
 
 <aside class="sidebar">
-<div class="logo">
-      <span>CityFix</span>
+  <div class="sidebar-logo">
+    <i data-lucide="building-2"></i>
+    <span>CityFix</span>
+  </div>
 
-  <img src="../images/logoooo.png" alt="CityFix Logo">
-</div>
-
-  <div class="menu">
- <div class="menu-title">
-  <i data-lucide="user"></i>
-  <span>Customer Area</span>
-</div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-section-title">
+      <i data-lucide="user"></i>
+      <span>Customer Area</span>
+    </div>
 
     <a class="active" href="#">
-      <i data-lucide="file-text"></i>
+      <i data-lucide="circle-plus"></i>
       <span>Create Report</span>
     </a>
 
@@ -395,9 +425,9 @@ textarea{height:110px;resize:none}
       <i data-lucide="user-circle"></i>
       <span>Profile</span>
     </a>
-  </div>
+  </nav>
 
-  <div class="menu logout">
+  <div class="sidebar-logout">
     <a href="#" onclick="logout()">
       <i data-lucide="log-out"></i>
       <span>Logout</span>
