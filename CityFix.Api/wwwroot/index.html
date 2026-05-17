@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>CityFix</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,346 +11,226 @@
 
   <style>
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
     }
 
     body {
       font-family: 'Heebo', sans-serif;
-      background: #edf2ff;
-      color: #1e293b;
       min-height: 100vh;
-    }
-
-    .page {
-      width: 100%;
-      min-height: 100vh;
-      padding: 36px 20px 42px;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
+      color: #111827;
+      background:
+        radial-gradient(circle at 0% 100%, rgba(145, 155, 255, 0.50), transparent 38%),
+        radial-gradient(circle at 100% 100%, rgba(165, 175, 255, 0.42), transparent 36%),
+        radial-gradient(circle at 68% 0%, rgba(255, 250, 235, 0.95), transparent 45%),
+        linear-gradient(135deg, #f0efff 0%, #ffffff 48%, #eef0ff 100%);
     }
 
+.container {
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12);
+  padding: 50px 50px 44px;
+  width: 100%;
+  max-width: 860px;
+  position: relative;
+  text-align: center;
+}
+    /* ── Logo ── */
     .logo-row {
       display: flex;
       align-items: center;
-      gap: 14px;
-      margin-top: 18px;
-      margin-bottom: 12px;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 22px;
       direction: ltr;
     }
 
+    .logo-row img {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+    }
+
     .logo-row h1 {
-      font-size: 56px;
+      font-size: 46px;
       line-height: 1;
       font-weight: 800;
-      color: #3f37b7;
+      color: #0f172a;
     }
 
-.logo-icon {
-  width: 70px;
-  height: 70px;
-  background: #e0e7ff;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.logo-icon img {
-  width: 140px;
-  height: 140px;
-  object-fit: contain;
-}
+    /* ── Subtitle ── */
     .subtitle {
-      font-size: 20px;
-      color: #334155;
-      margin-top: 8px;
-      margin-bottom: 8px;
-      text-align: center;
-    }
-
-    .location-line {
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      max-width: 580px;
+      margin: 0 auto 36px;
+      font-size: 18px;
+      line-height: 1.5;
       color: #64748b;
-      font-size: 17px;
-      margin-bottom: 46px;
     }
 
-    .location-line svg {
-      width: 18px;
-      height: 18px;
-      stroke: #64748b;
-      stroke-width: 2;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    .main-cards {
-      width: 100%;
-      max-width: 850px;
-      display: flex;
-      gap: 28px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-bottom: 56px;
-    }
-
-    .main-card {
-      width: 408px;
-      min-height: 210px;
-      background: #ffffff;
-      border-radius: 18px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 26px 24px;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .main-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
-    }
-
-    .circle-icon {
-      width: 76px;
-      height: 76px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 18px;
-    }
-
-    .circle-icon.login {
-      background: #dfe4ff;
-    }
-
-
-
-    .circle-icon svg {
-      width: 34px;
-      height: 34px;
-      stroke-width: 2.2;
-      fill: none;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-.circle-icon img {
-  width: 150px;
-  height: 150px;
-  object-fit: contain;
-    margin-top: 15px; 
-}
-    .circle-icon.login svg {
-      stroke: #5a4df0;
-    }
-
-    .circle-icon.signup svg {
-      stroke: #16a34a;
-    }
-
-    .main-card h2 {
+    /* ── How It Works ── */
+    .how-title {
       font-size: 26px;
       font-weight: 800;
       color: #0f172a;
-      margin-bottom: 10px;
-    }
-
-    .main-card p {
-      font-size: 16px;
-      color: #475569;
-    }
-
-    .how-title {
-      font-size: 32px;
-      font-weight: 800;
-      color: #1e293b;
-      margin-bottom: 18px;
-      text-align: center;
+      margin-bottom: 32px;
     }
 
     .steps {
-      width: 100%;
-      max-width: 850px;
       display: flex;
-      gap: 20px;
       justify-content: center;
-      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: 18px;
+      margin-bottom: 40px;
     }
 
-    .step-card {
-      width: 250px;
-      min-height: 148px;
-      background: #ffffff;
+    .step {
+      flex: 1;
+      background: #f8f9ff;
+      border: 1px solid #e8eaf0;
       border-radius: 16px;
-      box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px 18px 16px;
+      padding: 28px 20px 24px;
       text-align: center;
     }
 
     .step-number {
-      width: 46px;
-      height: 46px;
-      border-radius: 50%;
-      background: #3b82f6;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 27px;
-      font-weight: 700;
-      margin-bottom: 14px;
-    }
-
-    .step-card h3 {
-      font-size: 17px;
+      font-size: 48px;
+      line-height: 1;
       font-weight: 800;
-      color: #1e293b;
+      color: #1437ff;
+      margin-bottom: 16px;
+    }
+
+    .step h3 {
+      font-size: 18px;
+      color: #0f172a;
       margin-bottom: 8px;
+      font-weight: 800;
     }
 
-    .step-card p {
+    .step p {
       font-size: 15px;
-      color: #64748b;
       line-height: 1.5;
+      color: #64748b;
     }
 
-    @media (max-width: 900px) {
-      .logo-row h1 {
-        font-size: 46px;
-      }
-
-      .subtitle {
-        font-size: 18px;
-      }
-
-      .main-card {
-        width: 100%;
-        max-width: 500px;
-      }
-
-      .step-card {
-        width: 100%;
-        max-width: 500px;
-      }
+    .arrow {
+      font-size: 36px;
+      color: #1437ff;
+      margin-top: 38px;
+      line-height: 1;
+      flex-shrink: 0;
     }
 
-    @media (max-width: 600px) {
-      .page {
-        padding: 28px 14px 34px;
-      }
+    /* ── Login Button ── */
+    .login-btn {
+      width: 165px;
+      height: 58px;
+      border: none;
+      border-radius: 10px;
+      background: #1437ff;
+      color: white;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Heebo', sans-serif;
+      box-shadow: 0 12px 24px rgba(20, 55, 255, 0.30);
+      transition: 0.2s ease;
+      margin-bottom: 18px;
+    }
 
-      .logo-row h1 {
-        font-size: 38px;
-      }
+    .login-btn:hover {
+      transform: translateY(-2px);
+      background: #002cff;
+    }
 
-      .logo-icon svg {
-        width: 46px;
-        height: 46px;
-      }
+    /* ── Signup ── */
+    .signup-text {
+      font-size: 16px;
+      color: #64748b;
+    }
 
-      .subtitle {
-        font-size: 17px;
-      }
+    .signup-text a {
+      color: #1437ff;
+      font-weight: 700;
+      text-decoration: underline;
+      cursor: pointer;
+    }
 
-      .location-line {
-        font-size: 15px;
-        margin-bottom: 34px;
-      }
-
-      .how-title {
-        font-size: 26px;
-      }
+    @media (max-width: 700px) {
+      body { padding: 20px; align-items: flex-start; padding-top: 40px; }
+      .container { padding: 40px 20px 32px; }
+      .logo-row h1 { font-size: 36px; }
+      .steps { flex-direction: column; align-items: center; }
+      .arrow { transform: rotate(90deg); margin: 0; }
+      .step { width: 100%; }
     }
   </style>
 </head>
+
 <body>
-  <div class="page">
+  <div class="container">
 
     <div class="logo-row">
-   <div class="logo-icon">
-    <img src="images/logo1.png" alt="logo">
-   </div>
+      <img src="images/image.png" alt="CityFix logo">
       <h1>CityFix</h1>
     </div>
 
-    <p class="subtitle">Easily report city issues and get fast responses</p>
+    <p class="subtitle">
+      Report city issues and get fast responses. Your voice makes a
+      difference in improving your community.
+    </p>
 
-    <div class="location-line">
-      <svg viewBox="0 0 24 24">
-        <path d="M12 21s-6-4.35-6-10a6 6 0 1 1 12 0c0 5.65-6 10-6 10Z"/>
-        <circle cx="12" cy="11" r="2"/>
-      </svg>
-      <span>Improving your city starts with your report</span>
-    </div>
-
-    <div class="main-cards">
-      <div class="main-card" onclick="goToLogin()">
-        <div class="circle-icon login">
-          <svg viewBox="0 0 24 24">
-            <path d="M15 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/>
-            <path d="M10 17l5-5-5-5"/>
-            <path d="M15 12H4"/>
-          </svg>
-        </div>
-        <h2>Login</h2>
-        <p>Sign in to your account</p>
-      </div>
-
-      <div class="main-card" onclick="goToSignup()">
-       <div class="circle-icon signup">
-        <img src="images/signupLogo.png" alt="signup">
-      </div>
-        <h2>Sign Up</h2>
-        <p>Create a new account and start reporting</p>
-      </div>
-    </div>
-
-    <h2 class="how-title">How it works?</h2>
+    <h2 class="how-title">How It Works</h2>
 
     <div class="steps">
-      <div class="step-card">
+
+      <div class="step">
         <div class="step-number">1</div>
         <h3>Report an Issue</h3>
-        <p>Take a photo and describe the issue at your location</p>
+        <p>Take a photo and describe the issue</p>
       </div>
 
-      <div class="step-card">
+      <div class="arrow">›</div>
+
+      <div class="step">
         <div class="step-number">2</div>
-        <h3>Track the Treatment</h3>
+        <h3>Track Progress</h3>
         <p>Get updates on treatment progress</p>
       </div>
 
-      <div class="step-card">
+      <div class="arrow">›</div>
+
+      <div class="step">
         <div class="step-number">3</div>
-        <h3>Improve Your City</h3>
-        <p>Contribute to your community and environment</p>
+        <h3>See the Impact</h3>
+        <p>Watch your city improve together</p>
       </div>
+
     </div>
+
+    <button class="login-btn" onclick="goToLogin()">Login</button>
+
+    <p class="signup-text">
+      Don't have an account?
+      <a onclick="goToSignup()">Create one</a>
+    </p>
 
   </div>
 
   <script>
     function goToLogin() {
-  window.location.href = "LogIn/login.html";
-}
+      window.location.href = "LogIn/login.html";
+    }
 
-   function goToSignup() {
-  window.location.href = "signUp/signup-choice.html";
-}
+    function goToSignup() {
+      window.location.href = "signUp/signup-choice.html";
+    }
   </script>
+
 </body>
 </html>

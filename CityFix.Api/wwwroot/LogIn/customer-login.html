@@ -7,7 +7,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -17,70 +17,102 @@
     }
 
     body {
-      font-family: 'Heebo', sans-serif;
+      font-family: 'Inter', Arial, sans-serif;
       min-height: 100vh;
-      background: #e6f8ff;
+      background:
+        radial-gradient(circle at 18% 22%, rgba(255, 246, 235, 0.95), transparent 35%),
+        radial-gradient(circle at 78% 28%, rgba(164, 194, 255, 0.55), transparent 40%),
+        linear-gradient(135deg, #fff7ed 0%, #eef5ff 43%, #dceaff 100%);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #0f172a;
+      color: #111827;
       padding: 24px;
     }
 
     .card {
       width: 100%;
-      max-width: 520px;
-      background: #ffffff;
-      border-radius: 20px;
-      box-shadow: 0 22px 45px rgba(15, 23, 42, 0.14);
-      padding: 34px 34px 28px;
+      max-width: 400px;
+      min-height: 470px;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 16px;
+      box-shadow: 0 26px 50px rgba(15, 23, 42, 0.18);
+      padding: 34px 40px 34px;
+      border: 1px solid rgba(229, 231, 235, 0.9);
+      position: relative;
     }
 
-    .top-icon {
-      width: 86px;
-      height: 86px;
-      border-radius: 50%;
-      background: #dbeafe;
+    .back-square {
+      width: 31px;
+      height: 31px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #2563eb, #0b63f6);
+      border: none;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 18px;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(37, 99, 235, 0.25);
+      position: absolute;
+      top: 31px;
+      left: 32px;
+    }
+
+    .back-square svg {
+      width: 17px;
+      height: 17px;
+      stroke: white;
+      fill: none;
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .top-icon {
+      width: 42px;
+      height: 42px;
+      margin: 24px auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .top-icon svg {
-      width: 42px;
-      height: 42px;
+      width: 38px;
+      height: 38px;
       stroke: #2563eb;
       fill: none;
-      stroke-width: 2.2;
+      stroke-width: 2.5;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
 
     .title {
       text-align: center;
-      font-size: 30px;
+      font-size: 26px;
       font-weight: 800;
-      color: #0f2341;
-      margin-bottom: 6px;
+      color: #111827;
+      margin-bottom: 8px;
+      letter-spacing: -0.4px;
     }
 
     .subtitle {
       text-align: center;
-      font-size: 18px;
-      color: #475569;
-      margin-bottom: 28px;
+      font-size: 12px;
+      color: #4b5563;
+      margin-bottom: 32px;
+      line-height: 1.4;
     }
 
     .form-group {
-      margin-bottom: 18px;
+      margin-bottom: 17px;
     }
 
     .form-group label {
       display: block;
-      font-size: 15px;
-      font-weight: 700;
-      color: #0f172a;
+      font-size: 11px;
+      font-weight: 800;
+      color: #111827;
       margin-bottom: 8px;
     }
 
@@ -90,27 +122,33 @@
 
     .input-wrap input {
       width: 100%;
-      height: 54px;
-      border: 1px solid #d7dee8;
-      border-radius: 12px;
-      background: #fff;
-      padding: 0 16px 0 48px;
-      font-size: 16px;
-      color: #0f172a;
+      height: 40px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      background: #ffffff;
+      padding: 0 13px 0 38px;
+      font-size: 12px;
+      color: #111827;
       outline: none;
+      transition: 0.2s ease;
+    }
+
+    .input-wrap input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.13);
     }
 
     .input-wrap input::placeholder {
-      color: #94a3b8;
+      color: #8f98a7;
     }
 
     .input-wrap svg {
       position: absolute;
-      left: 14px;
+      left: 13px;
       top: 50%;
       transform: translateY(-50%);
-      width: 20px;
-      height: 20px;
+      width: 15px;
+      height: 15px;
       stroke: #94a3b8;
       fill: none;
       stroke-width: 2;
@@ -123,63 +161,68 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: 8px 0 20px;
-      gap: 10px;
-      flex-wrap: wrap;
+      margin: 7px 0 32px;
+      gap: 8px;
+    }
+
+    .forgot-link {
+      color: #2563eb;
+      text-decoration: underline;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
     }
 
     .remember {
       display: flex;
       align-items: center;
-      gap: 8px;
-      color: #1e293b;
-      font-size: 15px;
+      gap: 7px;
+      color: #374151;
+      font-size: 11px;
       font-weight: 500;
+      white-space: nowrap;
     }
 
     .remember input {
-      width: 16px;
-      height: 16px;
+      width: 13px;
+      height: 13px;
       accent-color: #2563eb;
+      cursor: pointer;
     }
 
-    .forgot-link {
-      color: #2563eb;
-      text-decoration: none;
-      font-size: 15px;
-      font-weight: 700;
-    }
-
-    .forgot-link:hover {
-      text-decoration: underline;
+    .submit-area {
+      display: flex;
+      justify-content: center;
     }
 
     .submit-btn {
-      width: 100%;
-      height: 54px;
+      width: 92px;
+      height: 36px;
       border: none;
-      border-radius: 12px;
-      background: #2563eb;
-      color: #fff;
-      font-size: 20px;
+      border-radius: 7px;
+      background: linear-gradient(90deg, #2563eb 0%, #0b63f6 100%);
+      color: #ffffff;
+      font-size: 11px;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 10px 22px rgba(37, 99, 235, 0.24);
+      box-shadow: 0 9px 17px rgba(37, 99, 235, 0.30);
       transition: 0.2s ease;
     }
 
     .submit-btn:hover {
-      background: #1d4ed8;
+      transform: translateY(-1px);
+      box-shadow: 0 11px 20px rgba(37, 99, 235, 0.35);
+      background: linear-gradient(90deg, #1d4ed8 0%, #0b63f6 100%);
     }
 
     .message-box {
       display: none;
-      margin-top: 16px;
-      border-radius: 12px;
-      padding: 12px 14px;
-      font-size: 15px;
+      margin-top: 15px;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 11px;
       text-align: center;
-      line-height: 1.6;
+      line-height: 1.5;
     }
 
     .message-box.error {
@@ -198,10 +241,10 @@
 
     .bottom-links {
       text-align: center;
-      margin-top: 22px;
-      line-height: 2;
-      font-size: 17px;
-      color: #475569;
+      margin-top: 18px;
+      line-height: 1.8;
+      font-size: 12px;
+      color: #6b7280;
     }
 
     .bottom-links a {
@@ -218,28 +261,60 @@
       font-weight: 500;
     }
 
+    .signup-link:hover,
+    .back-link:hover {
+      text-decoration: underline;
+    }
+
     @media (max-width: 600px) {
+      body {
+        padding: 18px;
+      }
+
       .card {
-        padding: 24px 18px 22px;
+        max-width: 360px;
+        min-height: 450px;
+        padding: 32px 28px 30px;
+      }
+
+      .back-square {
+        top: 28px;
+        left: 28px;
       }
 
       .title {
-        font-size: 26px;
+        font-size: 24px;
       }
 
       .subtitle {
-        font-size: 16px;
+        font-size: 11px;
+      }
+
+      .input-wrap input {
+        height: 38px;
       }
 
       .options-row {
-        align-items: flex-start;
-        flex-direction: column-reverse;
+        gap: 10px;
+      }
+
+      .forgot-link,
+      .remember {
+        font-size: 10px;
       }
     }
   </style>
 </head>
+
 <body>
   <div class="card">
+
+    <button class="back-square" type="button" onclick="window.location.href='login.html'">
+      <svg viewBox="0 0 24 24">
+        <path d="M15 18l-6-6 6-6"></path>
+      </svg>
+    </button>
+
     <div class="top-icon">
       <svg viewBox="0 0 24 24">
         <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z"></path>
@@ -248,13 +323,13 @@
     </div>
 
     <h1 class="title">Citizen Login</h1>
-    <p class="subtitle">Report issues and track treatment progress</p>
+    <p class="subtitle">Report city issues</p>
 
     <form id="customerLoginForm">
       <div class="form-group">
         <label for="email">Email</label>
         <div class="input-wrap">
-          <input type="email" id="email" placeholder="citizen@example.com" required />
+          <input type="email" id="email" placeholder="Citizen@cityfix.com" required />
           <svg viewBox="0 0 24 24">
             <path d="M4 6h16v12H4z"></path>
             <path d="m4 7 8 6 8-6"></path>
@@ -282,76 +357,91 @@
         </label>
       </div>
 
-      <button type="submit" class="submit-btn">Login</button>
+      <div class="submit-area">
+        <button type="submit" class="submit-btn">Login</button>
+      </div>
 
       <div id="messageBox" class="message-box"></div>
     </form>
 
     <div class="bottom-links">
       <div>Not registered yet? <a class="signup-link" href="../signUp/citizen-signup.html">Sign Up Now</a></div>
-      <div><a class="back-link" href="login.html">← Back to User Type Selection</a></div>
     </div>
   </div>
 
   <script>
-  const form = document.getElementById("customerLoginForm");
-  const messageBox = document.getElementById("messageBox");
+    const form = document.getElementById("customerLoginForm");
+    const messageBox = document.getElementById("messageBox");
 
-  form.addEventListener("submit", async function (e) {
-    e.preventDefault();
+    form.addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-    messageBox.className = "message-box";
-    messageBox.style.display = "none";
-    messageBox.textContent = "";
+      messageBox.className = "message-box";
+      messageBox.style.display = "none";
+      messageBox.textContent = "";
 
-    const data = {
-      email: document.getElementById("email").value.trim(),
-      password: document.getElementById("password").value
-    };
+      const data = {
+        email: document.getElementById("email").value.trim(),
+        password: document.getElementById("password").value
+      };
 
-    try {
-      const response = await fetch("/api/Auth/login-customer", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
-      });
-
-      let result = {};
       try {
-        result = await response.json();
-      } catch {
-        result = {};
+        const response = await fetch("/api/Auth/login-customer", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        let result = {};
+        try {
+          result = await response.json();
+        } catch {
+          result = {};
+        }
+
+        if (!response.ok) {
+          messageBox.style.display = "block";
+          messageBox.className = "message-box error";
+          messageBox.textContent = result.message || "Login error";
+          return;
+        }
+
+        if (document.getElementById("rememberMe").checked) {
+          localStorage.setItem("customerEmail", data.email);
+        } else {
+          localStorage.removeItem("customerEmail");
+        }
+
+        localStorage.setItem("userFullName", result.fullName || "");
+        localStorage.setItem("userEmail", result.email || "");
+        localStorage.setItem("userRole", result.role || "Customer");
+        localStorage.setItem("userPhone", result.phone || "");
+        localStorage.setItem("userAddress", result.address || "");
+
+        messageBox.style.display = "block";
+        messageBox.className = "message-box success";
+        messageBox.textContent = result.message || "Logged in successfully";
+
+        setTimeout(() => {
+          window.location.href = "../citizen/create-report.html?v=" + Date.now();
+        }, 1000);
+
+      } catch (error) {
+        messageBox.style.display = "block";
+        messageBox.className = "message-box error";
+        messageBox.textContent = "Connection error with server";
+        console.error(error);
       }
+    });
 
- if (!response.ok) {
-  messageBox.style.display = "block";
-  messageBox.className = "message-box error";
-  messageBox.textContent = result.message || "Login error";
-  return;
-}
+    const savedEmail = localStorage.getItem("customerEmail");
 
-localStorage.setItem("userFullName", result.fullName || "");
-localStorage.setItem("userEmail", result.email || "");
-localStorage.setItem("userRole", result.role || "Customer");
-localStorage.setItem("userPhone", result.phone || "");
-localStorage.setItem("userAddress", result.address || "");
-
-messageBox.style.display = "block";
-messageBox.className = "message-box success";
-messageBox.textContent = result.message || "Logged in successfully";
-
-setTimeout(() => {
-window.location.href = "../citizen/create-report.html?v=" + Date.now();}, 1000);
-
-    } catch (error) {
-      messageBox.style.display = "block";
-      messageBox.className = "message-box error";
-      messageBox.textContent = "Connection error with server";
-      console.error(error);
+    if (savedEmail) {
+      document.getElementById("email").value = savedEmail;
+      document.getElementById("rememberMe").checked = true;
     }
-  });
-</script>
+  </script>
 </body>
 </html>
