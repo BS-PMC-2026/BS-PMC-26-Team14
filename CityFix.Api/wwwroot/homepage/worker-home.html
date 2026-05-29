@@ -815,6 +815,7 @@ body {
   line-height: 1.7;
   font-size: 14px;
 }
+
 .filters-card {
   background: white;
   border: 1px solid #dbe2ea;
@@ -999,6 +1000,7 @@ body {
       <section id="listView">
         <h1 class="page-title">All Reports</h1>
 
+        
         <div class="filters-card">
           <div class="filter-group">
             <label>Category</label>
@@ -1257,7 +1259,8 @@ async function loadOpenReports() {
       return;
     }
 
-    currentPage = 1;
+   
+     currentPage = 1;
     fillCategoryFilter();
     renderReportsList();
 
@@ -1275,7 +1278,8 @@ function renderReportsList() {
     return;
   }
 
-  const statusFilter = document.getElementById("statusFilter")?.value || "";
+ 
+   const statusFilter = document.getElementById("statusFilter")?.value || "";
   const priorityFilter = document.getElementById("priorityFilter")?.value || "";
   const categoryFilter = document.getElementById("categoryFilter")?.value || "";
 
@@ -1286,16 +1290,19 @@ function renderReportsList() {
     return statusMatch && priorityMatch && categoryMatch;
   });
 
+  
   if (filtered.length === 0) {
     container.innerHTML = `<p class="empty-msg">No reports match the selected filters</p>`;
     return;
   }
 
+ 
   const totalPages = Math.ceil(filtered.length / REPORTS_PER_PAGE);
   if (currentPage > totalPages) currentPage = totalPages;
   if (currentPage < 1) currentPage = 1;
 
   const start = (currentPage - 1) * REPORTS_PER_PAGE;
+  
   const pageReports = filtered.slice(start, start + REPORTS_PER_PAGE);
 
   let html = `<div class="reports-list">`;
@@ -1344,6 +1351,7 @@ function renderReportsList() {
   container.innerHTML = html;
 }
 
+
 function fillCategoryFilter() {
   const select = document.getElementById("categoryFilter");
   if (!select) return;
@@ -1353,6 +1361,7 @@ function fillCategoryFilter() {
     select.innerHTML += `<option value="${cat}">${cat}</option>`;
   });
 }
+
 
 function resetReportFilters() {
   document.getElementById("statusFilter").value = "";
