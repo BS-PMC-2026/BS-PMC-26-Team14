@@ -6,6 +6,7 @@ namespace CityFix.Api.Models
         public string FullName { get; set; } = "";
         public string Email { get; set; } = "";
         public string PasswordHash { get; set; } = "";
+        public bool IsBlocked { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
