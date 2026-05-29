@@ -8,6 +8,7 @@ namespace CityFix.Api.Models
         public string Email { get; set; } = "";
         public string Address { get; set; } = "";
         public string PasswordHash { get; set; } = "";
+        public bool IsBlocked { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

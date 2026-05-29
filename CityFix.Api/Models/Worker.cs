@@ -11,6 +11,7 @@ namespace CityFix.Api.Models
         public string Municipality { get; set; } = "";
         public string PasswordHash { get; set; } = "";
         public string ApprovalStatus { get; set; } = "Pending";
+        public bool IsBlocked { get; set; } = false;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

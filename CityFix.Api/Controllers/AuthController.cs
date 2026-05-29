@@ -36,7 +36,8 @@ namespace CityFix.Api.Controllers
                 Phone = dto.Phone,
                 Email = dto.Email,
                 Address = dto.Address,
-                PasswordHash = HashPassword(dto.Password)
+                PasswordHash = HashPassword(dto.Password),
+                IsBlocked = false
             };
 
             if (!ModelState.IsValid)
@@ -63,7 +64,8 @@ namespace CityFix.Api.Controllers
                 Department = dto.Department,
                 Municipality = dto.Municipality,
                 PasswordHash = HashPassword(dto.Password),
-                ApprovalStatus = "Pending"
+                ApprovalStatus = "Pending",
+                IsBlocked = false
             };
 
             if (!ModelState.IsValid)
@@ -88,6 +90,9 @@ namespace CityFix.Api.Controllers
             if (customer == null)
                 return NotFound(new { message = "לא נמצא תושב עם האימייל הזה" });
 
+            if (customer.IsBlocked)
+                return BadRequest(new { message = "Your account has been blocked by the system administrator" });
+
             if (!VerifyPassword(dto.Password, customer.PasswordHash))
                 return Unauthorized(new { message = "סיסמה שגויה" });
 
@@ -110,6 +115,9 @@ namespace CityFix.Api.Controllers
 
             if (worker == null)
                 return NotFound(new { message = "האימייל לא קיים במערכת" });
+
+            if (worker.IsBlocked)
+                return BadRequest(new { message = "Your account has been blocked by the system administrator" });
 
             if (!VerifyPassword(dto.Password, worker.PasswordHash))
                 return Unauthorized(new { message = "הסיסמה שגויה" });
@@ -140,6 +148,9 @@ namespace CityFix.Api.Controllers
 
             if (admin == null)
                 return NotFound(new { message = "האימייל לא קיים במערכת" });
+
+            if (admin.IsBlocked)
+                return BadRequest(new { message = "Your admin account has been blocked" });
 
             if (!VerifyPassword(dto.Password, admin.PasswordHash))
                 return Unauthorized(new { message = "הסיסמה שגויה" });
@@ -497,11 +508,12 @@ namespace CityFix.Api.Controllers
             public string ImageBase64 { get; set; } = "";
             public string Note { get; set; } = "";
         }
+
         public class UpdateReportStatusDto
-{
-    public string WorkerEmail { get; set; } = "";
-    public string NewStatus { get; set; } = "";
-}
+        {
+            public string WorkerEmail { get; set; } = "";
+            public string NewStatus { get; set; } = "";
+        }
 
         [HttpGet("worker-profile")]
         public async Task<IActionResult> GetWorkerProfile([FromQuery] string email)
@@ -639,6 +651,9 @@ namespace CityFix.Api.Controllers
             if (worker == null)
                 return NotFound(new { message = "העובד לא נמצא במערכת" });
 
+            if (worker.IsBlocked)
+                return BadRequest(new { message = "Your account has been blocked by the system administrator" });
+
             if (worker.ApprovalStatus != "Approved")
                 return BadRequest(new { message = "העובד עדיין לא מאושר במערכת" });
 
@@ -692,6 +707,15 @@ namespace CityFix.Api.Controllers
             if (report.AssignedWorkerEmail.ToLower() != workerEmail)
                 return BadRequest(new { message = "רק העובד שקיבל את הדיווח יכול להעלות תמונה" });
 
+            var worker = await _context.Workers
+                .FirstOrDefaultAsync(w => w.Email.ToLower() == workerEmail);
+
+            if (worker == null)
+                return NotFound(new { message = "העובד לא נמצא במערכת" });
+
+            if (worker.IsBlocked)
+                return BadRequest(new { message = "Your account has been blocked by the system administrator" });
+
             report.WorkerImageBase64 = dto.ImageBase64;
             report.WorkerImageNote = dto.Note;
             report.WorkerImageUploadedAt = DateTime.UtcNow;
@@ -743,7 +767,9 @@ namespace CityFix.Api.Controllers
                     longitude = r.Longitude,
                     location = r.Location,
                     description = r.Description,
-                    priority = r.Priority
+                    priority = r.Priority,
+                    customerEmail = r.CustomerEmail,
+                    assignedWorkerEmail = r.AssignedWorkerEmail
                 })
                 .ToListAsync();
 
@@ -858,6 +884,267 @@ namespace CityFix.Api.Controllers
             return Ok(reports);
         }
 
+        [HttpGet("admin/users")]
+        public async Task<IActionResult> GetAllSystemUsers()
+        {
+            var customers = await _context.Customers
+                .AsNoTracking()
+                .Select(c => new
+                {
+                    id = c.Id,
+                    name = c.FullName,
+                    email = c.Email,
+                    role = "Customer",
+                    status = c.IsBlocked ? "Blocked" : "Active",
+                    joinDate = c.CreatedAt,
+                    reports = _context.Reports.Count(r => r.CustomerEmail.ToLower() == c.Email.ToLower())
+                })
+                .ToListAsync();
+
+            var workers = await _context.Workers
+                .AsNoTracking()
+                .Select(w => new
+                {
+                    id = w.Id,
+                    name = w.FullName,
+                    email = w.Email,
+                    role = "Worker",
+                    status = w.IsBlocked
+                        ? "Blocked"
+                        : w.ApprovalStatus == "Pending"
+                            ? "Pending"
+                            : w.ApprovalStatus == "Rejected"
+                                ? "Rejected"
+                                : "Active",
+                    joinDate = w.CreatedAt,
+                    reports = _context.Reports.Count(r =>
+                        r.AssignedWorkerEmail != null &&
+                        r.AssignedWorkerEmail.ToLower() == w.Email.ToLower())
+                })
+                .ToListAsync();
+
+            var admins = await _context.Admins
+                .AsNoTracking()
+                .Select(a => new
+                {
+                    id = a.Id,
+                    name = a.FullName,
+                    email = a.Email,
+                    role = "Admin",
+                    status = a.IsBlocked ? "Blocked" : "Active",
+                    joinDate = a.CreatedAt,
+                    reports = 0
+                })
+                .ToListAsync();
+
+            var users = customers
+                .Concat(workers)
+                .Concat(admins)
+                .OrderByDescending(u => u.joinDate)
+                .ToList();
+
+            return Ok(users);
+        }
+
+        [HttpPut("admin/users/{role}/{id}/block")]
+        public async Task<IActionResult> ToggleUserBlockStatus(string role, int id)
+        {
+            role = role.Trim().ToLower();
+
+            if (role == "customer")
+            {
+                var customer = await _context.Customers.FindAsync(id);
+
+                if (customer == null)
+                    return NotFound(new { message = "Customer not found" });
+
+                customer.IsBlocked = !customer.IsBlocked;
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    message = customer.IsBlocked ? "Customer blocked successfully" : "Customer unblocked successfully",
+                    isBlocked = customer.IsBlocked
+                });
+            }
+
+            if (role == "worker")
+            {
+                var worker = await _context.Workers.FindAsync(id);
+
+                if (worker == null)
+                    return NotFound(new { message = "Worker not found" });
+
+                worker.IsBlocked = !worker.IsBlocked;
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    message = worker.IsBlocked ? "Worker blocked successfully" : "Worker unblocked successfully",
+                    isBlocked = worker.IsBlocked
+                });
+            }
+
+            if (role == "admin")
+            {
+                var admin = await _context.Admins.FindAsync(id);
+
+                if (admin == null)
+                    return NotFound(new { message = "Admin not found" });
+
+                var activeAdminsCount = await _context.Admins.CountAsync(a => !a.IsBlocked);
+
+                if (!admin.IsBlocked && activeAdminsCount <= 1)
+                {
+                    return BadRequest(new { message = "Cannot block the last active admin account" });
+                }
+
+                admin.IsBlocked = !admin.IsBlocked;
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    message = admin.IsBlocked ? "Admin blocked successfully" : "Admin unblocked successfully",
+                    isBlocked = admin.IsBlocked
+                });
+            }
+
+            return BadRequest(new { message = "Invalid role" });
+        }
+
+        [HttpDelete("admin/users/{role}/{id}")]
+        public async Task<IActionResult> DeleteSystemUser(string role, int id)
+        {
+            role = role.Trim().ToLower();
+
+            if (role == "customer")
+            {
+                var customer = await _context.Customers.FindAsync(id);
+
+                if (customer == null)
+                    return NotFound(new { message = "Customer not found" });
+
+                _context.Customers.Remove(customer);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Customer deleted successfully" });
+            }
+
+            if (role == "worker")
+            {
+                var worker = await _context.Workers.FindAsync(id);
+
+                if (worker == null)
+                    return NotFound(new { message = "Worker not found" });
+
+                _context.Workers.Remove(worker);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Worker deleted successfully" });
+            }
+
+            if (role == "admin")
+            {
+                var admin = await _context.Admins.FindAsync(id);
+
+                if (admin == null)
+                    return NotFound(new { message = "Admin not found" });
+
+                var adminsCount = await _context.Admins.CountAsync();
+
+                if (adminsCount <= 1)
+                {
+                    return BadRequest(new { message = "Cannot delete the last admin account" });
+                }
+
+                _context.Admins.Remove(admin);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Admin deleted successfully" });
+            }
+
+            return BadRequest(new { message = "Invalid role" });
+        }
+
+        [HttpPut("update-report-status/{reportId}")]
+        public async Task<IActionResult> UpdateReportStatus(
+            int reportId,
+            [FromBody] UpdateReportStatusDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
+                return Unauthorized(new { message = "יש להתחבר כעובד" });
+
+            var worker = await _context.Workers
+                .FirstOrDefaultAsync(w =>
+                    w.Email.ToLower() == dto.WorkerEmail.ToLower() &&
+                    w.ApprovalStatus == "Approved");
+
+            if (worker == null)
+                return Unauthorized(new { message = "אין הרשאה לעדכן סטטוס" });
+
+            if (worker.IsBlocked)
+                return BadRequest(new { message = "Your account has been blocked by the system administrator" });
+
+            var allowedStatuses = new[]
+            {
+                "Open",
+                "In Treatment",
+                "Completed"
+            };
+
+            if (!allowedStatuses.Contains(dto.NewStatus))
+                return BadRequest(new { message = "סטטוס לא חוקי" });
+
+            var report = await _context.Reports.FindAsync(reportId);
+
+            if (report == null)
+                return NotFound(new { message = "הקריאה לא נמצאה" });
+
+            if (report.AssignedWorkerEmail != null &&
+                report.AssignedWorkerEmail.ToLower() != dto.WorkerEmail.ToLower())
+            {
+                return Forbid();
+            }
+
+            var oldStatus = report.Status;
+
+            report.Status = dto.NewStatus;
+
+            var history = new ReportStatusHistory
+            {
+                ReportId = report.Id,
+                OldStatus = oldStatus,
+                NewStatus = dto.NewStatus,
+                ChangedByWorkerEmail = dto.WorkerEmail,
+                ChangedAt = DateTime.UtcNow
+            };
+
+            _context.ReportStatusHistories.Add(history);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "סטטוס הקריאה עודכן בהצלחה",
+                reportId = report.Id,
+                oldStatus,
+                newStatus = report.Status,
+                changedBy = dto.WorkerEmail,
+                changedAt = history.ChangedAt
+            });
+        }
+
+        [HttpGet("report-status-history/{reportId}")]
+        public async Task<IActionResult> GetReportStatusHistory(int reportId)
+        {
+            var history = await _context.ReportStatusHistories
+                .Where(h => h.ReportId == reportId)
+                .OrderByDescending(h => h.ChangedAt)
+                .ToListAsync();
+
+            return Ok(history);
+        }
+
         private async Task<(string UserType, int UserId)?> FindUserByEmailAsync(string email)
         {
             var customer = await _context.Customers
@@ -902,81 +1189,5 @@ namespace CityFix.Api.Controllers
             var hashedPassword = HashPassword(password);
             return hashedPassword == savedHash;
         }
-        [HttpPut("update-report-status/{reportId}")]
-public async Task<IActionResult> UpdateReportStatus(
-    int reportId,
-    [FromBody] UpdateReportStatusDto dto)
-{
-    if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
-        return Unauthorized(new { message = "יש להתחבר כעובד" });
-
-    var worker = await _context.Workers
-        .FirstOrDefaultAsync(w =>
-            w.Email.ToLower() == dto.WorkerEmail.ToLower() &&
-            w.ApprovalStatus == "Approved");
-
-    if (worker == null)
-        return Unauthorized(new { message = "אין הרשאה לעדכן סטטוס" });
-
-    var allowedStatuses = new[]
-    {
-        "Open",
-        "In Treatment",
-        "Completed"
-    };
-
-    if (!allowedStatuses.Contains(dto.NewStatus))
-        return BadRequest(new { message = "סטטוס לא חוקי" });
-
-    var report = await _context.Reports.FindAsync(reportId);
-
-    if (report == null)
-        return NotFound(new { message = "הקריאה לא נמצאה" });
-
-    if (report.AssignedWorkerEmail != null &&
-        report.AssignedWorkerEmail.ToLower() != dto.WorkerEmail.ToLower())
-    {
-        return Forbid();
-    }
-
-    var oldStatus = report.Status;
-
-    report.Status = dto.NewStatus;
-    
-
-    var history = new ReportStatusHistory
-    {
-        ReportId = report.Id,
-        OldStatus = oldStatus,
-        NewStatus = dto.NewStatus,
-        ChangedByWorkerEmail = dto.WorkerEmail,
-        ChangedAt = DateTime.UtcNow
-    };
-
-    _context.ReportStatusHistories.Add(history);
-
-    await _context.SaveChangesAsync();
-
-    return Ok(new
-    {
-        message = "סטטוס הקריאה עודכן בהצלחה",
-        reportId = report.Id,
-        oldStatus,
-        newStatus = report.Status,
-        changedBy = dto.WorkerEmail,
-        changedAt = history.ChangedAt
-    });
-}
-
-[HttpGet("report-status-history/{reportId}")]
-public async Task<IActionResult> GetReportStatusHistory(int reportId)
-{
-    var history = await _context.ReportStatusHistories
-        .Where(h => h.ReportId == reportId)
-        .OrderByDescending(h => h.ChangedAt)
-        .ToListAsync();
-
-    return Ok(history);
-}
     }
 }

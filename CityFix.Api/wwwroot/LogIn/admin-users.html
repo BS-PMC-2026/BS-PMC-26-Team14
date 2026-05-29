@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Management - CityFix</title>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f8fafc;
+  color: #111827;
+}
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR - SAME STYLE AS CREATE REPORT */
+.sidebar {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  min-height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-logo {
+  height: 78px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.sidebar-logo i,
+.sidebar-logo svg {
+  width: 28px;
+  height: 28px;
+  color: #0526ff;
+  flex-shrink: 0;
+}
+
+.sidebar-logo span {
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: #101828;
+  letter-spacing: -0.4px;
+}
+
+.sidebar-nav {
+  padding: 16px 14px 0;
+  flex: 1;
+}
+
+.sidebar-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 12px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  color: #5f5f5f;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
+}
+
+.sidebar-section-title i,
+.sidebar-section-title svg {
+  width: 16px;
+  height: 16px;
+  color: #5f5f5f;
+}
+
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 16px;
+  color: #364153;
+  text-decoration: none;
+  border-radius: 10px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  margin-bottom: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sidebar-nav a i,
+.sidebar-nav a svg {
+  width: 20px;
+  height: 20px;
+  color: #364153;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.sidebar-nav a:hover {
+  background: #d7e9ff;
+  color: #0526ff;
+}
+
+.sidebar-nav a:hover i,
+.sidebar-nav a:hover svg {
+  color: #0526ff;
+}
+
+.sidebar-nav a.active {
+  background: #0526ff;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.sidebar-nav a.active i,
+.sidebar-nav a.active svg {
+  color: #ffffff;
+}
+
+.sidebar-logout {
+  padding: 16px 14px;
+  border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.sidebar-logout a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 16px;
+  color: #364153;
+  text-decoration: none;
+  border-radius: 10px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sidebar-logout a i,
+.sidebar-logout a svg {
+  width: 20px;
+  height: 20px;
+  color: #364153;
+  transition: color 0.15s;
+}
+
+.sidebar-logout a:hover {
+  background: #d7e9ff;
+  color: #0526ff;
+}
+
+.sidebar-logout a:hover i,
+.sidebar-logout a:hover svg {
+  color: #0526ff;
+}
+
+/* MAIN - SAME STYLE AS CREATE REPORT */
+.main {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+  min-height: 100vh;
+}
+
+.topbar {
+  height: 78px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+  position: sticky;
+  top: 0;
+  z-index: 900;
+}
+
+.menu-icon {
+  width: 28px;
+  height: 28px;
+  color: #334155;
+}
+
+.admin-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+.admin-info {
+  text-align: right;
+}
+
+.admin-info b {
+  font-size: 16px;
+  color: #111827;
+  text-transform: uppercase;
+}
+
+.admin-info span {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+}
+
+.avatar i,
+.avatar svg {
+  width: 26px;
+  height: 26px;
+}
+
+.content {
+  padding: 38px 55px 50px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.page-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+.page-subtitle {
+  font-size: 18px;
+  color: #475569;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+.add-btn {
+  border: none;
+  border-radius: 7px;
+  background: #0b63e5;
+  color: white;
+  padding: 13px 24px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: 'Inter', Arial, sans-serif;
+  transition: 0.15s ease;
+}
+
+.add-btn i,
+.add-btn svg {
+  width: 19px;
+  height: 19px;
+}
+
+.add-btn:hover {
+  background: #084fbb;
+}
+
+/* STATS */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: white;
+  border: 1px solid #d7dde5;
+  border-radius: 8px;
+  min-height: 140px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.stat-number {
+  font-size: 38px;
+  font-weight: 800;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+.blue { color: #0526ff; }
+.green { color: #16a34a; }
+.orange { color: #c77c00; }
+.red { color: #dc2626; }
+
+.stat-label {
+  font-size: 16px;
+  color: #334155;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+/* FILTERS */
+.filters-card {
+  background: white;
+  border: 1px solid #d7dde5;
+  border-radius: 8px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+.search-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.search-wrap input {
+  width: 100%;
+  height: 52px;
+  border: none;
+  border-radius: 7px;
+  background: #f3f4f6;
+  padding: 0 18px 0 54px;
+  font-size: 16px;
+  color: #111827;
+  outline: none;
+}
+
+.search-wrap input::placeholder {
+  color: #6b7280;
+}
+
+.search-wrap i,
+.search-wrap svg {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  width: 22px;
+  height: 22px;
+  pointer-events: none;
+}
+
+.filters-card select {
+  width: 100%;
+  height: 52px;
+  border: 1px solid #cfd6df;
+  border-radius: 7px;
+  background: white;
+  padding: 0 14px;
+  font-size: 16px;
+  color: #111827;
+  outline: none;
+}
+
+/* TABLE */
+.table-card {
+  background: white;
+  border: 1px solid #d7dde5;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+thead {
+  background: #ffffff;
+}
+
+th {
+  text-align: left;
+  padding: 16px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 15px;
+  font-weight: 800;
+  color: #111827;
+}
+
+td {
+  padding: 14px 10px;
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 15px;
+  color: #334155;
+  vertical-align: middle;
+  word-break: break-word;
+}
+
+tbody tr:hover {
+  background: #f8fafc;
+}
+
+.name-cell {
+  color: #111827;
+  font-weight: 800;
+}
+
+.email-cell {
+  color: #334155;
+  line-height: 1.45;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  direction: ltr;
+}
+
+.email-text {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  color: #334155;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.role-admin {
+  background: #faf5ff;
+  color: #8b2cf5;
+  border: 1px solid #e9d5ff;
+}
+
+.role-worker {
+  background: #eff6ff;
+  color: #0526ff;
+  border: 1px solid #bfdbfe;
+}
+
+.role-customer {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.status-active {
+  background: #ecfdf5;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+.status-pending {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.status-rejected {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.status-blocked {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.icon-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 7px;
+  border: 1px solid #d7dde5;
+  background: white;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-btn i,
+.icon-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.icon-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.block-btn {
+  color: #c77c00;
+}
+
+.delete-btn {
+  color: #dc2626;
+}
+
+.unblock-btn {
+  color: #16a34a;
+}
+
+.empty-message,
+.loading-message {
+  padding: 36px;
+  text-align: center;
+  font-size: 17px;
+  color: #64748b;
+}
+
+.error-message {
+  padding: 36px;
+  text-align: center;
+  font-size: 17px;
+  color: #dc2626;
+  font-weight: 800;
+}
+
+/* RESPONSIVE */
+@media(max-width: 1050px) {
+  .layout {
+    display: block;
+  }
+
+  .sidebar {
+    position: static;
+    width: 100%;
+    min-height: auto;
+  }
+
+  .main {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filters-card {
+    grid-template-columns: 1fr;
+  }
+
+  table {
+    min-width: 1050px;
+  }
+}
+
+@media(max-width: 700px) {
+  .content {
+    padding: 25px 15px;
+  }
+
+  .page-header {
+    flex-direction: column;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .table-card {
+    overflow-x: auto;
+  }
+
+  table {
+    min-width: 1050px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <i data-lucide="building-2"></i>
+      <span>CityFix</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">
+        <i data-lucide="shield-check"></i>
+        <span>Admin Area</span>
+      </div>
+
+      <a href="home.html">
+        <i data-lucide="layout-dashboard"></i>
+        <span>Home</span>
+      </a>
+
+      <a href="admin-dashboard.html">
+        <i data-lucide="bar-chart-3"></i>
+        <span>Statistics</span>
+      </a>
+
+      <a href="admin-dashboard.html">
+        <i data-lucide="file-text"></i>
+        <span>All Reports</span>
+      </a>
+
+      <a href="admin-users.html" class="active">
+        <i data-lucide="users"></i>
+        <span>Manage Users</span>
+      </a>
+
+      <a href="approve-workers.html">
+        <i data-lucide="user-check"></i>
+        <span>Worker Requests</span>
+      </a>
+
+      <a href="profile.html">
+        <i data-lucide="user-circle"></i>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-logout">
+      <a href="#" onclick="logout()">
+        <i data-lucide="log-out"></i>
+        <span>Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="topbar">
+      <i data-lucide="menu" class="menu-icon"></i>
+
+      <div class="admin-user">
+        <div class="admin-info">
+          <b id="adminName">Admin</b><br>
+          <span>Admin</span>
+        </div>
+
+        <div class="avatar">
+          <i data-lucide="user"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">User Management</h1>
+          <p class="page-subtitle">Manage system users and permissions</p>
+        </div>
+
+      </div>
+
+      <section class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number blue" id="totalUsers">0</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-number green" id="activeUsers">0</div>
+          <div class="stat-label">Active Users</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-number orange" id="pendingUsers">0</div>
+          <div class="stat-label">Pending Approval</div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-number red" id="blockedUsers">0</div>
+          <div class="stat-label">Blocked Users</div>
+        </div>
+      </section>
+
+      <section class="filters-card">
+        <div class="search-wrap">
+          <i data-lucide="search"></i>
+          <input id="searchInput" type="text" placeholder="Search by name or email..." oninput="renderUsers()">
+        </div>
+
+        <select id="roleFilter" onchange="renderUsers()">
+          <option value="">All Roles</option>
+          <option value="Admin">Admin</option>
+          <option value="Worker">Worker</option>
+          <option value="Customer">Customer</option>
+        </select>
+
+        <select id="statusFilter" onchange="renderUsers()">
+          <option value="">All Statuses</option>
+          <option value="Active">Active</option>
+          <option value="Pending">Pending</option>
+          <option value="Rejected">Rejected</option>
+          <option value="Blocked">Blocked</option>
+        </select>
+      </section>
+
+      <section class="table-card">
+        <div class="table-scroll">
+          <table>
+            <colgroup>
+              <col style="width: 15%;">
+              <col style="width: 28%;">
+              <col style="width: 12%;">
+              <col style="width: 12%;">
+              <col style="width: 11%;">
+              <col style="width: 8%;">
+              <col style="width: 14%;">
+            </colgroup>
+
+            <thead>
+              <tr>
+                <th style="padding-left:16px;">Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Join Date</th>
+                <th>Reports</th>
+                <th style="text-align:right;padding-right:16px;">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody id="usersTableBody">
+              <tr>
+                <td colspan="7" class="loading-message">Loading users...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+let allUsers = [];
+
+const adminName = localStorage.getItem("userName") || "Admin";
+const adminEmail = localStorage.getItem("userEmail") || "";
+const userRole = localStorage.getItem("userRole") || "";
+
+document.getElementById("adminName").innerText = adminName;
+
+if (userRole !== "Admin") {
+  window.location.href = "login.html";
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  lucide.createIcons();
+  loadUsers();
+});
+
+async function loadUsers() {
+  const tbody = document.getElementById("usersTableBody");
+
+  try {
+    const response = await fetch("/api/Auth/admin/users");
+
+    let data = [];
+
+    try {
+      data = await response.json();
+    } catch {
+      data = [];
+    }
+
+    if (!response.ok) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="error-message">Error loading users from database</td>
+        </tr>
+      `;
+      return;
+    }
+
+    allUsers = Array.isArray(data) ? data : [];
+
+    updateStats();
+    renderUsers();
+
+  } catch (error) {
+    console.error(error);
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="error-message">Connection error with server</td>
+      </tr>
+    `;
+  }
+}
+
+function updateStats() {
+  document.getElementById("totalUsers").innerText = allUsers.length;
+
+  document.getElementById("activeUsers").innerText =
+    allUsers.filter(u => u.status === "Active").length;
+
+  document.getElementById("pendingUsers").innerText =
+    allUsers.filter(u => u.status === "Pending").length;
+
+  document.getElementById("blockedUsers").innerText =
+    allUsers.filter(u => u.status === "Blocked").length;
+}
+
+function renderUsers() {
+  const tbody = document.getElementById("usersTableBody");
+
+  const search = document.getElementById("searchInput").value.trim().toLowerCase();
+  const role = document.getElementById("roleFilter").value;
+  const status = document.getElementById("statusFilter").value;
+
+  let filtered = [...allUsers];
+
+  if (search) {
+    filtered = filtered.filter(user =>
+      String(user.name || "").toLowerCase().includes(search) ||
+      String(getRealEmail(user)).toLowerCase().includes(search)
+    );
+  }
+
+  if (role) {
+    filtered = filtered.filter(user => user.role === role);
+  }
+
+  if (status) {
+    filtered = filtered.filter(user => user.status === status);
+  }
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="7" class="empty-message">No users found</td>
+      </tr>
+    `;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(user => {
+    const safeRole = escapeHtml(user.role || "");
+    const safeStatus = escapeHtml(user.status || "");
+    const realEmail = getRealEmail(user);
+    const safeEmail = escapeHtml(realEmail);
+
+    const isCurrentAdmin =
+      user.role === "Admin" &&
+      adminEmail &&
+      String(realEmail || "").toLowerCase() === adminEmail.toLowerCase();
+
+    return `
+      <tr>
+        <td class="name-cell" style="padding-left:16px;">${escapeHtml(user.name || "-")}</td>
+
+        <td class="email-cell" title="${escapeHtmlForAttribute(realEmail)}">
+          <span class="email-text">${safeEmail}</span>
+        </td>
+
+        <td>
+          <span class="badge ${getRoleClass(user.role)}">${safeRole}</span>
+        </td>
+
+        <td>
+          <span class="badge ${getStatusClass(user.status)}">${safeStatus}</span>
+        </td>
+
+        <td>${formatDate(user.joinDate)}</td>
+
+        <td>${Number(user.reports || 0)}</td>
+
+        <td>
+          <div class="actions" style="justify-content:flex-end;padding-right:16px;">
+            <button class="icon-btn ${user.status === "Blocked" ? "unblock-btn" : "block-btn"}"
+              title="${user.status === "Blocked" ? "Unblock user" : "Block user"}"
+              onclick="toggleBlock('${escapeHtmlForAttribute(user.role)}', ${user.id}, '${escapeHtmlForAttribute(user.name || "")}', '${escapeHtmlForAttribute(user.status || "")}')"
+              ${isCurrentAdmin ? "disabled" : ""}>
+              <i data-lucide="${user.status === "Blocked" ? "shield-check" : "ban"}"></i>
+            </button>
+
+            <button class="icon-btn delete-btn"
+              title="Delete user"
+              onclick="deleteUser('${escapeHtmlForAttribute(user.role)}', ${user.id}, '${escapeHtmlForAttribute(user.name || "")}')"
+              ${isCurrentAdmin ? "disabled" : ""}>
+              <i data-lucide="x-circle"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  lucide.createIcons();
+}
+
+function getRealEmail(user) {
+  if (!user) return "-";
+
+  const email =
+    user.email ||
+    user.Email ||
+    user.userEmail ||
+    user.workerEmail ||
+    user.customerEmail ||
+    "-";
+
+  return String(email).trim() || "-";
+}
+
+async function toggleBlock(role, id, name, currentStatus) {
+  const actionText = currentStatus === "Blocked" ? "unblock" : "block";
+
+  if (!confirm(`Are you sure you want to ${actionText} ${name}?`)) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/Auth/admin/users/${encodeURIComponent(role)}/${id}/block`, {
+      method: "PUT"
+    });
+
+    let result = {};
+
+    try {
+      result = await response.json();
+    } catch {
+      result = {};
+    }
+
+    if (!response.ok) {
+      alert(result.message || "Error updating user status");
+      return;
+    }
+
+    alert(result.message || "User status updated successfully");
+    await loadUsers();
+
+  } catch (error) {
+    console.error(error);
+    alert("Connection error with server");
+  }
+}
+
+async function deleteUser(role, id, name) {
+  if (!confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/Auth/admin/users/${encodeURIComponent(role)}/${id}`, {
+      method: "DELETE"
+    });
+
+    let result = {};
+
+    try {
+      result = await response.json();
+    } catch {
+      result = {};
+    }
+
+    if (!response.ok) {
+      alert(result.message || "Error deleting user");
+      return;
+    }
+
+    alert(result.message || "User deleted successfully");
+    await loadUsers();
+
+  } catch (error) {
+    console.error(error);
+    alert("Connection error with server");
+  }
+}
+
+function getRoleClass(role) {
+  if (role === "Admin") return "role-admin";
+  if (role === "Worker") return "role-worker";
+  if (role === "Customer") return "role-customer";
+  return "role-customer";
+}
+
+function getStatusClass(status) {
+  if (status === "Active") return "status-active";
+  if (status === "Pending") return "status-pending";
+  if (status === "Rejected") return "status-rejected";
+  if (status === "Blocked") return "status-blocked";
+  return "status-active";
+}
+
+function formatDate(value) {
+  if (!value) return "-";
+
+  const date = new Date(value);
+
+  if (isNaN(date.getTime())) return "-";
+
+  return date.toLocaleDateString("en-CA");
+}
+
+function goToApproveWorkers() {
+  window.location.href = "approve-workers.html";
+}
+
+function goToProfile() {
+  window.location.href = "profile.html";
+}
+
+function goToAdminDashboard() {
+  window.location.href = "admin-dashboard.html";
+}
+
+function goToUsersManagement() {
+  window.location.href = "admin-users.html";
+}
+
+function goToHome() {
+  window.location.href = "home.html";
+}
+
+function logout() {
+  localStorage.removeItem("userRole");
+  localStorage.removeItem("userName");
+  localStorage.removeItem("userEmail");
+  window.location.href = "login.html";
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function escapeHtmlForAttribute(value) {
+  return String(value)
+    .replaceAll("\\", "\\\\")
+    .replaceAll("'", "\\'")
+    .replaceAll('"', "&quot;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+lucide.createIcons();
+</script>
+
+</body>
+</html>

@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Approve Workers - CityFix</title>
 
+  <script src="https://unpkg.com/lucide@latest"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -17,136 +19,446 @@
     }
 
     body {
-      font-family: 'Heebo', sans-serif;
-      background: #f0efff;
+      font-family: Arial, sans-serif;
+      background: #f8fafc;
+      color: #111827;
+    }
+
+    .layout {
+      display: flex;
       min-height: 100vh;
-      padding: 20px;
-      color: #0f172a;
     }
 
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 18px;
-      padding: 78px 30px 30px;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
-      position: relative;
-      min-height: 410px;
+    /* SIDEBAR */
+    .sidebar {
+      width: 260px;
+      background: #ffffff;
+      border-right: 1px solid #e5e7eb;
+      min-height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
     }
 
-    .top-actions {
-      position: absolute;
-      top: 22px;
-      left: 30px;
-      right: 30px;
+    .sidebar-logo {
+      height: 78px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 24px;
+      border-bottom: 1px solid #e5e7eb;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo i,
+    .sidebar-logo svg {
+      width: 28px;
+      height: 28px;
+      color: #0526ff;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo span {
+      font-family: 'Inter', Arial, sans-serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: #101828;
+      letter-spacing: -0.4px;
+    }
+
+    .sidebar-nav {
+      padding: 16px 14px 0;
+      flex: 1;
+    }
+
+    .sidebar-section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      height: 44px;
+      padding: 0 12px;
+      font-family: 'Inter', Arial, sans-serif;
+      font-weight: 600;
+      font-size: 11px;
+      color: #5f5f5f;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-section-title i,
+    .sidebar-section-title svg {
+      width: 16px;
+      height: 16px;
+      color: #5f5f5f;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 52px;
+      padding: 0 16px;
+      color: #364153;
+      text-decoration: none;
+      border-radius: 10px;
+      font-family: 'Inter', Arial, sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      margin-bottom: 4px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sidebar-nav a i,
+    .sidebar-nav a svg {
+      width: 20px;
+      height: 20px;
+      color: #364153;
+      flex-shrink: 0;
+      transition: color 0.15s;
+    }
+
+    .sidebar-nav a:hover {
+      background: #d7e9ff;
+      color: #0526ff;
+    }
+
+    .sidebar-nav a:hover i,
+    .sidebar-nav a:hover svg {
+      color: #0526ff;
+    }
+
+    .sidebar-nav a.active {
+      background: #0526ff;
+      color: #ffffff;
+      font-weight: 600;
+    }
+
+    .sidebar-nav a.active i,
+    .sidebar-nav a.active svg {
+      color: #ffffff;
+    }
+
+    .sidebar-logout {
+      padding: 16px 14px;
+      border-top: 1px solid #e5e7eb;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logout a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      height: 52px;
+      padding: 0 16px;
+      color: #364153;
+      text-decoration: none;
+      border-radius: 10px;
+      font-family: 'Inter', Arial, sans-serif;
+      font-weight: 500;
+      font-size: 15px;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .sidebar-logout a i,
+    .sidebar-logout a svg {
+      width: 20px;
+      height: 20px;
+      color: #364153;
+      transition: color 0.15s;
+    }
+
+    .sidebar-logout a:hover {
+      background: #d7e9ff;
+      color: #0526ff;
+    }
+
+    .sidebar-logout a:hover i,
+    .sidebar-logout a:hover svg {
+      color: #0526ff;
+    }
+
+    /* MAIN */
+    .main {
+      margin-left: 260px;
+      width: calc(100% - 260px);
+      min-height: 100vh;
+    }
+
+    .topbar {
+      height: 78px;
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      pointer-events: none;
+      padding: 0 36px;
+      position: sticky;
+      top: 0;
+      z-index: 900;
     }
 
-    .back-square,
-    .logout-btn {
-      pointer-events: auto;
+    .menu-icon {
+      width: 28px;
+      height: 28px;
+      color: #334155;
     }
 
-    .back-square {
-      width: 34px;
-      height: 34px;
-      border-radius: 9px;
-      background: linear-gradient(135deg, #a855f7, #8b00ff);
-      border: none;
+    .admin-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+
+    .admin-info {
+      text-align: right;
+    }
+
+    .admin-info b {
+      font-size: 16px;
+      color: #111827;
+      text-transform: uppercase;
+    }
+
+    .admin-info span {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .avatar {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #e5e7eb;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      box-shadow: 0 8px 16px rgba(139, 0, 255, 0.25);
-      text-decoration: none;
-      transition: 0.2s ease;
+      color: #64748b;
     }
 
-    .back-square:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 11px 20px rgba(139, 0, 255, 0.32);
+    .avatar i,
+    .avatar svg {
+      width: 26px;
+      height: 26px;
     }
 
-    .back-square svg {
-      width: 18px;
-      height: 18px;
-      stroke: white;
-      fill: none;
-      stroke-width: 3;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+    /* CONTENT */
+    .content {
+      padding: 38px 55px 50px;
     }
 
-    .logout-btn {
-      border: none;
-      border-radius: 10px;
-      padding: 9px 18px;
-      background: #8b2cf5;
-      color: #ffffff;
-      font-size: 15px;
-      font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 8px 18px rgba(139, 44, 245, 0.22);
-      transition: 0.2s ease;
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 30px;
     }
 
-    .logout-btn:hover {
-      background: #7c1fc9;
-      transform: translateY(-1px);
-      box-shadow: 0 12px 24px rgba(139, 44, 245, 0.30);
-    }
-
-    h1 {
-      text-align: center;
+    .page-title {
       font-size: 32px;
-      color: #8b2cf5;
-      margin-bottom: 58px;
       font-weight: 800;
+      color: #111827;
+      margin-bottom: 8px;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+
+    .page-subtitle {
+      font-size: 18px;
+      color: #475569;
+      font-family: 'Inter', Arial, sans-serif;
+      line-height: 1.6;
+    }
+
+    .refresh-btn {
+      border: none;
+      border-radius: 7px;
+      background: #0b63e5;
+      color: white;
+      padding: 13px 24px;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-family: 'Inter', Arial, sans-serif;
+      transition: 0.15s ease;
+    }
+
+    .refresh-btn:hover {
+      background: #084fbb;
+    }
+
+    .refresh-btn i,
+    .refresh-btn svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    /* MESSAGE */
+    .message {
+      display: none;
+      padding: 14px 18px;
+      border-radius: 8px;
+      margin-bottom: 22px;
+      font-family: 'Inter', Arial, sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .message.error {
+      display: block;
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .message.success {
+      display: block;
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+    }
+
+    /* TABLE */
+    .table-card {
+      background: white;
+      border: 1px solid #d7dde5;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .table-card-header {
+      padding: 22px 24px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .table-card-header h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #111827;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+
+    .table-card-header p {
+      margin-top: 5px;
+      font-size: 15px;
+      color: #64748b;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+
+    .pending-badge {
+      background: #fffbeb;
+      color: #b45309;
+      border: 1px solid #fde68a;
+      border-radius: 7px;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-weight: 800;
+      font-family: 'Inter', Arial, sans-serif;
+      white-space: nowrap;
     }
 
     .table-wrapper {
+      width: 100%;
       overflow-x: auto;
     }
 
     table {
       width: 100%;
+      min-width: 1250px;
       border-collapse: collapse;
-      margin-bottom: 20px;
+      table-layout: fixed;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+
+    thead {
+      background: #ffffff;
     }
 
     th {
-      background: #f3f4f6;
-      padding: 12px;
       text-align: left;
-      font-weight: 700;
-      border-bottom: 2px solid #e5e7eb;
+      padding: 16px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 15px;
+      font-weight: 800;
+      color: #111827;
     }
 
     td {
-      padding: 12px;
+      padding: 14px 10px;
       border-bottom: 1px solid #e5e7eb;
+      font-size: 15px;
+      color: #334155;
+      vertical-align: middle;
+      word-break: break-word;
     }
 
-    tr:hover {
-      background: #f9fafb;
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .name-cell {
+      color: #111827;
+      font-weight: 800;
+    }
+
+    .email-cell {
+      color: #334155;
+      line-height: 1.45;
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      direction: ltr;
+    }
+
+    .id-cell {
+      color: #334155;
+      direction: ltr;
+      white-space: nowrap;
+      overflow: visible;
+      text-overflow: unset;
     }
 
     .actions {
       display: flex;
-      gap: 8px;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: nowrap;
+      min-width: 190px;
     }
 
     .btn {
-      padding: 8px 12px;
       border: none;
-      border-radius: 8px;
+      border-radius: 7px;
+      padding: 10px 13px;
       font-size: 14px;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 800;
+      font-family: 'Inter', Arial, sans-serif;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn i,
+    .btn svg {
+      width: 16px;
+      height: 16px;
     }
 
     .btn-approve {
@@ -167,132 +479,233 @@
       background: #b91c1c;
     }
 
-    .message {
-      display: none;
-      text-align: center;
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-
-    .message.error {
-      display: block;
-      background: #fef2f2;
-      color: #b91c1c;
-      border: 1px solid #fecaca;
-    }
-
-    .message.success {
-      display: block;
-      background: #f0fdf4;
-      color: #166534;
-      border: 1px solid #bbf7d0;
-    }
-
     .empty {
       text-align: center;
-      padding: 40px;
-      color: #9ca3af;
-      font-size: 18px;
+      padding: 42px;
+      color: #64748b;
+      font-size: 17px;
+      font-family: 'Inter', Arial, sans-serif;
     }
 
     .back-link {
       display: none;
     }
 
-    @media (max-width: 760px) {
-      body {
-        padding: 14px;
+    /* RESPONSIVE */
+    @media(max-width: 1050px) {
+      .layout {
+        display: block;
       }
 
-      .container {
-        padding: 72px 16px 24px;
+      .sidebar {
+        position: static;
+        width: 100%;
+        min-height: auto;
       }
 
-      .top-actions {
-        left: 16px;
-        right: 16px;
+      .main {
+        margin-left: 0;
+        width: 100%;
       }
 
-      h1 {
-        font-size: 26px;
-        margin-bottom: 36px;
+      table {
+        min-width: 1250px;
+      }
+    }
+
+    @media(max-width: 700px) {
+      .content {
+        padding: 25px 15px;
       }
 
-      th,
-      td {
-        padding: 10px;
-        font-size: 14px;
-      }
-
-      .actions {
+      .page-header {
         flex-direction: column;
       }
 
-      .logout-btn {
-        padding: 8px 14px;
-        font-size: 14px;
+      .table-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .actions {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+      }
+
+      .page-title {
+        font-size: 28px;
       }
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
+  <div class="layout">
 
-    <div class="top-actions">
-      <a href="home.html" class="back-square" title="Back">
-        <svg viewBox="0 0 24 24">
-          <path d="M15 18l-6-6 6-6"></path>
-        </svg>
-      </a>
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <i data-lucide="building-2"></i>
+        <span>CityFix</span>
+      </div>
 
-      <button class="logout-btn" onclick="logout()">Logout</button>
-    </div>
+      <nav class="sidebar-nav">
+        <div class="sidebar-section-title">
+          <i data-lucide="shield-check"></i>
+          <span>Admin Area</span>
+        </div>
 
-    <h1>Worker Registration Requests</h1>
+        <a href="home.html">
+          <i data-lucide="layout-dashboard"></i>
+          <span>Home</span>
+        </a>
 
-    <div id="messageBox" class="message"></div>
+        <a href="admin-dashboard.html">
+          <i data-lucide="bar-chart-3"></i>
+          <span>Statistics</span>
+        </a>
 
-    <div class="table-wrapper" id="tableContainer">
-      <p class="empty">Loading...</p>
-    </div>
+        <a href="admin-dashboard.html">
+          <i data-lucide="file-text"></i>
+          <span>All Reports</span>
+        </a>
 
-    <a href="home.html" class="back-link">← Back</a>
-    <a href="#" class="back-link" onclick="logout(); return false;">Logout</a>
+        <a href="admin-users.html">
+          <i data-lucide="users"></i>
+          <span>Manage Users</span>
+        </a>
+
+        <a href="approve-workers.html" class="active">
+          <i data-lucide="user-check"></i>
+          <span>Worker Requests</span>
+        </a>
+
+        <a href="profile.html">
+          <i data-lucide="user-circle"></i>
+          <span>Profile</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-logout">
+        <a href="#" onclick="logout()">
+          <i data-lucide="log-out"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <i data-lucide="menu" class="menu-icon"></i>
+
+        <div class="admin-user">
+          <div class="admin-info">
+            <b id="adminName">Admin</b><br>
+            <span>Admin</span>
+          </div>
+
+          <div class="avatar">
+            <i data-lucide="user"></i>
+          </div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Worker Registration Requests</h1>
+            <p class="page-subtitle">
+              Review pending worker accounts and approve or reject registration requests.
+            </p>
+          </div>
+
+          <button class="refresh-btn" onclick="loadPendingWorkers()">
+            <i data-lucide="refresh-cw"></i>
+            Refresh
+          </button>
+        </div>
+
+        <div id="messageBox" class="message"></div>
+
+        <section class="table-card">
+          <div class="table-card-header">
+            <div>
+              <h2>Pending Workers</h2>
+              <p>Workers waiting for admin approval</p>
+            </div>
+
+            <div class="pending-badge" id="pendingCount">0 Pending</div>
+          </div>
+
+          <div class="table-wrapper" id="tableContainer">
+            <p class="empty">Loading...</p>
+          </div>
+        </section>
+
+        <a href="home.html" class="back-link">← Back</a>
+        <a href="#" class="back-link" onclick="logout(); return false;">Logout</a>
+      </div>
+    </main>
   </div>
 
   <script>
-    const BASE_URL = "/api/auth";
+    const BASE_URL = "/api/Auth";
 
+    const adminName = localStorage.getItem("userName") || "Admin";
     const userRole = localStorage.getItem("userRole");
+
+    document.getElementById("adminName").textContent = adminName;
+
     if (userRole !== "Admin") {
       window.location.href = "login.html";
     }
 
     async function loadPendingWorkers() {
+      const container = document.getElementById("tableContainer");
+      const pendingCount = document.getElementById("pendingCount");
+
+      container.innerHTML = '<p class="empty">Loading...</p>';
+      pendingCount.textContent = "0 Pending";
+
       try {
         const response = await fetch(`${BASE_URL}/pending-workers`);
         const workers = await response.json();
 
-        const container = document.getElementById("tableContainer");
+        if (!response.ok) {
+          showMessage("Error loading data", "error");
+          container.innerHTML = '<p class="empty">Error loading workers</p>';
+          return;
+        }
 
         if (!Array.isArray(workers) || workers.length === 0) {
+          pendingCount.textContent = "0 Pending";
           container.innerHTML = '<p class="empty">No pending requests</p>';
           return;
         }
 
+        pendingCount.textContent = `${workers.length} Pending`;
+
         let html = `
           <table>
+            <colgroup>
+              <col style="width: 14%;">
+              <col style="width: 21%;">
+              <col style="width: 11%;">
+              <col style="width: 13%;">
+              <col style="width: 11%;">
+              <col style="width: 13%;">
+              <col style="width: 17%;">
+            </colgroup>
+
             <thead>
               <tr>
-                <th>Full Name</th>
+                <th style="padding-left:16px;">Full Name</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Department</th>
                 <th>City</th>
                 <th>ID</th>
-                <th>Actions</th>
+                <th style="text-align:right;padding-right:16px;">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -301,15 +714,24 @@
         workers.forEach(worker => {
           html += `
             <tr>
-              <td>${worker.fullName}</td>
-              <td>${worker.email}</td>
-              <td>${worker.phone}</td>
-              <td>${worker.department}</td>
-              <td>${worker.municipality}</td>
-              <td>${worker.nationalId}</td>
-              <td class="actions">
-                <button class="btn btn-approve" onclick="approveWorker(${worker.id})">Approve</button>
-                <button class="btn btn-reject" onclick="rejectWorker(${worker.id})">Reject</button>
+              <td class="name-cell" style="padding-left:16px;">${escapeHtml(worker.fullName || "-")}</td>
+              <td class="email-cell">${escapeHtml(worker.email || "-")}</td>
+              <td>${escapeHtml(worker.phone || "-")}</td>
+              <td>${escapeHtml(worker.department || "-")}</td>
+              <td>${escapeHtml(worker.municipality || "-")}</td>
+              <td class="id-cell" title="${escapeHtml(worker.nationalId || "-")}">${escapeHtml(worker.nationalId || "-")}</td>
+              <td>
+                <div class="actions" style="padding-right:16px;">
+                  <button class="btn btn-approve" onclick="approveWorker(${worker.id})">
+                    <i data-lucide="check"></i>
+                    Approve
+                  </button>
+
+                  <button class="btn btn-reject" onclick="rejectWorker(${worker.id})">
+                    <i data-lucide="x"></i>
+                    Reject
+                  </button>
+                </div>
               </td>
             </tr>
           `;
@@ -317,9 +739,11 @@
 
         html += `</tbody></table>`;
         container.innerHTML = html;
+        lucide.createIcons();
 
       } catch (error) {
         showMessage("Error loading data", "error");
+        container.innerHTML = '<p class="empty">Connection error with server</p>';
       }
     }
 
@@ -332,10 +756,10 @@
         const data = await response.json();
 
         if (response.ok) {
-          showMessage(data.message, "success");
-          setTimeout(loadPendingWorkers, 1000);
+          showMessage(data.message || "Worker approved successfully", "success");
+          setTimeout(loadPendingWorkers, 700);
         } else {
-          showMessage(data.message, "error");
+          showMessage(data.message || "Approve failed", "error");
         }
 
       } catch (error) {
@@ -352,10 +776,10 @@
         const data = await response.json();
 
         if (response.ok) {
-          showMessage(data.message, "success");
-          setTimeout(loadPendingWorkers, 1000);
+          showMessage(data.message || "Worker rejected successfully", "success");
+          setTimeout(loadPendingWorkers, 700);
         } else {
-          showMessage(data.message, "error");
+          showMessage(data.message || "Reject failed", "error");
         }
 
       } catch (error) {
@@ -376,6 +800,16 @@
       window.location.href = "login.html";
     }
 
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    lucide.createIcons();
     loadPendingWorkers();
   </script>
 </body>
