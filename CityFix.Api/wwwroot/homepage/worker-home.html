@@ -927,6 +927,39 @@ body {
   font-size: 13px;
   color: #64748b;
 }
+.search-box {
+  width: 500px;
+  max-width: 100%;
+  height: 46px;
+  background: white;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 14px;
+  margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+.search-box:focus-within {
+  border-color: #0526ff;
+  box-shadow: 0 0 0 4px rgba(5, 38, 255, 0.12);
+}
+
+.search-box i {
+  width: 20px;
+  height: 20px;
+  color: #94a3b8;
+}
+
+.search-box input {
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 15px;
+  color: #0f172a;
+}
 </style>
 </head>
 
@@ -1028,6 +1061,15 @@ body {
           </div>
           <button class="reset-filter-btn" onclick="resetReportFilters()">Reset</button>
         </div>
+        <div class="search-box">
+  <i data-lucide="search"></i>
+  <input
+    type="text"
+    id="reportSearchInput"
+    placeholder="Search reports by ID, category, or description..."
+    oninput="currentPage=1; renderReportsList()"
+  />
+</div>
 
         <div id="reportsContainer">
           <p class="empty-msg">Loading reports...</p>
@@ -1278,31 +1320,40 @@ function renderReportsList() {
     return;
   }
 
- 
-   const statusFilter = document.getElementById("statusFilter")?.value || "";
+  const statusFilter = document.getElementById("statusFilter")?.value || "";
   const priorityFilter = document.getElementById("priorityFilter")?.value || "";
   const categoryFilter = document.getElementById("categoryFilter")?.value || "";
+ const searchText = document.getElementById("reportSearchInput")?.value.toLowerCase().trim() || "";
 
   const filtered = reports.filter(report => {
     const statusMatch = !statusFilter || report.status === statusFilter;
     const priorityMatch = !priorityFilter || getPriorityText(report.priority) === priorityFilter;
     const categoryMatch = !categoryFilter || report.category === categoryFilter;
-    return statusMatch && priorityMatch && categoryMatch;
+
+    const searchMatch =
+      !searchText ||
+      String(report.id || "").toLowerCase().includes(searchText) ||
+      ("rpt-" + report.id).toLowerCase().includes(searchText) ||
+      (report.category || "").toLowerCase().includes(searchText) ||
+      (report.description || "").toLowerCase().includes(searchText) ||
+      (report.customerEmail || "").toLowerCase().includes(searchText) ||
+      (report.status || "").toLowerCase().includes(searchText) ||
+      getPriorityText(report.priority).toLowerCase().includes(searchText);
+
+    return statusMatch && priorityMatch && categoryMatch && searchMatch;
   });
 
-  
   if (filtered.length === 0) {
     container.innerHTML = `<p class="empty-msg">No reports match the selected filters</p>`;
     return;
   }
 
- 
   const totalPages = Math.ceil(filtered.length / REPORTS_PER_PAGE);
+
   if (currentPage > totalPages) currentPage = totalPages;
   if (currentPage < 1) currentPage = 1;
 
   const start = (currentPage - 1) * REPORTS_PER_PAGE;
-  
   const pageReports = filtered.slice(start, start + REPORTS_PER_PAGE);
 
   let html = `<div class="reports-list">`;
@@ -1314,16 +1365,24 @@ function renderReportsList() {
     html += `
       <div class="list-card${isInTreatment ? " in-treatment-card" : ""}${isCompleted ? " completed-card" : ""}"
            onclick="openReportDetails(${report.id})">
+
         <h3>${report.category || "Report"}</h3>
+
+        <p><b>ID:</b> RPT-${report.id}</p>
+
         <p><b>Priority:</b> ${getPriorityText(report.priority)}</p>
+
         <p>
           <b>Status:</b>
           <span class="${isInTreatment ? "treatment-badge" : isCompleted ? "completed-badge" : "open-badge"}">
             ${isInTreatment ? "In Treatment" : isCompleted ? "Completed" : "Open"}
           </span>
         </p>
+
         <p><b>Customer:</b> ${report.customerEmail || "-"}</p>
+
         <p><b>Description:</b> ${report.description || "-"}</p>
+
       </div>
     `;
   });
@@ -1332,7 +1391,9 @@ function renderReportsList() {
 
   if (totalPages > 1) {
     const end = Math.min(start + REPORTS_PER_PAGE, filtered.length);
+
     html += `<div class="pagination-bar">`;
+
     html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})"${currentPage === 1 ? " disabled" : ""}>← Prev</button>`;
 
     getPaginationRange(currentPage, totalPages).forEach(p => {
@@ -1344,13 +1405,14 @@ function renderReportsList() {
     });
 
     html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})"${currentPage === totalPages ? " disabled" : ""}>Next →</button>`;
+
     html += `<span class="page-info">${start + 1}–${end} of ${filtered.length}</span>`;
+
     html += `</div>`;
   }
 
   container.innerHTML = html;
 }
-
 
 function fillCategoryFilter() {
   const select = document.getElementById("categoryFilter");
@@ -1367,6 +1429,7 @@ function resetReportFilters() {
   document.getElementById("statusFilter").value = "";
   document.getElementById("priorityFilter").value = "";
   document.getElementById("categoryFilter").value = "";
+  document.getElementById("reportSearchInput").value = "";
   currentPage = 1;
   renderReportsList();
 }
