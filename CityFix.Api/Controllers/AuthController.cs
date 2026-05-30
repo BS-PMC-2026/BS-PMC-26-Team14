@@ -1108,7 +1108,8 @@ namespace CityFix.Api.Controllers
             {
                 "Open",
                 "In Treatment",
-                "Completed"
+                "Completed",
+                "Closed"
             };
 
             if (!allowedStatuses.Contains(dto.NewStatus))

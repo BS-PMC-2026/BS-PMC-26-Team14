@@ -960,6 +960,11 @@ body {
   font-size: 15px;
   color: #0f172a;
 }
+.pill-status-closed {
+  background: #e5e7eb;
+  color: #374151;
+  border-color: #cbd5e1;
+}
 </style>
 </head>
 
@@ -1103,6 +1108,7 @@ body {
               <option value="Open">Open</option>
               <option value="In Treatment">In Treatment</option>
               <option value="Completed">Completed</option>
+              <option value="Closed">Closed</option>
             </select>
             <button onclick="updateReportStatus()">Update</button>
           </div>
@@ -1279,6 +1285,7 @@ function getPriorityClass(priority) {
 function getStatusPillClass(status) {
   if (status === "In Treatment") return "pill pill-status-treatment";
   if (status === "Completed") return "pill pill-status-completed";
+  if (status === "Closed") return "pill pill-status-closed";
   return "pill pill-status-open";
 }
 
@@ -1361,6 +1368,7 @@ function renderReportsList() {
   pageReports.forEach(report => {
     const isInTreatment = report.status === "In Treatment";
     const isCompleted = report.status === "Completed";
+    const isClosed = report.status === "Closed";
 
     html += `
       <div class="list-card${isInTreatment ? " in-treatment-card" : ""}${isCompleted ? " completed-card" : ""}"
@@ -1374,9 +1382,19 @@ function renderReportsList() {
 
         <p>
           <b>Status:</b>
-          <span class="${isInTreatment ? "treatment-badge" : isCompleted ? "completed-badge" : "open-badge"}">
-            ${isInTreatment ? "In Treatment" : isCompleted ? "Completed" : "Open"}
-          </span>
+          <span class="${
+  isInTreatment ? "treatment-badge" :
+  isCompleted ? "completed-badge" :
+  isClosed ? "completed-badge" :
+  "open-badge"
+}">
+  ${
+    isInTreatment ? "In Treatment" :
+    isCompleted ? "Completed" :
+    isClosed ? "Closed" :
+    "Open"
+  }
+</span>
         </p>
 
         <p><b>Customer:</b> ${report.customerEmail || "-"}</p>
@@ -1498,8 +1516,11 @@ if (
     document.getElementById("uploadImageView").classList.add("hidden");
     document.getElementById("detailsView").classList.remove("hidden");
 
-    const statusText = currentReport.status === "In Treatment" ? "In Treatment" :
-      currentReport.status === "Completed" ? "Completed" : "Open";
+    const statusText =
+  currentReport.status === "In Treatment" ? "In Treatment" :
+  currentReport.status === "Completed" ? "Completed" :
+  currentReport.status === "Closed" ? "Closed" :
+  "Open";
 
     document.getElementById("detailPriority").className = getPriorityClass(currentReport.priority);
     document.getElementById("detailPriority").innerText = "⚠ " + getPriorityText(currentReport.priority);
@@ -1913,8 +1934,11 @@ async function updateReportStatus() {
 
   currentReport.status = newStatus;
 
-  const updatedStatusText = newStatus === "In Treatment" ? "In Treatment" :
-    newStatus === "Completed" ? "Completed" : "Open";
+  const updatedStatusText =
+  newStatus === "In Treatment" ? "In Treatment" :
+  newStatus === "Completed" ? "Completed" :
+  newStatus === "Closed" ? "Closed" :
+  "Open";
   document.getElementById("detailStatus").className = getStatusPillClass(newStatus);
   document.getElementById("detailStatus").innerText = "● " + updatedStatusText;
 
