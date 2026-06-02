@@ -828,6 +828,9 @@ namespace CityFix.Api.Controllers
             if (report == null)
                 return NotFound(new { message = "הדיווח לא נמצא" });
 
+            if (!CanWorkerHandleCategory(worker.Department, report.Category))
+                return BadRequest(new { message = "This report does not match your department" });
+
             if (report.Status != "Open")
                 return BadRequest(new { message = "הדיווח כבר נלקח לטיפול או שאינו פתוח" });
 
@@ -893,9 +896,41 @@ namespace CityFix.Api.Controllers
         public async Task<IActionResult> GetReportsMap(
             [FromQuery] string? status,
             [FromQuery] string? fromDate,
-            [FromQuery] string? toDate)
+            [FromQuery] string? toDate,
+            [FromQuery] string? workerEmail)
         {
             var query = _context.Reports.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(workerEmail))
+            {
+                var normalizedWorkerEmail = workerEmail.Trim().ToLowerInvariant();
+
+                var worker = await _context.Workers
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(w => w.Email.ToLower() == normalizedWorkerEmail);
+
+                if (worker == null)
+                    return NotFound(new { message = "Worker not found" });
+
+                if (worker.IsBlocked)
+                    return BadRequest(new { message = "Worker account is blocked" });
+
+                if (worker.ApprovalStatus != "Approved")
+                    return BadRequest(new { message = "Worker account is not approved" });
+
+                var allowedCategories = GetCategoriesForDepartment(worker.Department);
+
+                if (allowedCategories.Count == 0)
+                    return Ok(new List<object>());
+
+                query = query.Where(r =>
+                    allowedCategories.Contains(r.Category) &&
+                    (
+                        r.Status == "Open" ||
+                        (r.AssignedWorkerEmail != null && r.AssignedWorkerEmail.ToLower() == normalizedWorkerEmail)
+                    )
+                );
+            }
 
             if (!string.IsNullOrWhiteSpace(status))
             {
@@ -971,15 +1006,40 @@ namespace CityFix.Api.Controllers
         [HttpGet("open-reports")]
         public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
         {
-            workerEmail = workerEmail?.Trim().ToLowerInvariant();
+            if (string.IsNullOrWhiteSpace(workerEmail))
+                return BadRequest(new { message = "Worker email is required" });
+
+            var normalizedWorkerEmail = workerEmail.Trim().ToLowerInvariant();
+
+            var worker = await _context.Workers
+                .AsNoTracking()
+                .FirstOrDefaultAsync(w => w.Email.ToLower() == normalizedWorkerEmail);
+
+            if (worker == null)
+                return NotFound(new { message = "Worker not found" });
+
+            if (worker.IsBlocked)
+                return BadRequest(new { message = "Worker account is blocked" });
+
+            if (worker.ApprovalStatus != "Approved")
+                return BadRequest(new { message = "Worker account is not approved" });
+
+            var allowedCategories = GetCategoriesForDepartment(worker.Department);
+
+            if (allowedCategories.Count == 0)
+                return Ok(new List<object>());
 
             var reports = await _context.Reports
                 .AsNoTracking()
                 .Where(r =>
-                    r.Status == "Open" ||
-                    (!string.IsNullOrEmpty(workerEmail) &&
-                     r.AssignedWorkerEmail != null &&
-                     r.AssignedWorkerEmail.ToLower() == workerEmail)
+                    allowedCategories.Contains(r.Category) &&
+                    (
+                        r.Status == "Open" ||
+                        (
+                            r.AssignedWorkerEmail != null &&
+                            r.AssignedWorkerEmail.ToLower() == normalizedWorkerEmail
+                        )
+                    )
                 )
                 .OrderByDescending(r => r.CreatedAt)
                 .Select(r => new
@@ -1010,35 +1070,62 @@ namespace CityFix.Api.Controllers
         [HttpGet("report-details/{reportId}")]
         public async Task<IActionResult> GetReportDetails(int reportId, [FromQuery] string? workerEmail)
         {
-            var report = await _context.Reports
+            var reportEntity = await _context.Reports
                 .AsNoTracking()
-                .Where(r => r.Id == reportId)
-                .Select(r => new
-                {
-                    id = r.Id,
-                    customerEmail = r.CustomerEmail,
-                    category = r.Category,
-                    priority = r.Priority,
-                    description = r.Description,
-                    notes = r.Notes,
-                    location = r.Location,
-                    imageBase64 = r.ImageBase64,
-                    latitude = r.Latitude,
-                    longitude = r.Longitude,
-                    status = r.Status,
-                    assignedWorkerEmail = r.AssignedWorkerEmail,
-                    acceptedAt = r.AcceptedAt,
-                    createdAt = r.CreatedAt,
-                    workerImageBase64 = r.WorkerImageBase64,
-                    workerImageNote = r.WorkerImageNote,
-                    workerImageUploadedAt = r.WorkerImageUploadedAt
-                })
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(r => r.Id == reportId);
 
-            if (report == null)
+            if (reportEntity == null)
             {
                 return NotFound(new { message = "הדיווח לא נמצא" });
             }
+
+            if (!string.IsNullOrWhiteSpace(workerEmail))
+            {
+                var normalizedWorkerEmail = workerEmail.Trim().ToLowerInvariant();
+
+                var worker = await _context.Workers
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(w => w.Email.ToLower() == normalizedWorkerEmail);
+
+                if (worker == null)
+                    return NotFound(new { message = "Worker not found" });
+
+                if (worker.IsBlocked)
+                    return BadRequest(new { message = "Worker account is blocked" });
+
+                if (worker.ApprovalStatus != "Approved")
+                    return BadRequest(new { message = "Worker account is not approved" });
+
+                if (!CanWorkerHandleCategory(worker.Department, reportEntity.Category))
+                    return BadRequest(new { message = "This report does not match your department" });
+
+                if (!string.IsNullOrWhiteSpace(reportEntity.AssignedWorkerEmail) &&
+                    reportEntity.AssignedWorkerEmail.ToLower() != normalizedWorkerEmail)
+                {
+                    return Forbid();
+                }
+            }
+
+            var report = new
+            {
+                id = reportEntity.Id,
+                customerEmail = reportEntity.CustomerEmail,
+                category = reportEntity.Category,
+                priority = reportEntity.Priority,
+                description = reportEntity.Description,
+                notes = reportEntity.Notes,
+                location = reportEntity.Location,
+                imageBase64 = reportEntity.ImageBase64,
+                latitude = reportEntity.Latitude,
+                longitude = reportEntity.Longitude,
+                status = reportEntity.Status,
+                assignedWorkerEmail = reportEntity.AssignedWorkerEmail,
+                acceptedAt = reportEntity.AcceptedAt,
+                createdAt = reportEntity.CreatedAt,
+                workerImageBase64 = reportEntity.WorkerImageBase64,
+                workerImageNote = reportEntity.WorkerImageNote,
+                workerImageUploadedAt = reportEntity.WorkerImageUploadedAt
+            };
 
             return Ok(report);
         }
@@ -1120,6 +1207,9 @@ namespace CityFix.Api.Controllers
             if (report == null)
                 return NotFound(new { message = "הקריאה לא נמצאה" });
 
+            if (!CanWorkerHandleCategory(worker.Department, report.Category))
+                return BadRequest(new { message = "This report does not match your department" });
+
             if (report.AssignedWorkerEmail != null &&
                 report.AssignedWorkerEmail.ToLower() != dto.WorkerEmail.ToLower())
             {
@@ -1195,6 +1285,52 @@ namespace CityFix.Api.Controllers
             }
 
             return null;
+        }
+
+        private static List<string> GetCategoriesForDepartment(string? department)
+        {
+            var value = NormalizeDepartmentText(department);
+
+            if (string.IsNullOrWhiteSpace(value))
+                return new List<string>();
+
+            if (value.Contains("road") || value.Contains("roads") || value.Contains("street") || value.Contains("כביש") || value.Contains("תשתיות"))
+                return new List<string> { "Road Damage" };
+
+            if (value.Contains("light") || value.Contains("lighting") || value.Contains("electric") || value.Contains("electricity") || value.Contains("תאורה") || value.Contains("חשמל"))
+                return new List<string> { "Street Lighting" };
+
+            if (value.Contains("garbage") || value.Contains("sanitation") || value.Contains("waste") || value.Contains("clean") || value.Contains("אשפה") || value.Contains("זבל") || value.Contains("ניקיון"))
+                return new List<string> { "Garbage / Sanitation" };
+
+            if (value.Contains("garden") || value.Contains("gardening") || value.Contains("park") || value.Contains("גינון") || value.Contains("גן") || value.Contains("עצים"))
+                return new List<string> { "Gardening" };
+
+            if (value.Contains("water") || value.Contains("sewage") || value.Contains("sewer") || value.Contains("מים") || value.Contains("ביוב"))
+                return new List<string> { "Water / Sewage" };
+
+            if (value.Contains("maintenance") || value.Contains("general") || value.Contains("תחזוקה") || value.Contains("כללי"))
+                return new List<string> { "General Maintenance" };
+
+            return new List<string>();
+        }
+
+        private static bool CanWorkerHandleCategory(string? department, string? category)
+        {
+            if (string.IsNullOrWhiteSpace(category))
+                return false;
+
+            var allowedCategories = GetCategoriesForDepartment(department);
+            return allowedCategories.Any(c => string.Equals(c, category.Trim(), StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static string NormalizeDepartmentText(string? value)
+        {
+            return (value ?? "")
+                .Trim()
+                .ToLowerInvariant()
+                .Replace("-", " ")
+                .Replace("_", " ");
         }
 
         private static string HashPassword(string password)

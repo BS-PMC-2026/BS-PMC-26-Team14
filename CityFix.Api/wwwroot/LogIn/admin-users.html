@@ -569,6 +569,220 @@ tbody tr:hover {
   font-weight: 800;
 }
 
+/* TOAST MESSAGES */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 5000;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.toast {
+  min-width: 300px;
+  max-width: 390px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-left: 5px solid #0b63e5;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-family: 'Inter', Arial, sans-serif;
+  animation: toastSlideIn 0.25s ease;
+}
+
+.toast.success {
+  border-left-color: #16a34a;
+}
+
+.toast.error {
+  border-left-color: #dc2626;
+}
+
+.toast.warning {
+  border-left-color: #f59e0b;
+}
+
+.toast.info {
+  border-left-color: #0b63e5;
+}
+
+.toast-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.toast.success .toast-icon {
+  background: #16a34a;
+}
+
+.toast.error .toast-icon {
+  background: #dc2626;
+}
+
+.toast.warning .toast-icon {
+  background: #f59e0b;
+}
+
+.toast.info .toast-icon {
+  background: #0b63e5;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 3px;
+}
+
+.toast-message {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* CONFIRM MODAL */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 4500;
+  padding: 20px;
+}
+
+.confirm-overlay.show {
+  display: flex;
+}
+
+.confirm-box {
+  width: 100%;
+  max-width: 430px;
+  background: white;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 24px 55px rgba(15, 23, 42, 0.24);
+  padding: 24px;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+.confirm-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fff7ed;
+  color: #f59e0b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.confirm-icon.danger {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.confirm-icon.success {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.confirm-icon i,
+.confirm-icon svg {
+  width: 27px;
+  height: 27px;
+}
+
+.confirm-title {
+  font-size: 21px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.confirm-message {
+  font-size: 15px;
+  color: #475569;
+  line-height: 1.6;
+  margin-bottom: 22px;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.confirm-btn {
+  border: none;
+  border-radius: 8px;
+  height: 42px;
+  padding: 0 18px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+.confirm-cancel {
+  background: #f3f4f6;
+  color: #111827;
+  border: 1px solid #d7dde5;
+}
+
+.confirm-cancel:hover {
+  background: #e5e7eb;
+}
+
+.confirm-approve {
+  background: #0b63e5;
+  color: white;
+}
+
+.confirm-approve:hover {
+  background: #084fbb;
+}
+
+.confirm-danger {
+  background: #dc2626;
+  color: white;
+}
+
+.confirm-danger:hover {
+  background: #b91c1c;
+}
+
 /* RESPONSIVE */
 @media(max-width: 1050px) {
   .layout {
@@ -624,6 +838,23 @@ tbody tr:hover {
 </head>
 
 <body>
+
+
+<div id="toastContainer" class="toast-container"></div>
+
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirmIcon">
+      <i data-lucide="alert-triangle"></i>
+    </div>
+    <div class="confirm-title" id="confirmTitle">Confirm Action</div>
+    <div class="confirm-message" id="confirmMessage">Are you sure?</div>
+    <div class="confirm-actions">
+      <button type="button" class="confirm-btn confirm-cancel" id="confirmCancelBtn">Cancel</button>
+      <button type="button" class="confirm-btn confirm-approve" id="confirmOkBtn">Confirm</button>
+    </div>
+  </div>
+</div>
 
 <div class="layout">
 
@@ -960,8 +1191,16 @@ function getRealEmail(user) {
 
 async function toggleBlock(role, id, name, currentStatus) {
   const actionText = currentStatus === "Blocked" ? "unblock" : "block";
+  const isUnblock = currentStatus === "Blocked";
 
-  if (!confirm(`Are you sure you want to ${actionText} ${name}?`)) {
+  const confirmed = await showConfirm({
+    title: isUnblock ? "Unblock User" : "Block User",
+    message: `Are you sure you want to ${actionText} ${name || "this user"}?`,
+    okText: isUnblock ? "Unblock" : "Block",
+    type: isUnblock ? "success" : "warning"
+  });
+
+  if (!confirmed) {
     return;
   }
 
@@ -979,21 +1218,28 @@ async function toggleBlock(role, id, name, currentStatus) {
     }
 
     if (!response.ok) {
-      alert(result.message || "Error updating user status");
+      showToast("error", "Update Failed", result.message || "Error updating user status");
       return;
     }
 
-    alert(result.message || "User status updated successfully");
+    showToast("success", "Status Updated", result.message || "User status updated successfully");
     await loadUsers();
 
   } catch (error) {
     console.error(error);
-    alert("Connection error with server");
+    showToast("error", "Connection Error", "Could not connect to the server");
   }
 }
 
 async function deleteUser(role, id, name) {
-  if (!confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) {
+  const confirmed = await showConfirm({
+    title: "Delete User",
+    message: `Are you sure you want to delete ${name || "this user"}? This action cannot be undone.`,
+    okText: "Delete",
+    type: "danger"
+  });
+
+  if (!confirmed) {
     return;
   }
 
@@ -1011,16 +1257,16 @@ async function deleteUser(role, id, name) {
     }
 
     if (!response.ok) {
-      alert(result.message || "Error deleting user");
+      showToast("error", "Delete Failed", result.message || "Error deleting user");
       return;
     }
 
-    alert(result.message || "User deleted successfully");
+    showToast("success", "User Deleted", result.message || "User deleted successfully");
     await loadUsers();
 
   } catch (error) {
     console.error(error);
-    alert("Connection error with server");
+    showToast("error", "Connection Error", "Could not connect to the server");
   }
 }
 
@@ -1093,6 +1339,99 @@ function escapeHtmlForAttribute(value) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;");
 }
+
+
+function showToast(type, title, message) {
+  let container = document.getElementById("toastContainer");
+
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toastContainer";
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement("div");
+  toast.className = "toast " + type;
+
+  let icon = "i";
+  if (type === "success") icon = "✓";
+  if (type === "error") icon = "!";
+  if (type === "warning") icon = "!";
+  if (type === "info") icon = "i";
+
+  toast.innerHTML = `
+    <div class="toast-icon">${icon}</div>
+    <div class="toast-content">
+      <div class="toast-title">${escapeHtml(title)}</div>
+      <div class="toast-message">${escapeHtml(message)}</div>
+    </div>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(18px)";
+    toast.style.transition = "0.2s ease";
+
+    setTimeout(() => {
+      toast.remove();
+    }, 220);
+  }, 3200);
+}
+
+function showConfirm(options) {
+  return new Promise(resolve => {
+    const overlay = document.getElementById("confirmOverlay");
+    const title = document.getElementById("confirmTitle");
+    const message = document.getElementById("confirmMessage");
+    const icon = document.getElementById("confirmIcon");
+    const okBtn = document.getElementById("confirmOkBtn");
+    const cancelBtn = document.getElementById("confirmCancelBtn");
+
+    const type = options.type || "warning";
+
+    title.textContent = options.title || "Confirm Action";
+    message.textContent = options.message || "Are you sure?";
+    okBtn.textContent = options.okText || "Confirm";
+
+    icon.className = "confirm-icon";
+    okBtn.className = "confirm-btn confirm-approve";
+
+    if (type === "danger") {
+      icon.classList.add("danger");
+      okBtn.className = "confirm-btn confirm-danger";
+      icon.innerHTML = `<i data-lucide="trash-2"></i>`;
+    } else if (type === "success") {
+      icon.classList.add("success");
+      icon.innerHTML = `<i data-lucide="shield-check"></i>`;
+    } else {
+      icon.innerHTML = `<i data-lucide="alert-triangle"></i>`;
+    }
+
+    overlay.classList.add("show");
+    lucide.createIcons();
+
+    function close(value) {
+      overlay.classList.remove("show");
+      okBtn.onclick = null;
+      cancelBtn.onclick = null;
+      overlay.onclick = null;
+      resolve(value);
+    }
+
+    okBtn.onclick = () => close(true);
+    cancelBtn.onclick = () => close(false);
+
+    overlay.onclick = function (event) {
+      if (event.target === overlay) {
+        close(false);
+      }
+    };
+  });
+}
+
 
 lucide.createIcons();
 </script>

@@ -761,6 +761,238 @@
       background: #b91c1c;
     }
 
+
+    /* TOAST MESSAGES */
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 5000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .toast {
+      width: min(390px, calc(100vw - 48px));
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-left: 5px solid #0b63e5;
+      border-radius: 12px;
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-family: 'Inter', Arial, sans-serif;
+      pointer-events: auto;
+      animation: toastSlideIn 0.22s ease;
+    }
+
+    .toast.success {
+      border-left-color: #16a34a;
+    }
+
+    .toast.error {
+      border-left-color: #dc2626;
+    }
+
+    .toast.warning {
+      border-left-color: #f59e0b;
+    }
+
+    .toast.info {
+      border-left-color: #0b63e5;
+    }
+
+    .toast-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .toast.success .toast-icon {
+      background: #16a34a;
+    }
+
+    .toast.error .toast-icon {
+      background: #dc2626;
+    }
+
+    .toast.warning .toast-icon {
+      background: #f59e0b;
+    }
+
+    .toast.info .toast-icon {
+      background: #0b63e5;
+    }
+
+    .toast-content {
+      flex: 1;
+    }
+
+    .toast-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 3px;
+    }
+
+    .toast-message {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #475569;
+    }
+
+    .toast-close {
+      border: none;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+      margin-left: 4px;
+    }
+
+    .toast-close:hover {
+      color: #334155;
+    }
+
+    @keyframes toastSlideIn {
+      from {
+        opacity: 0;
+        transform: translateX(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* CONFIRM MODAL */
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.50);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 4500;
+      padding: 20px;
+    }
+
+    .confirm-overlay.show {
+      display: flex;
+    }
+
+    .confirm-box {
+      width: 100%;
+      max-width: 440px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 14px;
+      box-shadow: 0 24px 55px rgba(15, 23, 42, 0.22);
+      overflow: hidden;
+      font-family: 'Inter', Arial, sans-serif;
+      animation: confirmPop 0.18s ease;
+    }
+
+    .confirm-header {
+      padding: 20px 22px 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .confirm-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #fef2f2;
+      color: #dc2626;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    .confirm-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: #111827;
+    }
+
+    .confirm-message {
+      padding: 0 22px 20px 76px;
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .confirm-actions {
+      padding: 16px 22px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: #f8fafc;
+    }
+
+    .confirm-cancel,
+    .confirm-delete {
+      height: 42px;
+      border-radius: 8px;
+      padding: 0 18px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+
+    .confirm-cancel {
+      background: #ffffff;
+      color: #111827;
+      border: 1px solid #cbd5e1;
+    }
+
+    .confirm-cancel:hover {
+      background: #f1f5f9;
+    }
+
+    .confirm-delete {
+      background: #dc2626;
+      color: #ffffff;
+      border: none;
+    }
+
+    .confirm-delete:hover {
+      background: #b91c1c;
+    }
+
+    @keyframes confirmPop {
+      from {
+        opacity: 0;
+        transform: scale(0.97);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
     @media(max-width: 1050px) {
       .layout {
         display: block;
@@ -1077,9 +1309,123 @@
     </div>
   </div>
 
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <div class="confirm-header">
+        <div class="confirm-icon">!</div>
+        <div class="confirm-title" id="confirmTitle">Confirm Action</div>
+      </div>
+
+      <div class="confirm-message" id="confirmMessage">
+        Are you sure you want to continue?
+      </div>
+
+      <div class="confirm-actions">
+        <button type="button" class="confirm-cancel" id="confirmCancelBtn">Cancel</button>
+        <button type="button" class="confirm-delete" id="confirmOkBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     let allReports = [];
     let selectedReportId = null;
+
+    function showToast(type, title, message) {
+      let container = document.getElementById("toastContainer");
+
+      if (!container) {
+        container = document.createElement("div");
+        container.id = "toastContainer";
+        container.className = "toast-container";
+        document.body.appendChild(container);
+      }
+
+      const toast = document.createElement("div");
+      toast.className = "toast " + (type || "info");
+
+      let icon = "i";
+      if (type === "success") icon = "✓";
+      if (type === "error") icon = "!";
+      if (type === "warning") icon = "!";
+      if (type === "info") icon = "i";
+
+      toast.innerHTML = `
+        <div class="toast-icon">${icon}</div>
+        <div class="toast-content">
+          <div class="toast-title">${escapeHtml(title || "Message")}</div>
+          <div class="toast-message">${escapeHtml(message || "")}</div>
+        </div>
+        <button type="button" class="toast-close" aria-label="Close message">×</button>
+      `;
+
+      const closeButton = toast.querySelector(".toast-close");
+      closeButton.addEventListener("click", function () {
+        removeToast(toast);
+      });
+
+      container.appendChild(toast);
+
+      setTimeout(function () {
+        removeToast(toast);
+      }, 3600);
+    }
+
+    function removeToast(toast) {
+      if (!toast) return;
+
+      toast.style.opacity = "0";
+      toast.style.transform = "translateX(18px)";
+      toast.style.transition = "0.2s ease";
+
+      setTimeout(function () {
+        if (toast.parentElement) {
+          toast.remove();
+        }
+      }, 220);
+    }
+
+    function showConfirm(title, message, okText = "Delete") {
+      return new Promise(resolve => {
+        const overlay = document.getElementById("confirmOverlay");
+        const titleElement = document.getElementById("confirmTitle");
+        const messageElement = document.getElementById("confirmMessage");
+        const cancelButton = document.getElementById("confirmCancelBtn");
+        const okButton = document.getElementById("confirmOkBtn");
+
+        titleElement.textContent = title;
+        messageElement.textContent = message;
+        okButton.textContent = okText;
+
+        overlay.classList.add("show");
+
+        function close(value) {
+          overlay.classList.remove("show");
+          cancelButton.onclick = null;
+          okButton.onclick = null;
+          overlay.onclick = null;
+          resolve(value);
+        }
+
+        cancelButton.onclick = function () {
+          close(false);
+        };
+
+        okButton.onclick = function () {
+          close(true);
+        };
+
+        overlay.onclick = function (event) {
+          if (event.target === overlay) {
+            close(false);
+          }
+        };
+      });
+    }
+
 
     const adminName = localStorage.getItem("userName") || "Admin";
     const userRole = localStorage.getItem("userRole") || "";
@@ -1121,6 +1467,7 @@
               <td colspan="9" class="error-message">Error loading reports from database</td>
             </tr>
           `;
+          showToast("error", "Loading Failed", "Could not load reports from the database.");
           return;
         }
 
@@ -1136,6 +1483,7 @@
             <td colspan="9" class="error-message">Connection error with server</td>
           </tr>
         `;
+        showToast("error", "Connection Error", "Could not connect to the server. Please try again.");
       }
     }
 
@@ -1259,7 +1607,7 @@
       const report = allReports.find(r => Number(r.id) === Number(reportId));
 
       if (!report) {
-        alert("Report not found");
+        showToast("warning", "Report Not Found", "The selected report could not be found.");
         return;
       }
 
@@ -1337,11 +1685,13 @@
     }
 
     async function deleteReport(reportId) {
-      if (!confirm(`Are you sure you want to delete report #${reportId}?`)) {
-        return;
-      }
+      const confirmed = await showConfirm(
+        "Delete Report",
+        `Are you sure you want to delete report #${reportId}? This action cannot be undone.`,
+        "Delete Report"
+      );
 
-      if (!confirm("This action cannot be undone. Delete this report?")) {
+      if (!confirmed) {
         return;
       }
 
@@ -1359,17 +1709,17 @@
         }
 
         if (!response.ok) {
-          alert(result.message || "Error deleting report");
+          showToast("error", "Delete Failed", result.message || "Error deleting report.");
           return;
         }
 
-        alert(result.message || "Report deleted successfully");
+        showToast("success", "Report Deleted", result.message || "Report deleted successfully.");
         closeReportModal();
         await loadReports();
 
       } catch (error) {
         console.error(error);
-        alert("Connection error with server");
+        showToast("error", "Connection Error", "Could not connect to the server. Please try again.");
       }
     }
 

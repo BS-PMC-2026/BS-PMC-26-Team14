@@ -1480,9 +1480,28 @@ function showList() {
   document.getElementById("detailsView").classList.add("hidden");
   document.getElementById("uploadImageView").classList.add("hidden");
   document.getElementById("listView").classList.remove("hidden");
+
+  const params = new URLSearchParams(window.location.search);
+
+  if (params.has("reportId")) {
+    window.history.replaceState({}, document.title, "worker-home.html");
+  }
+
+  if (!Array.isArray(reports) || reports.length === 0) {
+    loadOpenReports();
+  }
 }
 
 async function openReportDetails(reportId) {
+  document.getElementById("listView").classList.add("hidden");
+  document.getElementById("uploadImageView").classList.add("hidden");
+  document.getElementById("detailsView").classList.remove("hidden");
+
+  document.getElementById("detailCategory").innerText = "Loading...";
+  document.getElementById("detailDescription").innerText = "Loading report details...";
+  document.getElementById("detailId").innerText = "RPT-" + reportId;
+  document.getElementById("photoBox").innerHTML = `<div class="no-photo">Loading photo...</div>`;
+
   try {
     const response = await fetch(
       `/api/Auth/report-details/${reportId}?workerEmail=${encodeURIComponent(workerEmail)}`
@@ -1512,10 +1531,6 @@ if (
 } else {
   statusPanel.classList.add("hidden");
 }
-    document.getElementById("listView").classList.add("hidden");
-    document.getElementById("uploadImageView").classList.add("hidden");
-    document.getElementById("detailsView").classList.remove("hidden");
-
     const statusText =
   currentReport.status === "In Treatment" ? "In Treatment" :
   currentReport.status === "Completed" ? "Completed" :
@@ -1893,17 +1908,16 @@ if (reportId) {
   document.getElementById("detailCategory").innerText = "Loading...";
   document.getElementById("detailDescription").innerText = "Loading report details...";
   document.getElementById("detailId").innerText = "RPT-" + reportId;
+  document.getElementById("photoBox").innerHTML = `<div class="no-photo">Loading photo...</div>`;
+  document.getElementById("statusHistoryBox").innerHTML = "";
 
   openReportDetails(parseInt(reportId, 10));
-
-  loadOpenReports();
 } else {
   loadOpenReports();
 }
 
 lucide.createIcons();
 
-lucide.createIcons();
 async function updateReportStatus() {
   if (!currentReport) {
     alert("No report selected");

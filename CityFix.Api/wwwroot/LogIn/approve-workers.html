@@ -491,6 +491,177 @@
       display: none;
     }
 
+
+    /* TOAST MESSAGES */
+    .toast-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 5000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .toast {
+      min-width: 300px;
+      max-width: 390px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-left: 5px solid #0b63e5;
+      border-radius: 12px;
+      box-shadow: 0 18px 38px rgba(15, 23, 42, 0.18);
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      font-family: 'Inter', Arial, sans-serif;
+      animation: toastIn 0.25s ease;
+    }
+
+    .toast.success { border-left-color: #16a34a; }
+    .toast.error { border-left-color: #dc2626; }
+    .toast.warning { border-left-color: #f59e0b; }
+
+    .toast-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 17px;
+      font-weight: 800;
+      flex-shrink: 0;
+      background: #0b63e5;
+    }
+
+    .toast.success .toast-icon { background: #16a34a; }
+    .toast.error .toast-icon { background: #dc2626; }
+    .toast.warning .toast-icon { background: #f59e0b; }
+
+    .toast-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 3px;
+    }
+
+    .toast-message {
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(18px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* CONFIRM MODAL */
+    .confirm-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      z-index: 4500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .confirm-overlay.show {
+      display: flex;
+    }
+
+    .confirm-box {
+      width: 100%;
+      max-width: 430px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 24px 55px rgba(15, 23, 42, 0.25);
+      border: 1px solid #e5e7eb;
+      padding: 24px;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+
+    .confirm-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      margin-bottom: 16px;
+      background: #0b63e5;
+    }
+
+    .confirm-icon.danger {
+      background: #dc2626;
+    }
+
+    .confirm-icon.success {
+      background: #16a34a;
+    }
+
+    .confirm-icon i,
+    .confirm-icon svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .confirm-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #111827;
+      margin-bottom: 8px;
+    }
+
+    .confirm-text {
+      font-size: 15px;
+      color: #475569;
+      line-height: 1.6;
+      margin-bottom: 22px;
+    }
+
+    .confirm-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .confirm-cancel,
+    .confirm-ok {
+      height: 42px;
+      border: none;
+      border-radius: 8px;
+      padding: 0 18px;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: 'Inter', Arial, sans-serif;
+    }
+
+    .confirm-cancel {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .confirm-ok {
+      background: #0b63e5;
+      color: white;
+    }
+
+    .confirm-ok.danger {
+      background: #dc2626;
+    }
+
+    .confirm-ok.success {
+      background: #16a34a;
+    }
+
     /* RESPONSIVE */
     @media(max-width: 1050px) {
       .layout {
@@ -648,6 +819,23 @@
     </main>
   </div>
 
+  <div id="toastContainer" class="toast-container"></div>
+
+  <div id="confirmOverlay" class="confirm-overlay">
+    <div class="confirm-box">
+      <div id="confirmIcon" class="confirm-icon">
+        <i data-lucide="help-circle"></i>
+      </div>
+      <div id="confirmTitle" class="confirm-title">Confirm Action</div>
+      <div id="confirmText" class="confirm-text">Are you sure?</div>
+      <div class="confirm-actions">
+        <button type="button" class="confirm-cancel" onclick="closeConfirmModal(false)">Cancel</button>
+        <button type="button" id="confirmOkBtn" class="confirm-ok" onclick="closeConfirmModal(true)">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+
   <script>
     const BASE_URL = "/api/Auth";
 
@@ -658,6 +846,81 @@
 
     if (userRole !== "Admin") {
       window.location.href = "login.html";
+    }
+
+    let confirmCallback = null;
+
+    function showToast(type, title, message) {
+      const container = document.getElementById("toastContainer");
+      const toast = document.createElement("div");
+      toast.className = "toast " + type;
+
+      let icon = "i";
+      if (type === "success") icon = "✓";
+      if (type === "error") icon = "!";
+      if (type === "warning") icon = "!";
+
+      toast.innerHTML = `
+        <div class="toast-icon">${icon}</div>
+        <div>
+          <div class="toast-title">${escapeHtml(title)}</div>
+          <div class="toast-message">${escapeHtml(message)}</div>
+        </div>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateX(18px)";
+        toast.style.transition = "0.2s ease";
+
+        setTimeout(() => {
+          toast.remove();
+        }, 220);
+      }, 3200);
+    }
+
+    function showConfirmModal(options, callback) {
+      confirmCallback = callback;
+
+      const overlay = document.getElementById("confirmOverlay");
+      const iconBox = document.getElementById("confirmIcon");
+      const okBtn = document.getElementById("confirmOkBtn");
+
+      const type = options.type || "info";
+      const iconName = options.icon || "help-circle";
+
+      document.getElementById("confirmTitle").textContent = options.title || "Confirm Action";
+      document.getElementById("confirmText").textContent = options.message || "Are you sure?";
+      okBtn.textContent = options.confirmText || "Confirm";
+
+      iconBox.className = "confirm-icon";
+      okBtn.className = "confirm-ok";
+
+      if (type === "danger") {
+        iconBox.classList.add("danger");
+        okBtn.classList.add("danger");
+      }
+
+      if (type === "success") {
+        iconBox.classList.add("success");
+        okBtn.classList.add("success");
+      }
+
+      iconBox.innerHTML = `<i data-lucide="${iconName}"></i>`;
+      overlay.classList.add("show");
+      lucide.createIcons();
+    }
+
+    function closeConfirmModal(confirmed) {
+      document.getElementById("confirmOverlay").classList.remove("show");
+
+      if (confirmed && typeof confirmCallback === "function") {
+        confirmCallback();
+      }
+
+      confirmCallback = null;
     }
 
     async function loadPendingWorkers() {
@@ -672,7 +935,7 @@
         const workers = await response.json();
 
         if (!response.ok) {
-          showMessage("Error loading data", "error");
+          showToast("error", "Loading Failed", "Could not load worker requests from the database.");
           container.innerHTML = '<p class="empty">Error loading workers</p>';
           return;
         }
@@ -742,12 +1005,24 @@
         lucide.createIcons();
 
       } catch (error) {
-        showMessage("Error loading data", "error");
+        showToast("error", "Connection Error", "Could not connect to the server.");
         container.innerHTML = '<p class="empty">Connection error with server</p>';
       }
     }
 
-    async function approveWorker(workerId) {
+    function approveWorker(workerId) {
+      showConfirmModal({
+        type: "success",
+        icon: "check-circle",
+        title: "Approve Worker",
+        message: "Are you sure you want to approve this worker account?",
+        confirmText: "Approve"
+      }, function () {
+        approveWorkerRequest(workerId);
+      });
+    }
+
+    async function approveWorkerRequest(workerId) {
       try {
         const response = await fetch(`${BASE_URL}/approve-worker/${workerId}`, {
           method: "POST"
@@ -756,18 +1031,30 @@
         const data = await response.json();
 
         if (response.ok) {
-          showMessage(data.message || "Worker approved successfully", "success");
-          setTimeout(loadPendingWorkers, 700);
+          showToast("success", "Worker Approved", data.message || "Worker approved successfully.");
+          setTimeout(loadPendingWorkers, 350);
         } else {
-          showMessage(data.message || "Approve failed", "error");
+          showToast("error", "Approve Failed", data.message || "Could not approve this worker.");
         }
 
       } catch (error) {
-        showMessage("Save error", "error");
+        showToast("error", "Connection Error", "Could not save the action. Please try again.");
       }
     }
 
-    async function rejectWorker(workerId) {
+    function rejectWorker(workerId) {
+      showConfirmModal({
+        type: "danger",
+        icon: "x-circle",
+        title: "Reject Worker",
+        message: "Are you sure you want to reject this worker registration request?",
+        confirmText: "Reject"
+      }, function () {
+        rejectWorkerRequest(workerId);
+      });
+    }
+
+    async function rejectWorkerRequest(workerId) {
       try {
         const response = await fetch(`${BASE_URL}/reject-worker/${workerId}`, {
           method: "POST"
@@ -776,21 +1063,19 @@
         const data = await response.json();
 
         if (response.ok) {
-          showMessage(data.message || "Worker rejected successfully", "success");
-          setTimeout(loadPendingWorkers, 700);
+          showToast("success", "Worker Rejected", data.message || "Worker rejected successfully.");
+          setTimeout(loadPendingWorkers, 350);
         } else {
-          showMessage(data.message || "Reject failed", "error");
+          showToast("error", "Reject Failed", data.message || "Could not reject this worker.");
         }
 
       } catch (error) {
-        showMessage("Save error", "error");
+        showToast("error", "Connection Error", "Could not save the action. Please try again.");
       }
     }
 
     function showMessage(text, type) {
-      const box = document.getElementById("messageBox");
-      box.className = `message ${type}`;
-      box.textContent = text;
+      showToast(type, type === "success" ? "Success" : "Error", text);
     }
 
     function logout() {

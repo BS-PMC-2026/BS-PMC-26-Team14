@@ -394,10 +394,126 @@ textarea{height:110px;resize:none}
   }
 }
 
+/* TOAST MESSAGES */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.toast {
+  min-width: 300px;
+  max-width: 420px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-left: 5px solid #0b63e5;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.18);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-family: 'Inter', Arial, sans-serif;
+  animation: toastSlideIn 0.25s ease;
+  pointer-events: auto;
+}
+
+.toast-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #0b63e5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 3px;
+}
+
+.toast-message {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #475569;
+}
+
+.toast.success {
+  border-left-color: #16a34a;
+}
+
+.toast.success .toast-icon {
+  background: #16a34a;
+}
+
+.toast.error {
+  border-left-color: #dc2626;
+}
+
+.toast.error .toast-icon {
+  background: #dc2626;
+}
+
+.toast.warning {
+  border-left-color: #f59e0b;
+}
+
+.toast.warning .toast-icon {
+  background: #f59e0b;
+}
+
+.toast.info {
+  border-left-color: #0b63e5;
+}
+
+.toast.info .toast-icon {
+  background: #0b63e5;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media(max-width: 600px) {
+  .toast-container {
+    left: 16px;
+    right: 16px;
+    top: 16px;
+  }
+
+  .toast {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
 </style>
 </head>
 
 <body>
+<div id="toastContainer" class="toast-container"></div>
 <div class="layout">
 
 <aside class="sidebar">
@@ -629,6 +745,47 @@ textarea{height:110px;resize:none}
 </div>
 
 <script>
+
+function showToast(type, title, message) {
+  let container = document.getElementById("toastContainer");
+
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toastContainer";
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement("div");
+  toast.className = "toast " + type;
+
+  let icon = "i";
+  if (type === "success") icon = "✓";
+  if (type === "error") icon = "!";
+  if (type === "warning") icon = "!";
+  if (type === "info") icon = "i";
+
+  toast.innerHTML = `
+    <div class="toast-icon">${icon}</div>
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      <div class="toast-message">${message}</div>
+    </div>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(18px)";
+    toast.style.transition = "0.2s ease";
+
+    setTimeout(() => {
+      toast.remove();
+    }, 220);
+  }, 3200);
+}
+
 let selectedImageFile = null;
 let selectedImageBase64 = "";
 let selectedLocation = "";
@@ -678,12 +835,12 @@ function handleImageFile(file) {
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
-    alert("Please select an image file only");
+    showToast("warning", "Invalid File", "Please select an image file only.");
     return;
   }
 
   if (file.size > 10 * 1024 * 1024) {
-    alert("Image is too large. Maximum is 10MB");
+    showToast("warning", "Image Too Large", "Maximum image size is 10MB.");
     return;
   }
 
@@ -722,12 +879,12 @@ uploadBox.addEventListener("drop", function (e) {
 });
 function nextStep(step) {
   if (step === 2 && !selectedLocation) {
-    alert("Please select a location on the map first");
+    showToast("warning", "Location Required", "Please select a location on the map first.");
     return;
   }
 
   if (step === 3 && !selectedImageFile) {
-    alert("Please select an image first");
+    showToast("warning", "Image Required", "Please select an image first.");
     return;
   }
 
@@ -764,7 +921,7 @@ function detectLocation(event) {
   event.stopPropagation();
 
   if (!navigator.geolocation) {
-    alert("Browser does not support location detection");
+    showToast("error", "Location Not Supported", "Your browser does not support location detection.");
     return;
   }
 
@@ -775,7 +932,7 @@ function detectLocation(event) {
         "✅ Location detected automatically: " + selectedLocation;
       document.getElementById("sumLocation").innerText = selectedLocation;
     },
-    () => alert("Cannot get location. Check browser location permissions.")
+    () => showToast("error", "Location Permission Needed", "Cannot get location. Check browser location permissions.")
   );
 }
 
@@ -813,7 +970,7 @@ function detectCurrentLocation() {
   const detectedBox = document.getElementById("locationDetectedBox");
 
   if (!navigator.geolocation) {
-    alert("Browser does not support automatic location detection");
+    showToast("error", "Location Not Supported", "Your browser does not support automatic location detection.");
     return;
   }
 
@@ -826,7 +983,7 @@ function detectCurrentLocation() {
       const accuracy = position.coords.accuracy;
 
       if (!isInsideIsrael(lat, lng)) {
-        alert("Detected location is not within Israel");
+        showToast("warning", "Invalid Location", "Detected location is not within Israel.");
         return;
       }
 
@@ -870,7 +1027,7 @@ function detectCurrentLocation() {
       }, 200);
     },
     function () {
-      alert("Cannot detect location. Location permission needs to be granted in the browser.");
+      showToast("error", "Location Permission Needed", "Cannot detect location. Location permission needs to be granted in the browser.");
     },
     {
       enableHighAccuracy: true,
@@ -884,7 +1041,7 @@ map.on("click", function (e) {
   const lat = e.latlng.lat.toFixed(6);
   const lng = e.latlng.lng.toFixed(6);
 if (!isInsideIsrael(parseFloat(lat), parseFloat(lng))) {
-  alert("Please select a location within Israel only");
+  showToast("warning", "Invalid Location", "Please select a location within Israel only.");
   return;
 }
   selectedLocation = lat + "," + lng;
@@ -923,7 +1080,7 @@ async function searchAddress() {
   const street = document.getElementById("streetInput").value.trim();
 
   if (!city && !street) {
-    alert("Please enter a city or street");
+    showToast("warning", "Missing Search Details", "Please enter a city or street.");
     return;
   }
 
@@ -936,7 +1093,7 @@ async function searchAddress() {
     const results = await response.json();
 
     if (!results || results.length === 0) {
-      alert("No matching location found");
+      showToast("warning", "Location Not Found", "No matching location was found.");
       return;
     }
 
@@ -944,7 +1101,7 @@ const lat = parseFloat(results[0].lat);
 const lng = parseFloat(results[0].lon);
 
 if (!isInsideIsrael(lat, lng)) {
-  alert("Found location is not within Israel");
+  showToast("warning", "Invalid Location", "Found location is not within Israel.");
   return;
 }
 
@@ -965,7 +1122,7 @@ selectedLongitude = lng;
     document.getElementById("sumLocation").innerText = query;
 
   } catch (error) {
-    alert("Error searching for location");
+    showToast("error", "Search Error", "Error searching for location.");
     console.error(error);
   }
 }
@@ -973,11 +1130,11 @@ async function submitReport() {
   const description = document.getElementById("description").value.trim();
 
   if (!description) {
-    alert("Please enter a fault description");
+    showToast("warning", "Description Required", "Please enter a fault description.");
     return;
   }
   if (selectedLatitude === null || selectedLongitude === null) {
-  alert("Please select a location on the map");
+  showToast("warning", "Location Required", "Please select a location on the map.");
   return;
   console.log("report sent:", report);
 }
@@ -1005,15 +1162,18 @@ const report = {
     const result = await response.json();
 
     if (!response.ok) {
-      alert(result.message || "Error saving the report");
+      showToast("error", "Save Failed", result.message || "Error saving the report.");
       return;
     }
 
-    alert(result.message || "Report saved successfully");
-    window.location.href = "../citizen/create-report.html";
+    showToast("success", "Report Submitted", result.message || "Report saved successfully.");
+
+    setTimeout(() => {
+      window.location.href = "../citizen/create-report.html";
+    }, 900);
 
   } catch (error) {
-    alert("Connection error with server");
+    showToast("error", "Connection Error", "Could not connect to the server.");
     console.error(error);
   }
 }

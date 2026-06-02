@@ -215,6 +215,12 @@
       background: linear-gradient(90deg, #1d4ed8 0%, #0b63f6 100%);
     }
 
+    .submit-btn:disabled {
+      opacity: 0.75;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .message-box {
       display: none;
       margin-top: 15px;
@@ -424,7 +430,7 @@
       </div>
 
       <div class="submit-area">
-        <button type="submit" class="submit-btn">Login</button>
+        <button type="submit" class="submit-btn" id="loginBtn">Login</button>
       </div>
 
       <div id="messageBox" class="message-box"></div>
@@ -483,6 +489,7 @@
 
     const form = document.getElementById("customerLoginForm");
     const messageBox = document.getElementById("messageBox");
+    const loginBtn = document.getElementById("loginBtn");
 
     form.addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -490,6 +497,9 @@
       messageBox.className = "message-box";
       messageBox.style.display = "none";
       messageBox.textContent = "";
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = "Logging in...";
 
       const data = {
         email: document.getElementById("email").value.trim(),
@@ -516,6 +526,8 @@
           messageBox.style.display = "block";
           messageBox.className = "message-box error";
           messageBox.textContent = getEnglishErrorMessage(result.message);
+          loginBtn.disabled = false;
+          loginBtn.textContent = "Login";
           return;
         }
 
@@ -535,14 +547,14 @@
         messageBox.className = "message-box success";
         messageBox.textContent = "Logged in successfully";
 
-        setTimeout(() => {
-          window.location.href = "../citizen/create-report.html?v=" + Date.now();
-        }, 1000);
+        window.location.href = "../citizen/create-report.html?v=" + Date.now();
 
       } catch (error) {
         messageBox.style.display = "block";
         messageBox.className = "message-box error";
         messageBox.textContent = "Connection error with server";
+        loginBtn.disabled = false;
+        loginBtn.textContent = "Login";
         console.error(error);
       }
     });
