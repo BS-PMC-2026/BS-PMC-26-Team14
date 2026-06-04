@@ -782,6 +782,7 @@ namespace CityFix.Api.Controllers
                 Priority = dto.Priority,
                 Description = dto.Description,
                 Notes = dto.Notes,
+                Location = dto.Location,
                 ImageBase64 = dto.ImageBase64,
                 Latitude = dto.Latitude,
                 Longitude = dto.Longitude,
@@ -1242,6 +1243,38 @@ namespace CityFix.Api.Controllers
                 changedBy = dto.WorkerEmail,
                 changedAt = history.ChangedAt
             });
+        }
+
+        [HttpGet("customer-reports")]
+        public async Task<IActionResult> GetCustomerReports([FromQuery] string email)
+            if (string.IsNullOrWhiteSpace(email))
+                return BadRequest(new { message = "האימייל נדרש" });
+
+            var normalizedEmail = email.Trim().ToLowerInvariant();
+
+            var reports = await _context.Reports
+                .AsNoTracking()
+                .Where(r => r.CustomerEmail.ToLower() == normalizedEmail)
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new
+                {
+                    id = r.Id,
+                    category = r.Category,
+                    priority = r.Priority,
+                    description = r.Description,
+                    notes = r.Notes,
+                    status = r.Status,
+                    createdAt = r.CreatedAt,
+                    location = r.Location,
+                    latitude = r.Latitude,
+                    longitude = r.Longitude,
+                    imageBase64 = r.ImageBase64,
+                    assignedWorkerEmail = r.AssignedWorkerEmail,
+                    acceptedAt = r.AcceptedAt
+                })
+                .ToListAsync();
+
+            return Ok(reports);
         }
 
         [HttpGet("report-status-history/{reportId}")]

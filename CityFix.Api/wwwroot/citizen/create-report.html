@@ -525,7 +525,7 @@ textarea{height:110px;resize:none}
   <nav class="sidebar-nav">
     <div class="sidebar-section-title">
       <i data-lucide="user"></i>
-      <span>Customer Area</span>
+      <span>Citizen Area</span>
     </div>
 
     <a class="active" href="#">
@@ -533,7 +533,7 @@ textarea{height:110px;resize:none}
       <span>Create Report</span>
     </a>
 
-    <a href="#">
+    <a href="customer-my-reports.html">
       <i data-lucide="clipboard-list"></i>
       <span>My Reports</span>
     </a>
@@ -791,6 +791,16 @@ let selectedImageBase64 = "";
 let selectedLocation = "";
 let selectedLatitude = null;
 let selectedLongitude = null;
+
+async function reverseGeocode(lat, lng) {
+    try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+        const data = await res.json();
+        return data.display_name || (lat.toFixed(6) + "," + lng.toFixed(6));
+    } catch {
+        return lat.toFixed(6) + "," + lng.toFixed(6);
+    }
+}
 function compressImage(file, callback) {
   const img = new Image();
   const reader = new FileReader();
@@ -878,43 +888,50 @@ uploadBox.addEventListener("drop", function (e) {
   handleImageFile(file);
 });
 function nextStep(step) {
-  if (step === 2 && !selectedLocation) {
-    showToast("warning", "Location Required", "Please select a location on the map first.");
-    return;
-  }
+    if (step === 2 && !selectedLocation) {
+        showToast("warning", "Location Required", "Please select a location on the map first.");
+        return;
+    }
 
-  if (step === 3 && !selectedImageFile) {
-    showToast("warning", "Image Required", "Please select an image first.");
-    return;
-  }
+    if (step === 3 && !selectedImageFile) {
+        showToast("warning", "Image Required", "Please select an image first.");
+        return;
+    }
 
-  document.getElementById("step1").classList.add("hidden");
-  document.getElementById("step2").classList.add("hidden");
-  document.getElementById("step3").classList.add("hidden");
-  document.getElementById("step" + step).classList.remove("hidden");
+    document.getElementById("step1").classList.add("hidden");
+    document.getElementById("step2").classList.add("hidden");
+    document.getElementById("step3").classList.add("hidden");
+    document.getElementById("step" + step).classList.remove("hidden");
 
-  ["s1","s2","s3"].forEach(id => {
-    document.getElementById(id).classList.remove("active","done");
-  });
+    ["s1","s2","s3"].forEach(id => {
+        document.getElementById(id).classList.remove("active","done");
+    });
 
-  if (step === 1) document.getElementById("s1").classList.add("active");
-  if (step === 2) {
-    document.getElementById("s1").classList.add("done");
-    document.querySelector("#s1 .circle").innerText = "✓";
-    document.getElementById("s2").classList.add("active");
-  }
-  if (step === 3) {
-    document.getElementById("s1").classList.add("done");
-    document.getElementById("s2").classList.add("done");
-    document.querySelector("#s1 .circle").innerText = "✓";
-    document.querySelector("#s2 .circle").innerText = "✓";
-    document.getElementById("s3").classList.add("active");
-  }
-if (step === 1) {
-setTimeout(() => {
-  map.invalidateSize();
-}, 300);
-}
+    document.querySelector("#s1 .circle").innerText = "1";
+    document.querySelector("#s2 .circle").innerText = "2";
+    document.querySelector("#s3 .circle").innerText = "3";
+
+    if (step === 1) document.getElementById("s1").classList.add("active");
+
+    if (step === 2) {
+        document.getElementById("s1").classList.add("done");
+        document.querySelector("#s1 .circle").innerText = "✓";
+        document.getElementById("s2").classList.add("active");
+    }
+
+    if (step === 3) {
+        document.getElementById("s1").classList.add("done");
+        document.getElementById("s2").classList.add("done");
+        document.querySelector("#s1 .circle").innerText = "✓";
+        document.querySelector("#s2 .circle").innerText = "✓";
+        document.getElementById("s3").classList.add("active");
+    }
+
+    if (step === 1) {
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 300);
+    }
 }
 
 function detectLocation(event) {
@@ -999,16 +1016,10 @@ function detectCurrentLocation() {
         marker = L.marker([lat, lng]).addTo(map);
       }
 
-      marker.bindPopup(`
-        <b>Your Current Location</b><br>
-        ${selectedLocation}<br>
-        Auto Detected
-      `).openPopup();
-
       document.getElementById("locationText").innerHTML = `
         <div class="location-status-bar">
           <div>
-            📍 <b>Location:</b> ${selectedLocation}<br>
+            📍 <b>Location:</b> Getting address...<br>
             <span>Auto Detected</span>
           </div>
           <div>
@@ -1017,10 +1028,27 @@ function detectCurrentLocation() {
           </div>
         </div>
       `;
-
-      document.getElementById("sumLocation").innerText = selectedLocation;
+      document.getElementById("sumLocation").innerText = "Getting address...";
 
       detectedBox.classList.remove("hidden");
+
+      reverseGeocode(lat, lng).then(address => {
+        selectedLocation = address;
+        marker.bindPopup(`<b>Your Current Location</b><br>${address}`).openPopup();
+        document.getElementById("locationText").innerHTML = `
+          <div class="location-status-bar">
+            <div>
+              📍 <b>Location:</b> ${address}<br>
+              <span>Auto Detected</span>
+            </div>
+            <div>
+              Accuracy:
+              <span class="accuracy-high">${Math.round(accuracy)} meters</span>
+            </div>
+          </div>
+        `;
+        document.getElementById("sumLocation").innerText = address;
+      });
 
       setTimeout(() => {
         map.invalidateSize();
@@ -1038,25 +1066,31 @@ function detectCurrentLocation() {
 }
 
 map.on("click", function (e) {
-  const lat = e.latlng.lat.toFixed(6);
-  const lng = e.latlng.lng.toFixed(6);
-if (!isInsideIsrael(parseFloat(lat), parseFloat(lng))) {
-  showToast("warning", "Invalid Location", "Please select a location within Israel only.");
-  return;
-}
-  selectedLocation = lat + "," + lng;
-selectedLatitude = e.latlng.lat;
-selectedLongitude = e.latlng.lng; 
+  const lat = e.latlng.lat;
+  const lng = e.latlng.lng;
+  if (!isInsideIsrael(lat, lng)) {
+    showToast("warning", "Invalid Location", "Please select a location within Israel only.");
+    return;
+  }
+  selectedLatitude = lat;
+  selectedLongitude = lng;
+  selectedLocation = lat.toFixed(6) + "," + lng.toFixed(6);
+
   if (marker) {
     marker.setLatLng(e.latlng);
   } else {
     marker = L.marker(e.latlng).addTo(map);
   }
 
-  document.getElementById("locationText").innerText =
-    "✅ Location selected: " + selectedLocation;
+  document.getElementById("locationText").innerText = "📍 Getting address...";
+  document.getElementById("sumLocation").innerText = "Getting address...";
 
-  document.getElementById("sumLocation").innerText = selectedLocation;
+  (async () => {
+    const address = await reverseGeocode(lat, lng);
+    selectedLocation = address;
+    document.getElementById("locationText").innerText = "✅ Location selected: " + address;
+    document.getElementById("sumLocation").innerText = address;
+  })();
 });
 
 function updateCount() {
@@ -1105,9 +1139,10 @@ if (!isInsideIsrael(lat, lng)) {
   return;
 }
 
-    selectedLocation = lat.toFixed(6) + "," + lng.toFixed(6);
-selectedLatitude = lat;
-selectedLongitude = lng;
+    selectedLatitude = lat;
+    selectedLongitude = lng;
+    const address = results[0].display_name || (lat.toFixed(6) + "," + lng.toFixed(6));
+    selectedLocation = address;
     map.setView([lat, lng], 17);
 
     if (marker) {
@@ -1116,10 +1151,8 @@ selectedLongitude = lng;
       marker = L.marker([lat, lng]).addTo(map);
     }
 
-    document.getElementById("locationText").innerText =
-      "✅ Location selected: " + query + " (" + selectedLocation + ")";
-
-    document.getElementById("sumLocation").innerText = query;
+    document.getElementById("locationText").innerText = "✅ Location selected: " + address;
+    document.getElementById("sumLocation").innerText = address;
 
   } catch (error) {
     showToast("error", "Search Error", "Error searching for location.");
@@ -1127,55 +1160,58 @@ selectedLongitude = lng;
   }
 }
 async function submitReport() {
-  const description = document.getElementById("description").value.trim();
+    const description = document.getElementById("description").value.trim();
 
-  if (!description) {
-    showToast("warning", "Description Required", "Please enter a fault description.");
-    return;
-  }
-  if (selectedLatitude === null || selectedLongitude === null) {
-  showToast("warning", "Location Required", "Please select a location on the map.");
-  return;
-  console.log("report sent:", report);
-}
-
-const report = {
-  customerEmail: localStorage.getItem("userEmail"),
-  category: document.getElementById("category").value,
-  priority: document.getElementById("priority").value,
-  description: description,
-  notes: document.getElementById("notes").value.trim(),
-  latitude: selectedLatitude,
-  longitude: selectedLongitude,
-  imageBase64: selectedImageBase64
-};
-
-  try {
-    const response = await fetch("/api/Auth/create-report", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(report)
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      showToast("error", "Save Failed", result.message || "Error saving the report.");
-      return;
+    if (!description) {
+        showToast("warning", "Description Required", "Please enter a fault description.");
+        return;
     }
 
-    showToast("success", "Report Submitted", result.message || "Report saved successfully.");
+    if (selectedLatitude === null || selectedLongitude === null) {
+        showToast("warning", "Location Required", "Please select a location on the map.");
+        return;
+    }
 
-    setTimeout(() => {
-      window.location.href = "../citizen/create-report.html";
-    }, 900);
+    const report = {
+        customerEmail: localStorage.getItem("userEmail"),
+        category: document.getElementById("category").value,
+        priority: document.getElementById("priority").value,
+        description: description,
+        notes: document.getElementById("notes").value.trim(),
+        location: selectedLocation,
+        latitude: selectedLatitude,
+        longitude: selectedLongitude,
+        imageBase64: selectedImageBase64
+    };
 
-  } catch (error) {
-    showToast("error", "Connection Error", "Could not connect to the server.");
-    console.error(error);
-  }
+    console.log("report sent:", report);
+
+    try {
+        const response = await fetch("/api/Auth/create-report", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(report)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            showToast("error", "Save Failed", result.message || "Error saving the report.");
+            return;
+        }
+
+        showToast("success", "Report Submitted", result.message || "Report saved successfully.");
+
+        setTimeout(() => {
+            window.location.href = "../citizen/create-report.html";
+        }, 900);
+
+    } catch (error) {
+        showToast("error", "Connection Error", "Could not connect to the server.");
+        console.error(error);
+    }
 }
 
 function cancel() {
