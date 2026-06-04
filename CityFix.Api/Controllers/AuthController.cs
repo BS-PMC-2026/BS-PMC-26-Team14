@@ -829,9 +829,6 @@ namespace CityFix.Api.Controllers
             if (report == null)
                 return NotFound(new { message = "הדיווח לא נמצא" });
 
-            if (!CanWorkerHandleCategory(worker.Department, report.Category))
-                return BadRequest(new { message = "This report does not match your department" });
-
             if (report.Status != "Open")
                 return BadRequest(new { message = "הדיווח כבר נלקח לטיפול או שאינו פתוח" });
 
@@ -919,13 +916,7 @@ namespace CityFix.Api.Controllers
                 if (worker.ApprovalStatus != "Approved")
                     return BadRequest(new { message = "Worker account is not approved" });
 
-                var allowedCategories = GetCategoriesForDepartment(worker.Department);
-
-                if (allowedCategories.Count == 0)
-                    return Ok(new List<object>());
-
                 query = query.Where(r =>
-                    allowedCategories.Contains(r.Category) &&
                     (
                         r.Status == "Open" ||
                         (r.AssignedWorkerEmail != null && r.AssignedWorkerEmail.ToLower() == normalizedWorkerEmail)
@@ -1025,15 +1016,9 @@ namespace CityFix.Api.Controllers
             if (worker.ApprovalStatus != "Approved")
                 return BadRequest(new { message = "Worker account is not approved" });
 
-            var allowedCategories = GetCategoriesForDepartment(worker.Department);
-
-            if (allowedCategories.Count == 0)
-                return Ok(new List<object>());
-
             var reports = await _context.Reports
                 .AsNoTracking()
                 .Where(r =>
-                    allowedCategories.Contains(r.Category) &&
                     (
                         r.Status == "Open" ||
                         (
@@ -1096,9 +1081,6 @@ namespace CityFix.Api.Controllers
 
                 if (worker.ApprovalStatus != "Approved")
                     return BadRequest(new { message = "Worker account is not approved" });
-
-                if (!CanWorkerHandleCategory(worker.Department, reportEntity.Category))
-                    return BadRequest(new { message = "This report does not match your department" });
 
                 if (!string.IsNullOrWhiteSpace(reportEntity.AssignedWorkerEmail) &&
                     reportEntity.AssignedWorkerEmail.ToLower() != normalizedWorkerEmail)
@@ -1196,8 +1178,7 @@ namespace CityFix.Api.Controllers
             {
                 "Open",
                 "In Treatment",
-                "Completed",
-                "Closed"
+                "Completed"
             };
 
             if (!allowedStatuses.Contains(dto.NewStatus))
@@ -1207,9 +1188,6 @@ namespace CityFix.Api.Controllers
 
             if (report == null)
                 return NotFound(new { message = "הקריאה לא נמצאה" });
-
-            if (!CanWorkerHandleCategory(worker.Department, report.Category))
-                return BadRequest(new { message = "This report does not match your department" });
 
             if (report.AssignedWorkerEmail != null &&
                 report.AssignedWorkerEmail.ToLower() != dto.WorkerEmail.ToLower())
@@ -1328,22 +1306,22 @@ namespace CityFix.Api.Controllers
                 return new List<string>();
 
             if (value.Contains("road") || value.Contains("roads") || value.Contains("street") || value.Contains("כביש") || value.Contains("תשתיות"))
-                return new List<string> { "Road Damage" };
+                return new List<string> { "Road Damage", "נזק בכביש" };
 
             if (value.Contains("light") || value.Contains("lighting") || value.Contains("electric") || value.Contains("electricity") || value.Contains("תאורה") || value.Contains("חשמל"))
-                return new List<string> { "Street Lighting" };
+                return new List<string> { "Street Lighting", "תאורת רחוב" };
 
             if (value.Contains("garbage") || value.Contains("sanitation") || value.Contains("waste") || value.Contains("clean") || value.Contains("אשפה") || value.Contains("זבל") || value.Contains("ניקיון"))
-                return new List<string> { "Garbage / Sanitation" };
+                return new List<string> { "Garbage / Sanitation", "אשפה / ניקיון" };
 
             if (value.Contains("garden") || value.Contains("gardening") || value.Contains("park") || value.Contains("גינון") || value.Contains("גן") || value.Contains("עצים"))
-                return new List<string> { "Gardening" };
+                return new List<string> { "Gardening", "גינון" };
 
             if (value.Contains("water") || value.Contains("sewage") || value.Contains("sewer") || value.Contains("מים") || value.Contains("ביוב"))
-                return new List<string> { "Water / Sewage" };
+                return new List<string> { "Water / Sewage", "מים / ביוב" };
 
             if (value.Contains("maintenance") || value.Contains("general") || value.Contains("תחזוקה") || value.Contains("כללי"))
-                return new List<string> { "General Maintenance" };
+                return new List<string> { "General Maintenance", "תחזוקה כללית" };
 
             return new List<string>();
         }
