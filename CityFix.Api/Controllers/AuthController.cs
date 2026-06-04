@@ -1246,7 +1246,7 @@ namespace CityFix.Api.Controllers
         }
 
         [HttpGet("customer-reports")]
-        public async Task<IActionResult> GetCustomerReports([FromQuery] string email)
+        public async Task<IActionResult> GetCustomerReports([FromQuery] string email){
             if (string.IsNullOrWhiteSpace(email))
                 return BadRequest(new { message = "האימייל נדרש" });
 
