@@ -8,6 +8,10 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <style>
 * {
@@ -734,6 +738,10 @@ body {
     grid-template-columns: 1fr;
   }
 
+  .report-details-layout {
+    grid-template-columns: 1fr;
+  }
+
   .actions-bar {
     flex-wrap: wrap;
   }
@@ -755,6 +763,31 @@ body {
   .status-panel-bar {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .details-top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .details-actions {
+    width: 100%;
+  }
+
+  .close-report-btn {
+    width: 100%;
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .status-controls {
+    flex-direction: column;
+  }
+
+  .details-action-row {
+    grid-template-columns: 1fr;
   }
 
   .upload-actions {
@@ -965,6 +998,205 @@ body {
   color: #374151;
   border-color: #cbd5e1;
 }
+
+.details-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.details-title-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.details-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.back-btn {
+  color: #0526ff;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.close-report-btn {
+  height: 44px;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fff1f2;
+  color: #b91c1c;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 0 16px;
+  cursor: pointer;
+}
+
+.close-report-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.report-details-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.details-main-column,
+.details-side-column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.details-card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.details-card-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.details-card-body {
+  padding: 16px 18px;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.info-item {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 12px;
+  line-height: 1.55;
+}
+
+.description-text {
+  font-size: 15px;
+  color: #334155;
+  line-height: 1.8;
+  white-space: pre-wrap;
+}
+
+.badges-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.detail-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.priority-high {
+  background: #fee2e2;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.priority-medium {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.priority-low {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #86efac;
+}
+
+.status-open {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.status-treatment {
+  background: #fef3c7;
+  color: #92400e;
+  border-color: #fde68a;
+}
+
+.status-completed,
+.status-closed {
+  background: #e5e7eb;
+  color: #374151;
+  border-color: #cbd5e1;
+}
+
+.customer-list,
+.timeline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.side-info-item,
+.timeline-item {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 12px;
+  line-height: 1.55;
+  font-size: 14px;
+}
+
+#detailsMap {
+  width: 100%;
+  min-height: 320px;
+}
+
+.details-action-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.btn-download {
+  height: 48px;
+  background: #eef2ff;
+  color: #1e3a8a;
+  border: 1px solid #c7d2fe;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-download:hover {
+  background: #e0e7ff;
+}
 </style>
 </head>
 
@@ -1053,6 +1285,7 @@ body {
               <option value="Open">Open</option>
               <option value="In Treatment">In Treatment</option>
               <option value="Completed">Completed</option>
+              <option value="Closed">Closed</option>
             </select>
           </div>
           <div class="filter-group">
@@ -1083,64 +1316,96 @@ body {
 
       <!-- DETAILS VIEW -->
       <section id="detailsView" class="hidden">
-        <a class="back-link" onclick="showList()">← Back to All Reports</a>
-
-        <!-- Report header card -->
-        <div class="report-header">
-          <div class="report-header-title" id="detailCategory">Road Damage</div>
-          <div class="report-header-meta"><span id="detailId">RPT-42</span> · <span id="detailDate">Reported recently</span></div>
-        </div>
-
-        <!-- Pills row -->
-        <div class="pills-row">
-          <span id="detailStatus" class="pill pill-status-open">● Open</span>
-          <span id="detailPriority" class="pill pill-priority-high">⚠ High Priority</span>
-          <span id="detailLocationPill" class="pill pill-info">📍 —</span>
-          <span id="detailCustomerPill" class="pill pill-info">👤 —</span>
-          <span id="detailCategoryPill" class="pill pill-info">🏷 —</span>
-        </div>
-
-        <!-- Status update panel -->
-        <div class="status-panel-bar hidden" id="statusPanel">
-          <div class="status-panel-label">Update Report Status</div>
-          <div class="status-controls">
-            <select id="statusUpdateSelect">
-              <option value="Open">Open</option>
-              <option value="In Treatment">In Treatment</option>
-              <option value="Completed">Completed</option>
-              <option value="Closed">Closed</option>
-            </select>
-            <button onclick="updateReportStatus()">Update</button>
+        <div class="details-top">
+          <div class="details-title-box">
+            <a class="back-btn" onclick="showList()">← Back to All Reports</a>
+            <div>
+              <h1 class="page-title" id="detailCategory">Report</h1>
+              <div class="report-header-meta"><span id="detailId">RPT-42</span> · <span id="detailDate">Reported recently</span></div>
+            </div>
+          </div>
+          <div class="details-actions">
+            <button id="closeReportBtn" class="close-report-btn" onclick="closeCurrentReport()">Close Report</button>
           </div>
         </div>
 
-        <div id="statusHistoryBox"></div>
-
-        <!-- Body grid -->
-        <div class="detail-body-grid">
-          <div style="display:flex;flex-direction:column;gap:16px;">
-            <div class="detail-section-card">
-              <div class="detail-section-header"><div class="detail-dot"></div> Description</div>
-              <div class="detail-section-body">
-                <div class="description" id="detailDescription">-</div>
+        <div class="report-details-layout">
+          <div class="details-main-column">
+            <div class="details-card">
+              <div class="details-card-header">Report Information</div>
+              <div class="details-card-body">
+                <div class="badges-line">
+                  <span id="detailPriorityBox" class="detail-badge priority-medium">Medium Priority</span>
+                  <span id="detailStatusBox" class="detail-badge status-open">Open</span>
+                </div>
+                <div class="info-grid">
+                  <div class="info-item"><b>ID:</b> <span id="detailReportId">-</span></div>
+                  <div class="info-item"><b>Category:</b> <span id="detailCategoryText">-</span></div>
+                  <div class="info-item"><b>Created At:</b> <span id="detailCreatedAt">-</span></div>
+                  <div class="info-item"><b>Accepted At:</b> <span id="detailAcceptedAt">-</span></div>
+                  <div class="info-item" style="grid-column:1 / -1;"><b>Location:</b> <span id="detailLocationText">-</span></div>
+                </div>
+                <div class="description-text" id="detailDescription">-</div>
               </div>
             </div>
-            <div class="detail-section-card">
-              <div class="detail-section-header"><div class="detail-dot"></div> Photos</div>
-              <div class="detail-section-body" id="photoBox"></div>
+
+            <div class="details-card">
+              <div class="details-card-header">Report Photos</div>
+              <div class="details-card-body" id="photoBox"></div>
+            </div>
+
+            <div class="details-card">
+              <div class="details-card-header">Location Map</div>
+              <div id="detailsMap"></div>
             </div>
           </div>
-          <div class="detail-section-card detail-map-card">
-            <div class="detail-section-header"><div class="detail-dot"></div> Location on Map</div>
-            <div id="map"></div>
-          </div>
-        </div>
 
-        <!-- Action buttons -->
-        <div class="actions-bar">
-          <button class="btn-decline" onclick="declineReport()">× Decline Report</button>
-          <button class="btn-accept" onclick="acceptCurrentReport()">✓ Accept Report</button>
-          <button class="btn-upload" onclick="openUploadImagePage()">⬆ Upload Image</button>
+          <div class="details-side-column">
+            <div class="details-card">
+              <div class="details-card-header">Customer Details</div>
+              <div class="details-card-body customer-list">
+                <div class="side-info-item"><b>Name:</b> <span id="detailCustomerName">-</span></div>
+                <div class="side-info-item"><b>Email:</b> <span id="detailCustomerEmail">-</span></div>
+                <div class="side-info-item"><b>Phone:</b> <span id="detailCustomerPhone">-</span></div>
+              </div>
+            </div>
+
+            <div class="details-card">
+              <div class="details-card-header">Timeline</div>
+              <div class="details-card-body timeline-list">
+                <div class="timeline-item"><b>Status:</b> <span id="detailTimelineStatus">-</span></div>
+                <div class="timeline-item"><b>Created:</b> <span id="detailTimelineCreated">-</span></div>
+                <div class="timeline-item"><b>Accepted:</b> <span id="detailTimelineAccepted">-</span></div>
+              </div>
+            </div>
+
+            <div class="details-card hidden" id="statusPanel">
+              <div class="details-card-header">Update Status</div>
+              <div class="details-card-body">
+                <div class="status-controls">
+                  <select id="statusUpdateSelect">
+                    <option value="Open">Open</option>
+                    <option value="In Treatment">In Treatment</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Closed">Closed</option>
+                  </select>
+                  <button onclick="updateReportStatus()">Update</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="details-card">
+              <div class="details-card-header">Status History</div>
+              <div class="details-card-body" id="statusHistoryBox"></div>
+            </div>
+
+            <div class="details-action-row">
+              <button class="btn-decline" onclick="declineReport()">× Decline Report</button>
+              <button class="btn-accept" onclick="acceptCurrentReport()">✓ Accept Report</button>
+              <button class="btn-upload" onclick="openUploadImagePage()">⬆ Upload Image</button>
+              <button class="btn-download" onclick="downloadCurrentReportPdf()">⬇ Download PDF</button>
+            </div>
+          </div>
         </div>
 
       </section>
@@ -1268,11 +1533,75 @@ function formatDate(dateText) {
   });
 }
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function formatShortDate(dateText) {
+  if (!dateText) return "-";
+  const date = new Date(dateText);
+  if (isNaN(date.getTime())) return "-";
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit"
+  }) + " " + date.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
 function getPriorityText(priority) {
   if (priority === "גבוהה") return "High Priority";
   if (priority === "בינונית") return "Medium Priority";
   if (priority === "נמוכה") return "Low Priority";
+  if (priority === "High") return "High Priority";
+  if (priority === "Medium") return "Medium Priority";
+  if (priority === "Low") return "Low Priority";
   return priority || "Priority";
+}
+
+function getPriorityBadgeClass(priority) {
+  const text = getPriorityText(priority);
+  if (text === "High Priority") return "detail-badge priority-high";
+  if (text === "Low Priority") return "detail-badge priority-low";
+  return "detail-badge priority-medium";
+}
+
+function getStatusText(status) {
+  const normalized = String(status || "").trim().toLowerCase();
+  if (normalized === "in treatment" || normalized === "בטיפול") return "In Treatment";
+  if (normalized === "completed" || normalized === "הושלם") return "Completed";
+  if (normalized === "closed" || normalized === "נסגר") return "Closed";
+  return "Open";
+}
+
+function getStatusBadgeClass(status) {
+  const statusText = getStatusText(status);
+  if (statusText === "In Treatment") return "detail-badge status-treatment";
+  if (statusText === "Completed") return "detail-badge status-completed";
+  if (statusText === "Closed") return "detail-badge status-closed";
+  return "detail-badge status-open";
+}
+
+function getLocationText(report) {
+  if (!report) return "-";
+  const lat = report.latitude ?? "-";
+  const lng = report.longitude ?? "-";
+  return `${lat}, ${lng}`;
+}
+
+function normalizeImageSrc(src) {
+  const value = String(src || "").trim();
+  if (!value) return "";
+  if (value.startsWith("data:image")) return value;
+  if (value.startsWith("http://") || value.startsWith("https://") || value.startsWith("/")) return value;
+  return `data:image/jpeg;base64,${value.replace(/\s/g, "")}`;
 }
 
 function getPriorityClass(priority) {
@@ -1333,7 +1662,7 @@ function renderReportsList() {
  const searchText = document.getElementById("reportSearchInput")?.value.toLowerCase().trim() || "";
 
   const filtered = reports.filter(report => {
-    const statusMatch = !statusFilter || report.status === statusFilter;
+    const statusMatch = !statusFilter || getStatusText(report.status) === statusFilter;
     const priorityMatch = !priorityFilter || getPriorityText(report.priority) === priorityFilter;
     const categoryMatch = !categoryFilter || report.category === categoryFilter;
 
@@ -1366,19 +1695,26 @@ function renderReportsList() {
   let html = `<div class="reports-list">`;
 
   pageReports.forEach(report => {
-    const isInTreatment = report.status === "In Treatment";
-    const isCompleted = report.status === "Completed";
-    const isClosed = report.status === "Closed";
+    const statusText = getStatusText(report.status);
+    const isInTreatment = statusText === "In Treatment";
+    const isCompleted = statusText === "Completed";
+    const isClosed = statusText === "Closed";
+    const safeCategory = escapeHtml(report.category || "Report");
+    const safeId = escapeHtml(report.id || "-");
+    const safePriority = escapeHtml(getPriorityText(report.priority));
+    const safeCustomerEmail = escapeHtml(report.customerEmail || "-");
+    const safeDescription = escapeHtml(report.description || "-");
+    const safeStatusText = escapeHtml(statusText);
 
     html += `
       <div class="list-card${isInTreatment ? " in-treatment-card" : ""}${isCompleted ? " completed-card" : ""}"
-           onclick="openReportDetails(${report.id})">
+           onclick="openReportDetails(${Number(report.id)})">
 
-        <h3>${report.category || "Report"}</h3>
+        <h3>${safeCategory}</h3>
 
-        <p><b>ID:</b> RPT-${report.id}</p>
+        <p><b>ID:</b> RPT-${safeId}</p>
 
-        <p><b>Priority:</b> ${getPriorityText(report.priority)}</p>
+        <p><b>Priority:</b> ${safePriority}</p>
 
         <p>
           <b>Status:</b>
@@ -1388,18 +1724,13 @@ function renderReportsList() {
   isClosed ? "completed-badge" :
   "open-badge"
 }">
-  ${
-    isInTreatment ? "In Treatment" :
-    isCompleted ? "Completed" :
-    isClosed ? "Closed" :
-    "Open"
-  }
+  ${safeStatusText}
 </span>
         </p>
 
-        <p><b>Customer:</b> ${report.customerEmail || "-"}</p>
+        <p><b>Customer:</b> ${safeCustomerEmail}</p>
 
-        <p><b>Description:</b> ${report.description || "-"}</p>
+        <p><b>Description:</b> ${safeDescription}</p>
 
       </div>
     `;
@@ -1497,9 +1828,9 @@ async function openReportDetails(reportId) {
   document.getElementById("uploadImageView").classList.add("hidden");
   document.getElementById("detailsView").classList.remove("hidden");
 
-  document.getElementById("detailCategory").innerText = "Loading...";
-  document.getElementById("detailDescription").innerText = "Loading report details...";
-  document.getElementById("detailId").innerText = "RPT-" + reportId;
+  document.getElementById("detailCategory").textContent = "Loading...";
+  document.getElementById("detailDescription").textContent = "Loading report details...";
+  document.getElementById("detailId").textContent = "RPT-" + reportId;
   document.getElementById("photoBox").innerHTML = `<div class="no-photo">Loading photo...</div>`;
 
   try {
@@ -1521,58 +1852,64 @@ async function openReportDetails(reportId) {
     }
 
     currentReport = fullReport;
-const statusPanel = document.getElementById("statusPanel");
+    const statusPanel = document.getElementById("statusPanel");
+    const closeBtn = document.getElementById("closeReportBtn");
+    const isAssignedToCurrentWorker =
+      currentReport.assignedWorkerEmail &&
+      currentReport.assignedWorkerEmail.toLowerCase() === workerEmail.toLowerCase();
+    const statusText = getStatusText(currentReport.status);
 
-if (
-  currentReport.assignedWorkerEmail &&
-  currentReport.assignedWorkerEmail.toLowerCase() === workerEmail.toLowerCase()
-) {
-  statusPanel.classList.remove("hidden");
-} else {
-  statusPanel.classList.add("hidden");
-}
-    const statusText =
-  currentReport.status === "In Treatment" ? "In Treatment" :
-  currentReport.status === "Completed" ? "Completed" :
-  currentReport.status === "Closed" ? "Closed" :
-  "Open";
+    if (isAssignedToCurrentWorker) {
+      statusPanel.classList.remove("hidden");
+    } else {
+      statusPanel.classList.add("hidden");
+    }
 
-    document.getElementById("detailPriority").className = getPriorityClass(currentReport.priority);
-    document.getElementById("detailPriority").innerText = "⚠ " + getPriorityText(currentReport.priority);
+    closeBtn.disabled = !isAssignedToCurrentWorker || statusText === "Closed";
 
-    document.getElementById("detailStatus").className = getStatusPillClass(currentReport.status);
-    document.getElementById("detailStatus").innerText = "● " + statusText;
+    document.getElementById("detailPriorityBox").className = getPriorityBadgeClass(currentReport.priority);
+    document.getElementById("detailPriorityBox").innerHTML = escapeHtml(getPriorityText(currentReport.priority));
 
-    document.getElementById("detailCategory").innerText = currentReport.category || "-";
+    document.getElementById("detailStatusBox").className = getStatusBadgeClass(statusText);
+    document.getElementById("detailStatusBox").innerHTML = escapeHtml(statusText);
 
-    document.getElementById("detailCategoryPill").innerText = "🏷 " + (currentReport.category || "-");
+    document.getElementById("detailCategory").innerHTML = escapeHtml(currentReport.category || "-");
+    document.getElementById("detailCategoryText").innerHTML = escapeHtml(currentReport.category || "-");
+    document.getElementById("detailDate").innerHTML = escapeHtml(formatDate(currentReport.createdAt));
+    document.getElementById("detailId").innerHTML = `RPT-${escapeHtml(currentReport.id || "-")}`;
+    document.getElementById("detailReportId").innerHTML = `RPT-${escapeHtml(currentReport.id || "-")}`;
+    document.getElementById("detailLocationText").innerHTML = escapeHtml(getLocationText(currentReport));
 
-    document.getElementById("detailDate").innerText = formatDate(currentReport.createdAt);
+    document.getElementById("detailCreatedAt").innerHTML = escapeHtml(formatShortDate(currentReport.createdAt));
+    document.getElementById("detailAcceptedAt").innerHTML = escapeHtml(formatShortDate(currentReport.acceptedAt));
 
-    document.getElementById("detailLocationPill").innerText =
-      "📍 " + (currentReport.latitude || "-") + ", " + (currentReport.longitude || "-");
+    const customerName = currentReport.customerName || currentReport.customerFullName || "-";
+    const customerPhone = currentReport.customerPhone || currentReport.customerPhoneNumber || currentReport.phoneNumber || "-";
+    document.getElementById("detailCustomerName").innerHTML = escapeHtml(customerName);
+    document.getElementById("detailCustomerEmail").innerHTML = escapeHtml(currentReport.customerEmail || "-");
+    document.getElementById("detailCustomerPhone").innerHTML = escapeHtml(customerPhone);
 
-    document.getElementById("detailCustomerPill").innerText =
-      "👤 " + (currentReport.customerEmail || "-");
-
-    document.getElementById("detailId").innerText = "RPT-" + currentReport.id;
+    document.getElementById("detailTimelineStatus").innerHTML = escapeHtml(statusText);
+    document.getElementById("detailTimelineCreated").innerHTML = escapeHtml(formatShortDate(currentReport.createdAt));
+    document.getElementById("detailTimelineAccepted").innerHTML = escapeHtml(formatShortDate(currentReport.acceptedAt));
 
     document.getElementById("detailDescription").innerHTML =
-      `${currentReport.description || "No description"}<br>${currentReport.notes || ""}`;
-      document.getElementById("statusUpdateSelect").value =
-  currentReport.status || "Open";
+      `${escapeHtml(currentReport.description || "No description")}${currentReport.notes ? `\n\n${escapeHtml(currentReport.notes)}` : ""}`;
 
-loadStatusHistory(currentReport.id);
+    document.getElementById("statusUpdateSelect").value = statusText;
+    loadStatusHistory(currentReport.id);
 
     let photoHtml = "";
+    const reportImage = normalizeImageSrc(currentReport.imageBase64);
+    const workerImage = normalizeImageSrc(currentReport.workerImageBase64);
 
-    if (currentReport.imageBase64) {
-      photoHtml += `<img class="photo" src="${currentReport.imageBase64}" alt="Report photo">`;
+    if (reportImage) {
+      photoHtml += `<img class="photo" src="${reportImage}" alt="Report photo">`;
     } else {
       photoHtml += `<div class="no-photo">No photo uploaded</div>`;
     }
 
-    if (currentReport.workerImageBase64) {
+    if (workerImage) {
       photoHtml += `
         <div class="worker-uploaded-section">
           <div class="section-title">
@@ -1580,11 +1917,11 @@ loadStatusHistory(currentReport.id);
             <span>Worker Uploaded Image</span>
           </div>
 
-          <img src="${currentReport.workerImageBase64}" alt="Worker uploaded image">
+          <img src="${workerImage}" alt="Worker uploaded image">
 
           <div class="worker-uploaded-note">
             <b>Note:</b><br>
-            ${currentReport.workerImageNote || "No note"}
+            ${escapeHtml(currentReport.workerImageNote || "No note")}
           </div>
         </div>
       `;
@@ -1594,7 +1931,7 @@ loadStatusHistory(currentReport.id);
 
     const acceptButton = document.querySelector(".btn-accept");
 
-    if (currentReport.status === "In Treatment") {
+    if (statusText === "In Treatment") {
       acceptButton.innerText = "✓ Already in treatment";
       acceptButton.disabled = true;
       acceptButton.classList.add("accepted-disabled");
@@ -1630,7 +1967,7 @@ function initMap(lat, lng) {
     map = null;
   }
 
-  map = L.map("map").setView([lat, lng], 16);
+  map = L.map("detailsMap").setView([lat, lng], 16);
 
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     maxZoom: 19,
@@ -1694,7 +2031,7 @@ async function acceptCurrentReport() {
     currentReport.assignedWorkerEmail = workerEmail;
 
     await loadOpenReports();
-    showList();
+    await openReportDetails(currentReport.id);
 
   } catch (error) {
     alert("Connection error with server");
@@ -1717,7 +2054,7 @@ function openUploadImagePage() {
     return;
   }
 
-  if (currentReport.status !== "In Treatment") {
+  if (getStatusText(currentReport.status) !== "In Treatment") {
     alert("Can only upload image for a report in treatment");
     return;
   }
@@ -1729,7 +2066,7 @@ function openUploadImagePage() {
   document.getElementById("uploadSummaryCategory").innerText = currentReport.category || "-";
 
   document.getElementById("uploadSummaryLocation").innerText =
-    `${currentReport.latitude || "-"}, ${currentReport.longitude || "-"}`;
+    getLocationText(currentReport);
 
   document.getElementById("uploadSummaryCustomer").innerText =
     currentReport.customerEmail || "-";
@@ -1743,16 +2080,18 @@ function openUploadImagePage() {
   document.getElementById("workerImageNoteCount").innerText =
     document.getElementById("workerImageNote").value.length;
 
-  if (currentReport.imageBase64) {
+  const summaryImage = normalizeImageSrc(currentReport.imageBase64);
+  if (summaryImage) {
     document.getElementById("uploadSummaryImageBox").innerHTML =
-      `<img class="upload-summary-img" src="${currentReport.imageBase64}" alt="Report image">`;
+      `<img class="upload-summary-img" src="${summaryImage}" alt="Report image">`;
   } else {
     document.getElementById("uploadSummaryImageBox").innerHTML =
       `<div class="upload-summary-img"></div>`;
   }
 
-  if (currentReport.workerImageBase64) {
-    workerImageBase64 = currentReport.workerImageBase64;
+  const existingWorkerImage = normalizeImageSrc(currentReport.workerImageBase64);
+  if (existingWorkerImage) {
+    workerImageBase64 = existingWorkerImage;
     document.getElementById("workerImagePreview").innerHTML =
       `<img src="${workerImageBase64}" alt="Worker image">`;
   } else {
@@ -1926,60 +2265,237 @@ async function updateReportStatus() {
 
   const newStatus = document.getElementById("statusUpdateSelect").value;
 
-  const response = await fetch(`/api/Auth/update-report-status/${currentReport.id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      workerEmail: workerEmail,
-      newStatus: newStatus
-    })
-  });
+  try {
+    const response = await fetch(`/api/Auth/update-report-status/${currentReport.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        workerEmail: workerEmail,
+        newStatus: newStatus
+      })
+    });
 
-  const result = await response.json();
+    let result = {};
+    try {
+      result = await response.json();
+    } catch {
+      result = {};
+    }
 
-  if (!response.ok) {
-    alert(result.message || "Error updating status");
-    return;
+    if (!response.ok) {
+      alert(result.message || "Error updating status");
+      return;
+    }
+
+    alert("Status updated successfully");
+
+    currentReport.status = newStatus;
+    const statusText = getStatusText(newStatus);
+    document.getElementById("detailStatusBox").className = getStatusBadgeClass(statusText);
+    document.getElementById("detailStatusBox").innerHTML = escapeHtml(statusText);
+    document.getElementById("detailTimelineStatus").innerHTML = escapeHtml(statusText);
+
+    loadStatusHistory(currentReport.id);
+  } catch (error) {
+    alert("Connection error with server");
+    console.error(error);
   }
-
-  alert("Status updated successfully");
-
-  currentReport.status = newStatus;
-
-  const updatedStatusText =
-  newStatus === "In Treatment" ? "In Treatment" :
-  newStatus === "Completed" ? "Completed" :
-  newStatus === "Closed" ? "Closed" :
-  "Open";
-  document.getElementById("detailStatus").className = getStatusPillClass(newStatus);
-  document.getElementById("detailStatus").innerText = "● " + updatedStatusText;
-
-  loadStatusHistory(currentReport.id);
 }
 
 async function loadStatusHistory(reportId) {
-  const response = await fetch(`/api/Auth/report-status-history/${reportId}`);
-  const history = await response.json();
-
   const box = document.getElementById("statusHistoryBox");
 
-  if (!history.length) {
-    box.innerHTML = "";
+  try {
+    const response = await fetch(`/api/Auth/report-status-history/${reportId}`);
+    let history = [];
+    try {
+      history = await response.json();
+    } catch {
+      history = [];
+    }
+
+    if (!response.ok) {
+      box.innerHTML = `<div class="history-item">Unable to load status history.</div>`;
+      return;
+    }
+
+    if (!Array.isArray(history) || history.length === 0) {
+      box.innerHTML = `<div class="history-item">No status history available yet.</div>`;
+      return;
+    }
+
+    box.innerHTML = history.map(h => `
+      <div class="history-item">
+        <b>${escapeHtml(getStatusText(h.oldStatus))}</b> → <b>${escapeHtml(getStatusText(h.newStatus))}</b><br>
+        Worker: ${escapeHtml(h.changedByWorkerEmail || "-")}<br>
+        Time: ${escapeHtml(new Date(h.changedAt).toLocaleString("en-US"))}
+      </div>
+    `).join("");
+  } catch (error) {
+    box.innerHTML = `<div class="history-item">Unable to load status history.</div>`;
+    console.error(error);
+  }
+}
+
+async function closeCurrentReport() {
+  if (!currentReport) {
+    alert("No report selected");
     return;
   }
 
-  box.innerHTML = `
-    <h3 style="margin-top:20px;">Status History</h3>
-    ${history.map(h => `
-      <div class="history-item">
-        <b>${h.oldStatus}</b> → <b>${h.newStatus}</b><br>
-        Worker: ${h.changedByWorkerEmail}<br>
-        Time: ${new Date(h.changedAt).toLocaleString("en-US")}
-      </div>
-    `).join("")}
-  `;
+  const isAssignedToCurrentWorker =
+    currentReport.assignedWorkerEmail &&
+    currentReport.assignedWorkerEmail.toLowerCase() === workerEmail.toLowerCase();
+
+  if (!isAssignedToCurrentWorker) {
+    alert("Only the assigned worker can close this report");
+    return;
+  }
+
+  if (getStatusText(currentReport.status) === "Closed") {
+    alert("Report is already closed");
+    return;
+  }
+
+  if (!confirm("Are you sure you want to close this report?")) {
+    return;
+  }
+
+  try {
+    const response = await fetch(`/api/Auth/update-report-status/${currentReport.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        workerEmail: workerEmail,
+        newStatus: "Closed"
+      })
+    });
+
+    let result = {};
+    try {
+      result = await response.json();
+    } catch {
+      result = {};
+    }
+
+    if (!response.ok) {
+      alert(result.message || "Error closing the report");
+      return;
+    }
+
+    await loadOpenReports();
+    await openReportDetails(currentReport.id);
+  } catch (error) {
+    alert("Connection error with server");
+    console.error(error);
+  }
+}
+
+async function imageToDataUrl(src) {
+  const normalizedSrc = normalizeImageSrc(src);
+  if (!normalizedSrc) return "";
+  if (normalizedSrc.startsWith("data:image")) return normalizedSrc;
+
+  try {
+    const response = await fetch(normalizedSrc);
+    const blob = await response.blob();
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result || "");
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return "";
+  }
+}
+
+async function downloadCurrentReportPdf() {
+  if (!currentReport) {
+    alert("No report selected");
+    return;
+  }
+
+  const jsPdfNs = window.jspdf;
+  if (!jsPdfNs || !jsPdfNs.jsPDF) {
+    alert("PDF library is not available right now");
+    return;
+  }
+
+  try {
+    const { jsPDF } = jsPdfNs;
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 40;
+    let y = margin;
+
+    const line = (label, value) => {
+      doc.setFont("helvetica", "bold");
+      doc.text(`${label}:`, margin, y);
+      doc.setFont("helvetica", "normal");
+      doc.text(String(value || "-"), margin + 110, y);
+      y += 22;
+    };
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("CityFix Worker Report", margin, y);
+    y += 28;
+
+    doc.setFontSize(12);
+    line("Report ID", `RPT-${currentReport.id || "-"}`);
+    line("Category", currentReport.category || "-");
+    line("Status", getStatusText(currentReport.status));
+    line("Priority", getPriorityText(currentReport.priority));
+    line("Created At", formatShortDate(currentReport.createdAt));
+    line("Accepted At", formatShortDate(currentReport.acceptedAt));
+    line("Customer", currentReport.customerEmail || "-");
+    line("Location", getLocationText(currentReport));
+
+    y += 8;
+    doc.setFont("helvetica", "bold");
+    doc.text("Description:", margin, y);
+    y += 16;
+    doc.setFont("helvetica", "normal");
+    const descriptionText = `${currentReport.description || "No description"}${currentReport.notes ? `\n\nNotes: ${currentReport.notes}` : ""}`;
+    const wrapped = doc.splitTextToSize(descriptionText, pageWidth - margin * 2);
+    doc.text(wrapped, margin, y);
+    y += wrapped.length * 14 + 20;
+
+    const addImageBlock = async (title, source) => {
+      const dataUrl = await imageToDataUrl(source);
+      if (!dataUrl) return;
+
+      if (y > pageHeight - 220) {
+        doc.addPage();
+        y = margin;
+      }
+
+      doc.setFont("helvetica", "bold");
+      doc.text(title, margin, y);
+      y += 10;
+
+      const maxWidth = pageWidth - margin * 2;
+      const maxHeight = 180;
+      const imageFormat = dataUrl.includes("data:image/png") ? "PNG" : "JPEG";
+      doc.addImage(dataUrl, imageFormat, margin, y, maxWidth, maxHeight, undefined, "FAST");
+      y += maxHeight + 24;
+    };
+
+    await addImageBlock("Report Photo", currentReport.imageBase64);
+    await addImageBlock("Worker Uploaded Photo", currentReport.workerImageBase64);
+
+    const safeId = String(currentReport.id || "report").replace(/[^a-zA-Z0-9_-]/g, "");
+    doc.save(`cityfix-report-${safeId || "report"}.pdf`);
+  } catch (error) {
+    alert("Failed to generate report PDF");
+    console.error(error);
+  }
 }
 
 </script>
