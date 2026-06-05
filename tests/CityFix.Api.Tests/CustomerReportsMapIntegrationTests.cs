@@ -89,18 +89,19 @@ public class CustomerReportsMapIntegrationTests
         var email = "map.customer1@test.com";
         await SeedCustomerAsync(factory, email);
 
-        var createRequest = new
-        {
-            customerEmail = email,
-            category = "תאורת רחוב",
-            priority = "בינונית",
-            description = "עמוד תאורה שבור",
-            notes = "",
-            latitude = 32.0853,
-            longitude = 34.7818,
-            imageBase64 = ""
-        };
-
+var createRequest = new
+{
+    customerEmail = email,
+    category = "תאורת רחוב",
+    priority = "בינונית",
+    description = "עמוד תאורה שבור",
+    notes = "",
+    location = "תל אביב",
+    municipality = "תל אביב",
+    latitude = 32.0853,
+    longitude = 34.7818,
+    imageBase64 = ""
+};
         var createResponse = await client.PostAsJsonAsync("/api/Auth/create-report", createRequest);
         createResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -138,6 +139,7 @@ public class CustomerReportsMapIntegrationTests
             notes = "",
             latitude = 31.7683,
             longitude = 35.2137,
+            municipality = "באר שבע",
             imageBase64 = ""
         };
 
@@ -182,6 +184,7 @@ public class CustomerReportsMapIntegrationTests
                 notes = "",
                 latitude = 31.5,
                 longitude = 34.8,
+                municipality = "באר שבע",
                 imageBase64 = ""
             });
             var json = await res.Content.ReadFromJsonAsync<JsonElement>();
@@ -273,6 +276,7 @@ public class CustomerReportsMapIntegrationTests
             notes = "",
             latitude = 32.0853,
             longitude = 34.7818,
+            municipality = "באר שבע",
             imageBase64 = ""
         });
         createRes.StatusCode.Should().Be(HttpStatusCode.OK);

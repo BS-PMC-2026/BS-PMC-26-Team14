@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notifications - CityFix</title>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.page {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  min-height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-logo {
+  height: 78px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+.sidebar-logo i {
+  width: 28px;
+  height: 28px;
+  color: #0526ff;
+  flex-shrink: 0;
+}
+.sidebar-logo span {
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: #101828;
+  letter-spacing: -0.4px;
+}
+.sidebar-nav {
+  padding: 16px 14px 0;
+  flex: 1;
+}
+.sidebar-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 12px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  color: #5f5f5f;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
+}
+.sidebar-section-title i {
+  width: 16px;
+  height: 16px;
+  color: #5f5f5f;
+}
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 16px;
+  color: #364153;
+  text-decoration: none;
+  border-radius: 10px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  margin-bottom: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-nav a i {
+  width: 20px;
+  height: 20px;
+  color: #364153;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.sidebar-nav a:hover {
+  background: #d7e9ff;
+  color: #0526ff;
+}
+.sidebar-nav a:hover i {
+  color: #0526ff;
+}
+.sidebar-nav a.active {
+  background: #0526ff;
+  color: #ffffff;
+  font-weight: 600;
+}
+.sidebar-nav a.active i {
+  color: #ffffff;
+}
+.sidebar-logout {
+  padding: 16px 14px;
+  border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+.sidebar-logout a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 16px;
+  color: #364153;
+  text-decoration: none;
+  border-radius: 10px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-logout a i {
+  width: 20px;
+  height: 20px;
+  color: #364153;
+  transition: color 0.15s;
+}
+.sidebar-logout a:hover {
+  background: #d7e9ff;
+  color: #0526ff;
+}
+.sidebar-logout a:hover i {
+  color: #0526ff;
+}
+
+/* MAIN */
+.main {
+  margin-left: 260px;
+  width: calc(100% - 260px);
+  min-height: 100vh;
+}
+
+.topbar {
+  height: 78px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
+}
+
+.menu-icon {
+  width: 26px;
+  height: 26px;
+  color: #111827;
+}
+
+.worker-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'Inter', Arial, sans-serif;
+}
+
+.worker-box i,
+.worker-box svg {
+  width: 19px;
+  height: 19px;
+  color: #334155;
+}
+
+.worker-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.content {
+  padding: 34px 42px 44px;
+  width: 100%;
+  max-width: none;
+}
+
+.notifications-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.notifications-header h1 {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+  letter-spacing: -0.4px;
+}
+
+.notifications-header p {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 16px;
+  color: #475569;
+}
+
+.new-counter {
+  min-width: 74px;
+  height: 30px;
+  border-radius: 10px;
+  background: #dbeafe;
+  color: #1455ff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 13px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  margin-top: 10px;
+}
+
+.mark-read-btn {
+  height: 38px;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #111827;
+  border-radius: 7px;
+  padding: 0 17px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 18px;
+}
+
+.mark-read-btn:hover {
+  background: #f8fafc;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.notification-row {
+    width: 100%;
+  min-height: 104px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px 21px;
+  display: grid;
+  grid-template-columns: 52px 1fr 125px;
+  gap: 18px;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.notification-row.unread {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+.notification-row.read {
+  background: #ffffff;
+  border-color: #e5e7eb;
+}
+
+.notification-row.read:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #e5e7eb;
+}
+.notification-row:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+}
+
+.notification-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #dbeafe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1455ff;
+}
+
+.notification-icon i,
+.notification-icon svg {
+  width: 21px;
+  height: 21px;
+  color: #1455ff;
+}
+
+.notification-icon.success {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.notification-icon.success i,
+.notification-icon.success svg {
+  color: #16a34a;
+}
+
+.notification-content {
+  min-width: 0;
+}
+
+.notification-title {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.notification-description {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #475569;
+  margin-bottom: 11px;
+}
+
+.notification-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.notification-sidebar-link {
+  position: relative;
+}
+
+.sidebar-badge {
+  margin-left: auto;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+.report-link {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1455ff;
+}
+
+.priority-badge {
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.priority-badge.high {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.priority-badge.medium {
+  background: #fffbeb;
+  color: #b45309;
+  border-color: #fde68a;
+}
+
+.priority-badge.low {
+  background: #ecfdf5;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.notification-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.blue-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1455ff;
+  margin-top: 7px;
+}
+
+.notification-time {
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 12px;
+  color: #64748b;
+  white-space: nowrap;
+  margin-bottom: 2px;
+}
+
+.loading,
+.empty,
+.error {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 38px;
+  text-align: center;
+  color: #64748b;
+  font-family: 'Inter', Arial, sans-serif;
+  font-size: 16px;
+}
+
+.loading i,
+.loading svg,
+.empty i,
+.empty svg,
+.error i,
+.error svg {
+  width: 42px;
+  height: 42px;
+  margin-bottom: 12px;
+  color: #94a3b8;
+}
+
+.error {
+  color: #dc2626;
+}
+
+@media(max-width: 900px) {
+  .page {
+    display: block;
+  }
+
+  .sidebar {
+    position: static;
+    width: 100%;
+    min-height: auto;
+  }
+
+  .main {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .content {
+    padding: 28px 18px;
+  }
+
+  .notifications-header {
+    flex-direction: column;
+  }
+
+  .notification-row {
+    grid-template-columns: 44px 1fr;
+  }
+
+  .notification-right {
+    grid-column: 2;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <i data-lucide="building-2"></i>
+      <span>CityFix</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-title">
+        <i data-lucide="hard-hat"></i>
+        <span>Worker Area</span>
+      </div>
+
+      <a href="worker-home.html">
+        <i data-lucide="file-text"></i>
+        <span>All Reports</span>
+      </a>
+<a href="worker-notifications.html" class="notification-sidebar-link active">
+  <i data-lucide="bell"></i>
+  <span>Notifications</span>
+  <span id="sidebarNotificationBadge" class="sidebar-badge">0</span>
+</a>
+      <a href="worker-assigned-reports.html" >
+        <i data-lucide="clipboard-list"></i>
+        <span>Assigned Reports</span>
+      </a>
+
+      <a href="worker-reports-map.html">
+        <i data-lucide="map"></i>
+        <span>Map View</span>
+      </a>
+
+      <a href="../profile/worker-profile.html">
+        <i data-lucide="user-circle"></i>
+        <span>Profile</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-logout">
+      <a href="#" onclick="logout()">
+        <i data-lucide="log-out"></i>
+        <span>Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <i data-lucide="menu" class="menu-icon"></i>
+
+      <div class="worker-box">
+        <i data-lucide="user"></i>
+        <span class="worker-name" id="workerName">Worker</span>
+        <i data-lucide="chevron-down"></i>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="notifications-header">
+        <div>
+          <h1>Notifications</h1>
+          <p>Stay updated on new assignments and report updates</p>
+        </div>
+
+        <span class="new-counter" id="notificationCounter">0 New</span>
+      </div>
+
+      <button class="mark-read-btn" onclick="markAllAsRead()">
+        Mark all as read
+      </button>
+
+      <section id="notificationsContainer">
+        <div class="loading">
+          <i data-lucide="loader"></i>
+          <div>Loading notifications...</div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+</div>
+
+<script>
+let notifications = [];
+let readNotifications =
+  JSON.parse(localStorage.getItem("readNotifications") || "[]");
+let isMarkedRead = false;
+
+const workerEmail = localStorage.getItem("workerEmail") || "";
+const workerName =
+  localStorage.getItem("workerFullName") ||
+  localStorage.getItem("workerName") ||
+  "Worker";
+
+document.getElementById("workerName").innerText = workerName;
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "../index.html";
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function shortText(text, maxLength) {
+  text = String(text || "");
+  return text.length <= maxLength ? text : text.substring(0, maxLength) + "...";
+}
+
+function getPriorityText(priority) {
+  const p = String(priority || "").trim();
+
+  if (!p) return "Medium Priority";
+
+  if (p === "High" || p === "גבוהה") return "High Priority";
+  if (p === "Medium" || p === "בינונית") return "Medium Priority";
+  if (p === "Low" || p === "נמוכה") return "Low Priority";
+
+  if (p.toLowerCase().includes("high")) return "High Priority";
+  if (p.toLowerCase().includes("low")) return "Low Priority";
+  if (p.toLowerCase().includes("medium")) return "Medium Priority";
+
+  return p;
+}
+
+function getPriorityClass(priority) {
+  const text = getPriorityText(priority).toLowerCase();
+
+  if (text.includes("high")) return "high";
+  if (text.includes("low")) return "low";
+
+  return "medium";
+}
+
+function getRelativeTime(dateText) {
+  if (!dateText) return "";
+
+  const created = new Date(dateText);
+  if (isNaN(created.getTime())) return "";
+
+  const diffMs = Date.now() - created.getTime();
+  const diffMinutes = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMinutes / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMinutes < 1) return "just now";
+  if (diffMinutes < 60) return diffMinutes + " minutes ago";
+  if (diffHours < 24) return diffHours + " hour" + (diffHours > 1 ? "s" : "") + " ago";
+  return diffDays + " day" + (diffDays > 1 ? "s" : "") + " ago";
+}
+
+function markAllAsRead() {
+  isMarkedRead = true;
+  renderNotifications();
+}
+
+async function loadNotifications() {
+  const container = document.getElementById("notificationsContainer");
+
+  if (!workerEmail) {
+    container.innerHTML = `
+      <div class="error">
+        <i data-lucide="circle-alert"></i>
+        <div>Worker email not found. Please login again.</div>
+      </div>
+    `;
+    lucide.createIcons();
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "/api/Auth/worker-notifications?workerEmail=" + encodeURIComponent(workerEmail)
+    );
+
+    let data = [];
+    try {
+      data = await response.json();
+    } catch {
+      data = [];
+    }
+
+    if (!response.ok) {
+      container.innerHTML = `
+        <div class="error">
+          <i data-lucide="circle-alert"></i>
+          <div>${escapeHtml(data.message || "Error loading notifications")}</div>
+        </div>
+      `;
+      lucide.createIcons();
+      return;
+    }
+
+    notifications = Array.isArray(data) ? data : [];
+    renderNotifications();
+
+  } catch (error) {
+    console.error(error);
+    container.innerHTML = `
+      <div class="error">
+        <i data-lucide="wifi-off"></i>
+        <div>Connection error with server</div>
+      </div>
+    `;
+    lucide.createIcons();
+  }
+}
+
+function renderNotifications() {
+  const container = document.getElementById("notificationsContainer");
+
+const unreadCount =
+  notifications.filter(
+    n => !readNotifications.includes(n.id)
+  ).length;
+    document.getElementById("notificationCounter").innerText = unreadCount + " New";
+
+  if (notifications.length === 0) {
+    container.innerHTML = `
+      <div class="empty">
+        <i data-lucide="bell-off"></i>
+        <div>No new reports matching your area and department.</div>
+      </div>
+    `;
+    lucide.createIcons();
+    return;
+  }
+
+  let html = `<div class="notifications-list">`;
+
+  notifications.forEach(report => {
+    const priorityText = getPriorityText(report.priority);
+    const priorityClass = getPriorityClass(report.priority);
+    const category = report.category || "Report";
+    const timeText = getRelativeTime(report.createdAt) || "recently";
+const isRead = readNotifications.includes(report.id);
+    html += `
+<div class="notification-row ${isRead ? "read" : "unread"}"
+           onclick="openReport(${Number(report.id)})">
+
+        <div class="notification-icon">
+          <i data-lucide="bell"></i>
+        </div>
+
+        <div class="notification-content">
+          <div class="notification-title">
+New matching report available
+          </div>
+
+          <div class="notification-description">
+            A new ${escapeHtml(priorityText.replace(" Priority", "").toLowerCase())}
+            priority ${escapeHtml(category)} report has been assigned to you.
+          </div>
+
+          <div class="notification-meta">
+            <span class="report-link">RPT-${escapeHtml(report.id)}</span>
+            <span class="priority-badge ${priorityClass}">
+              ${escapeHtml(priorityText)}
+            </span>
+          </div>
+        </div>
+
+        <div class="notification-right">
+${isRead ? "" : `<span class="blue-dot"></span>`}
+          <span class="notification-time">${escapeHtml(timeText)}</span>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `</div>`;
+  container.innerHTML = html;
+  lucide.createIcons();
+}
+
+function openReport(reportId) {
+
+  if (!readNotifications.includes(reportId)) {
+
+    readNotifications.push(reportId);
+
+    localStorage.setItem(
+      "readNotifications",
+      JSON.stringify(readNotifications)
+    );
+  }
+
+  window.location.href =
+    "worker-home.html?reportId=" + encodeURIComponent(reportId);
+}
+async function loadSidebarNotificationBadge() {
+  const badge = document.getElementById("sidebarNotificationBadge");
+  const workerEmail = localStorage.getItem("workerEmail") || "";
+
+  if (!badge || !workerEmail) return;
+
+  try {
+    const response = await fetch(
+      "/api/Auth/worker-notifications?workerEmail=" + encodeURIComponent(workerEmail)
+    );
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const readNotifications =
+      JSON.parse(localStorage.getItem("readNotifications") || "[]");
+
+    const unreadCount = Array.isArray(data)
+      ? data.filter(n => !readNotifications.includes(n.id)).length
+      : 0;
+
+    if (unreadCount > 0) {
+      badge.innerText = unreadCount;
+      badge.style.display = "inline-flex";
+    } else {
+      badge.style.display = "none";
+    }
+  } catch {
+    badge.style.display = "none";
+  }
+}
+
+loadSidebarNotificationBadge();
+loadNotifications();
+lucide.createIcons();
+</script>
+
+</body>
+</html>
