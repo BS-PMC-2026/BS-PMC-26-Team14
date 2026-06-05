@@ -785,6 +785,7 @@ namespace CityFix.Api.Controllers
                 Location = dto.Location,
                 ImageBase64 = dto.ImageBase64,
                 Latitude = dto.Latitude,
+                Municipality = dto.Municipality,
                 Longitude = dto.Longitude,
                 LocationPoint = geometryFactory.CreatePoint(
                     new Coordinate(dto.Longitude, dto.Latitude)
@@ -1052,6 +1053,57 @@ namespace CityFix.Api.Controllers
 
             return Ok(reports);
         }
+[HttpGet("worker-notifications")]
+public async Task<IActionResult> GetWorkerNotifications([FromQuery] string workerEmail)
+{
+    if (string.IsNullOrWhiteSpace(workerEmail))
+        return BadRequest(new { message = "Worker email is required" });
+
+    var normalizedWorkerEmail = workerEmail.Trim().ToLowerInvariant();
+
+    var worker = await _context.Workers
+        .AsNoTracking()
+        .FirstOrDefaultAsync(w => w.Email.ToLower() == normalizedWorkerEmail);
+
+    if (worker == null)
+        return NotFound(new { message = "Worker not found" });
+
+    if (worker.IsBlocked)
+        return BadRequest(new { message = "Worker account is blocked" });
+
+    if (worker.ApprovalStatus != "Approved")
+        return BadRequest(new { message = "Worker account is not approved" });
+
+    var allowedCategories = GetCategoriesForDepartment(worker.Department);
+    var workerMunicipality = worker.Municipality.Trim();
+
+    var reports = await _context.Reports
+        .AsNoTracking()
+        .Where(r =>
+            r.Status == "Open" &&
+            string.IsNullOrWhiteSpace(r.AssignedWorkerEmail) &&
+            allowedCategories.Contains(r.Category) &&
+            (
+                r.Municipality == workerMunicipality ||
+                r.Location.Contains(workerMunicipality)
+            )
+        )
+        .OrderByDescending(r => r.CreatedAt)
+        .Select(r => new
+        {
+            id = r.Id,
+            category = r.Category,
+            priority = r.Priority,
+            description = r.Description,
+            location = r.Location,
+            municipality = r.Municipality,
+            createdAt = r.CreatedAt
+        })
+        .ToListAsync();
+
+    return Ok(reports);
+}
+
 
         [HttpGet("report-details/{reportId}")]
         public async Task<IActionResult> GetReportDetails(int reportId, [FromQuery] string? workerEmail)
@@ -1449,5 +1501,6 @@ namespace CityFix.Api.Controllers
             var hashedPassword = HashPassword(password);
             return hashedPassword == savedHash;
         }
+        
     }
 }

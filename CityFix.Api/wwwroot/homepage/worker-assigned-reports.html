@@ -442,7 +442,24 @@ body {
   color: #0b63f6;
   font-weight: 800;
 }
+.notification-sidebar-link {
+  position: relative;
+}
 
+.sidebar-badge {
+  margin-left: auto;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
 .error-message {
   border-color: #fecaca;
   color: #dc2626;
@@ -484,6 +501,7 @@ body {
   .summary-row {
     grid-template-columns: 1fr;
   }
+
 }
 </style>
 </head>
@@ -508,7 +526,11 @@ body {
         <i data-lucide="file-text"></i>
         <span>All Reports</span>
       </a>
-
+<a href="worker-notifications.html" class="notification-sidebar-link">
+  <i data-lucide="bell"></i>
+  <span>Notifications</span>
+  <span id="sidebarNotificationBadge" class="sidebar-badge">0</span>
+</a>
       <a href="worker-assigned-reports.html" class="active">
         <i data-lucide="clipboard-list"></i>
         <span>Assigned Reports</span>
@@ -922,6 +944,39 @@ function escapeHtml(value) {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
+async function loadSidebarNotificationBadge() {
+  const badge = document.getElementById("sidebarNotificationBadge");
+  const workerEmail = localStorage.getItem("workerEmail") || "";
+
+  if (!badge || !workerEmail) return;
+
+  try {
+    const response = await fetch(
+      "/api/Auth/worker-notifications?workerEmail=" + encodeURIComponent(workerEmail)
+    );
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const readNotifications =
+      JSON.parse(localStorage.getItem("readNotifications") || "[]");
+
+    const unreadCount = Array.isArray(data)
+      ? data.filter(n => !readNotifications.includes(n.id)).length
+      : 0;
+
+    if (unreadCount > 0) {
+      badge.innerText = unreadCount;
+      badge.style.display = "inline-flex";
+    } else {
+      badge.style.display = "none";
+    }
+  } catch {
+    badge.style.display = "none";
+  }
+}
+
+loadSidebarNotificationBadge();
 </script>
 
 </body>

@@ -14,6 +14,7 @@ namespace CityFix.Api.Models
         public string Notes { get; set; } = "";
 
         public string Location { get; set; } = "";
+        public string Municipality { get; set; } = "";
         public string ImageBase64 { get; set; } = "";
 
         public double Latitude { get; set; }

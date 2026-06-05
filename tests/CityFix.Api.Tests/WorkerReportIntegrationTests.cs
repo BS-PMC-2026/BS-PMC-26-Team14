@@ -177,6 +177,7 @@ public class WorkerReportIntegrationTests
             notes = "בדיקת אינטגרציה למיקום",
             latitude = 32.4340,
             longitude = 34.9196,
+            municipality = "באר שבע",
             imageBase64 = "data:image/jpeg;base64,AAAA"
         };
 

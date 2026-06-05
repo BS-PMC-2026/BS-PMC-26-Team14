@@ -27,5 +27,7 @@ namespace CityFix.Api.Models
 
         [Required]
         public double Longitude { get; set; }
+        [Required]
+        public string Municipality { get; set; } = "";
     }
 }
