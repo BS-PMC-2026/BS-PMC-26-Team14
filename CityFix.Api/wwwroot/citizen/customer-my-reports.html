@@ -713,7 +713,24 @@
         .toast.info .toast-icon {
             background: #0b63e5;
         }
+.notification-link {
+    position: relative;
+}
 
+.sidebar-badge {
+    margin-left: auto;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #ef4444;
+    color: white;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0 6px;
+}
         @keyframes toastSlideIn {
             from {
                 opacity: 0;
@@ -825,7 +842,11 @@
                 <i data-lucide="map"></i>
                 <span>Reports Map</span>
             </a>
-
+<a href="customer-notifications.html" class="notification-link">
+  <i data-lucide="bell"></i>
+  <span>Notifications</span>
+  <span id="sidebarNotificationBadge" class="sidebar-badge">0</span>
+</a>
             <a href="../profile/customer-profile.html">
                 <i data-lucide="user-circle"></i>
                 <span>Profile</span>
@@ -1414,9 +1435,51 @@
             document.getElementById("detailsModal").classList.remove("show");
         }
     });
+async function loadNotificationBadge() {
 
-    loadReports();
-    lucide.createIcons();
+    const email =
+        localStorage.getItem("customerEmail") ||
+        localStorage.getItem("userEmail") ||
+        localStorage.getItem("email");
+
+    const badge = document.getElementById("sidebarNotificationBadge");
+
+    if (!badge || !email) return;
+
+    try {
+
+        const response = await fetch(
+            "/api/Auth/customer-notifications?email=" +
+            encodeURIComponent(email)
+        );
+
+        if (!response.ok) return;
+
+        const notifications = await response.json();
+
+        const readIds = JSON.parse(
+            localStorage.getItem("customerReadNotifications") || "[]"
+        ).map(String);
+
+        const unreadCount = notifications.filter(n => {
+            const id = String(n.id || n.reportId);
+            return !readIds.includes(id);
+        }).length;
+
+        if (unreadCount > 0) {
+            badge.style.display = "flex";
+            badge.innerText = unreadCount;
+        } else {
+            badge.style.display = "none";
+        }
+
+    } catch (e) {
+        console.error(e);
+    }
+}
+loadReports();
+loadNotificationBadge();
+lucide.createIcons();
 </script>
 
 </body>

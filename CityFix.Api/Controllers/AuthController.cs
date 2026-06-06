@@ -833,11 +833,30 @@ namespace CityFix.Api.Controllers
             if (report.Status != "Open")
                 return BadRequest(new { message = "הדיווח כבר נלקח לטיפול או שאינו פתוח" });
 
-            report.Status = "In Treatment";
-            report.AssignedWorkerEmail = worker.Email;
-            report.AcceptedAt = DateTime.UtcNow;
+var acceptedTime = DateTime.UtcNow;
 
-            await _context.SaveChangesAsync();
+report.Status = "In Treatment";
+report.AssignedWorkerEmail = worker.Email;
+report.AcceptedAt = acceptedTime;
+
+_context.ReportStatusHistories.Add(new ReportStatusHistory
+{
+    ReportId = report.Id,
+    OldStatus = "Open",
+    NewStatus = "In Treatment",
+    ChangedByWorkerEmail = worker.Email,
+    ChangedAt = acceptedTime
+});
+_context.CustomerNotifications.Add(
+    new CustomerNotification
+    {
+        CustomerEmail = report.CustomerEmail,
+        ReportId = report.Id,
+        Message = $"Your report #{report.Id} is now In Treatment.",
+        CreatedAt = DateTime.UtcNow,
+        IsRead = false
+    });
+await _context.SaveChangesAsync();
 
             return Ok(new
             {
@@ -845,8 +864,7 @@ namespace CityFix.Api.Controllers
                 reportId = report.Id,
                 status = report.Status,
                 assignedWorkerEmail = report.AssignedWorkerEmail,
-                acceptedAt = report.AcceptedAt
-            });
+acceptedAt = acceptedTime            });
         }
 
         [HttpPut("worker-upload-image/{reportId}")]
@@ -890,7 +908,56 @@ namespace CityFix.Api.Controllers
                 workerImageUploadedAt = report.WorkerImageUploadedAt
             });
         }
+[HttpPost("decline-report/{reportId}")]
+public async Task<IActionResult> DeclineReport(int reportId, [FromBody] AcceptReportDto dto)
+{
+    if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
+        return BadRequest(new { message = "Worker email is required" });
 
+    var workerEmail = dto.WorkerEmail.Trim().ToLower();
+
+    var report = await _context.Reports.FirstOrDefaultAsync(r => r.Id == reportId);
+
+    if (report == null)
+        return NotFound(new { message = "Report not found" });
+
+    if (report.AssignedWorkerEmail == null ||
+        report.AssignedWorkerEmail.ToLower() != workerEmail)
+        return BadRequest(new { message = "Only assigned worker can decline this report" });
+
+    var oldStatus = report.Status;
+    var now = DateTime.UtcNow;
+
+    report.Status = "Open";
+    report.AssignedWorkerEmail = null;
+    report.AcceptedAt = null;
+
+    _context.ReportStatusHistories.Add(new ReportStatusHistory
+    {
+        ReportId = report.Id,
+        OldStatus = oldStatus,
+        NewStatus = "Open",
+        ChangedByWorkerEmail = dto.WorkerEmail,
+        ChangedAt = now
+    });
+_context.CustomerNotifications.Add(
+    new CustomerNotification
+    {
+        CustomerEmail = report.CustomerEmail,
+        ReportId = report.Id,
+        Message = $"Your report #{report.Id} has returned to Open status.",
+        CreatedAt = DateTime.UtcNow,
+        IsRead = false
+    });
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "Report declined and returned to Open",
+        reportId = report.Id,
+        status = report.Status
+    });
+}
         [HttpGet("reports-map")]
         public async Task<IActionResult> GetReportsMap(
             [FromQuery] string? status,
@@ -1116,7 +1183,9 @@ public async Task<IActionResult> GetWorkerNotifications([FromQuery] string worke
             {
                 return NotFound(new { message = "הדיווח לא נמצא" });
             }
-
+var customer = await _context.Customers
+    .AsNoTracking()
+    .FirstOrDefaultAsync(c => c.Email.ToLower() == reportEntity.CustomerEmail.ToLower());
             if (!string.IsNullOrWhiteSpace(workerEmail))
             {
                 var normalizedWorkerEmail = workerEmail.Trim().ToLowerInvariant();
@@ -1159,6 +1228,8 @@ public async Task<IActionResult> GetWorkerNotifications([FromQuery] string worke
                 createdAt = reportEntity.CreatedAt,
                 workerImageBase64 = reportEntity.WorkerImageBase64,
                 workerImageNote = reportEntity.WorkerImageNote,
+                customerName = customer != null ? customer.FullName : "-",
+customerPhone = customer != null ? customer.Phone : "-",
                 workerImageUploadedAt = reportEntity.WorkerImageUploadedAt
             };
 
@@ -1226,12 +1297,11 @@ public async Task<IActionResult> GetWorkerNotifications([FromQuery] string worke
             if (worker.IsBlocked)
                 return BadRequest(new { message = "Worker account is blocked" });
 
-            var allowedStatuses = new[]
-            {
-                "Open",
-                "In Treatment",
-                "Completed"
-            };
+  var allowedStatuses = new[]
+{
+    "In Treatment",
+    "Closed"
+};
 
             if (!allowedStatuses.Contains(dto.NewStatus))
                 return BadRequest(new { message = "סטטוס לא חוקי" });
@@ -1250,7 +1320,18 @@ public async Task<IActionResult> GetWorkerNotifications([FromQuery] string worke
             var oldStatus = report.Status;
 
             report.Status = dto.NewStatus;
-
+if (dto.NewStatus == "Closed")
+{
+    _context.CustomerNotifications.Add(
+        new CustomerNotification
+        {
+            CustomerEmail = report.CustomerEmail,
+            ReportId = report.Id,
+            Message = $"Your report #{report.Id} has been completed and closed.",
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        });
+}
             var history = new ReportStatusHistory
             {
                 ReportId = report.Id,
@@ -1274,7 +1355,16 @@ public async Task<IActionResult> GetWorkerNotifications([FromQuery] string worke
                 changedAt = history.ChangedAt
             });
         }
+[HttpGet("customer-notifications")]
+public async Task<IActionResult> CustomerNotifications(string email)
+{
+    var notifications = await _context.CustomerNotifications
+        .Where(n => n.CustomerEmail == email)
+        .OrderByDescending(n => n.CreatedAt)
+        .ToListAsync();
 
+    return Ok(notifications);
+}
         [HttpGet("customer-reports")]
         public async Task<IActionResult> GetCustomerReports([FromQuery] string email){
             if (string.IsNullOrWhiteSpace(email))
