@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Notifications - CityFix</title>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', Arial, sans-serif;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.page {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  background: #ffffff;
+  border-right: 1px solid #e5e7eb;
+  min-height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+.sidebar-logo {
+  height: 78px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+.sidebar-logo i {
+  width: 28px;
+  height: 28px;
+  color: #0526ff;
+  flex-shrink: 0;
+}
+.sidebar-logo span {
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 20px;
+  color: #101828;
+  letter-spacing: -0.4px;
+}
+.sidebar-nav {
+  padding: 16px 14px 0;
+  flex: 1;
+}
+.sidebar-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 44px;
+  padding: 0 12px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  color: #5f5f5f;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
+}
+.sidebar-section-title i {
+  width: 16px;
+  height: 16px;
+  color: #5f5f5f;
+}
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 16px;
+  color: #364153;
+  text-decoration: none;
+  border-radius: 10px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  margin-bottom: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-nav a i {
+  width: 20px;
+  height: 20px;
+  color: #364153;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+.sidebar-nav a:hover {
+  background: #d7e9ff;
+  color: #0526ff;
+}
+.sidebar-nav a:hover i {
+  color: #0526ff;
+}
+.sidebar-nav a.active {
+  background: #0526ff;
+  color: #ffffff;
+  font-weight: 600;
+}
+.sidebar-nav a.active i {
+  color: #ffffff;
+}
+.sidebar-logout {
+  padding: 16px 14px;
+  border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+.sidebar-logout a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 52px;
+  padding: 0 16px;
+  color: #364153;
+  text-decoration: none;
+  border-radius: 10px;
+  font-family: 'Inter', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 15px;
+  transition: background 0.15s, color 0.15s;
+}
+.sidebar-logout a i {
+  width: 20px;
+  height: 20px;
+  color: #364153;
+  transition: color 0.15s;
+}
+.sidebar-logout a:hover {
+  background: #d7e9ff;
+  color: #0526ff;
+}
+.sidebar-logout a:hover i {
+  color: #0526ff;
+}
+
+/* MAIN */
+.main {
+  margin-left: 250px;
+  width: calc(100% - 250px);
+  min-height: 100vh;
+}
+
+.topbar {
+  height: 78px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 34px;
+}
+
+.menu-icon {
+  width: 22px;
+  height: 22px;
+  color: #334155;
+}
+
+.customer-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.customer-box i {
+  width: 18px;
+  height: 18px;
+}
+
+/* CONTENT */
+.content {
+    padding: 32px 28px 50px;
+    width: 100%;
+}
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #111827;
+}
+
+.new-badge {
+  min-width: 56px;
+  height: 28px;
+  border-radius: 8px;
+  background: #dbeafe;
+  color: #1455ff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* NOTIFICATIONS */
+.notifications-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    width: 100%;
+}
+.notification-card {
+  width: 100%;
+  min-height: 94px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 13px;
+  padding: 18px 20px;
+  display: grid;
+  grid-template-columns: 42px 1fr 16px;
+  gap: 14px;
+  align-items: flex-start;
+cursor: default;  transition: 0.15s;
+}
+
+.notification-card:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.08);
+}
+
+.notification-card.unread {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+}
+
+.icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #dbeafe;
+  color: #1455ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-box i {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-box.open {
+  background: #dbeafe;
+  color: #1455ff;
+}
+
+.icon-box.treatment {
+  background: #e0f2fe;
+  color: #2563eb;
+}
+
+.icon-box.closed {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.icon-box.default {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.notification-main {
+  min-width: 0;
+}
+
+.notification-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.report-link {
+  color: #1455ff;
+  font-size: 15px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 23px;
+  padding: 0 9px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 800;
+  border: 1px solid transparent;
+}
+
+.status-open {
+  background: #dcfce7;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.status-treatment {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border-color: #bfdbfe;
+}
+
+.status-closed {
+  background: #f1f5f9;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+
+.notification-message {
+  font-size: 15px;
+  color: #334155;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.notification-time {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.unread-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1455ff;
+  margin-top: 12px;
+}
+
+.notification-card.read .unread-dot {
+  display: none;
+}
+
+.empty-box {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 13px;
+  padding: 45px;
+  text-align: center;
+  color: #64748b;
+  font-size: 17px;
+}
+
+.error-box {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 13px;
+  padding: 20px;
+  font-weight: 700;
+}
+.notification-link {
+  position: relative;
+}
+
+.sidebar-badge {
+  margin-left: auto;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+@media(max-width: 800px) {
+  .sidebar {
+    position: static;
+    width: 100%;
+    min-height: auto;
+  }
+
+  .page {
+    display: block;
+  }
+
+  .main {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .content {
+    padding: 24px 16px;
+  }
+
+  .notification-card {
+    grid-template-columns: 38px 1fr 12px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <i data-lucide="building-2"></i>
+      <span>CityFix</span>
+    </div>
+
+   <nav class="sidebar-nav">
+    <div class="sidebar-section-title">
+      <i data-lucide="user"></i>
+      <span>Customer Area</span>
+    </div>
+
+    <a href="create-report.html">
+      <i data-lucide="circle-plus"></i>
+      <span>Create Report</span>
+    </a>
+
+    <a href="customer-my-reports.html">
+      <i data-lucide="clipboard-list"></i>
+      <span>My Reports</span>
+    </a>
+
+    <a  href="customer-reports-map.html">
+      <i data-lucide="map"></i>
+      <span>Reports Map</span>
+    </a>
+<a class="active notification-link" href="customer-notifications.html">
+  <i data-lucide="bell"></i>
+  <span>Notifications</span>
+  <span id="sidebarNotificationBadge" class="sidebar-badge">0</span>
+</a>
+    <a href="../profile/customer-profile.html">
+      <i data-lucide="user-circle"></i>
+      <span>Profile</span>
+    </a>
+  </nav>
+
+    <div class="sidebar-logout">
+      <a href="#" onclick="logout()">
+        <i data-lucide="log-out"></i>
+        <span>Logout</span>
+      </a>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <div class="topbar">
+      <i data-lucide="menu" class="menu-icon"></i>
+
+      <div class="customer-box">
+        <i data-lucide="user"></i>
+        <span id="topCustomerName">Customer</span>
+        <i data-lucide="chevron-down"></i>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <div class="header-row">
+        <h1 class="page-title">Notifications</h1>
+        <span id="newCounter" class="new-badge">0 New</span>
+      </div>
+
+      <div id="notificationsList" class="notifications-list">
+        <div class="empty-box">Loading notifications...</div>
+      </div>
+
+    </div>
+
+  </main>
+
+</div>
+
+<script>
+const customerName =
+  localStorage.getItem("customerFullName") ||
+  localStorage.getItem("userFullName") ||
+  localStorage.getItem("fullName") ||
+  "Customer";
+
+const customerEmail =
+  localStorage.getItem("customerEmail") ||
+  localStorage.getItem("userEmail") ||
+  localStorage.getItem("email") ||
+  "";
+
+document.getElementById("topCustomerName").innerText = customerName;
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "../index.html";
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function getNotificationStatus(notification) {
+  const status = String(
+    notification.status ||
+    notification.newStatus ||
+    notification.reportStatus ||
+    ""
+  ).trim().toLowerCase();
+
+  const message = String(notification.message || "").toLowerCase();
+
+  if (status === "in treatment" || message.includes("in treatment") || message.includes("started treatment")) {
+    return "In Treatment";
+  }
+
+  if (status === "closed" || message.includes("closed") || message.includes("resolved")) {
+    return "Closed";
+  }
+
+  return "Open";
+}
+
+function getStatusClass(status) {
+  if (status === "In Treatment") return "status-pill status-treatment";
+  if (status === "Closed") return "status-pill status-closed";
+  return "status-pill status-open";
+}
+
+function getIconClass(status) {
+  if (status === "In Treatment") return "icon-box treatment";
+  if (status === "Closed") return "icon-box closed";
+  if (status === "Open") return "icon-box open";
+  return "icon-box default";
+}
+
+function getIconName(status) {
+  if (status === "In Treatment") return "clock";
+  if (status === "Closed") return "check-circle";
+  return "bell";
+}
+
+function formatTime(dateText) {
+  if (!dateText) return "";
+
+  const date = new Date(dateText);
+  if (isNaN(date.getTime())) return "";
+
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMinutes = Math.floor(diffMs / (1000 * 60));
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffMinutes < 1) return "Just now";
+  if (diffMinutes < 60) return diffMinutes + " minutes ago";
+  if (diffHours < 24) return diffHours + " hours ago";
+  if (diffDays < 7) return diffDays + " days ago";
+
+  return date.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "2-digit"
+  });
+}
+
+function getReadNotifications() {
+  try {
+    return JSON.parse(localStorage.getItem("customerReadNotifications") || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveReadNotifications(readIds) {
+  localStorage.setItem("customerReadNotifications", JSON.stringify(readIds));
+}
+
+
+
+
+
+function normalizeNotification(n) {
+  return {
+    id: n.id || n.notificationId || n.reportId || Date.now(),
+    reportId: n.reportId || n.ReportId || n.reportID || n.id,
+    message: n.message || n.Message || "Your report status has been updated",
+    createdAt: n.createdAt || n.CreatedAt || n.date || n.time,
+    isRead: n.isRead || n.IsRead || false,
+    status: n.status || n.newStatus || n.reportStatus
+  };
+}
+
+async function loadCustomerNotifications() {
+  const list = document.getElementById("notificationsList");
+  const counter = document.getElementById("newCounter");
+
+  if (!customerEmail) {
+    list.innerHTML = `<div class="error-box">Customer email not found. Please login again.</div>`;
+    counter.innerText = "0 New";
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "/api/Auth/customer-notifications?email=" + encodeURIComponent(customerEmail)
+    );
+
+    let data = [];
+
+    try {
+      data = await response.json();
+    } catch {
+      data = [];
+    }
+
+    if (!response.ok) {
+      list.innerHTML = `<div class="error-box">Failed to load notifications</div>`;
+      counter.innerText = "0 New";
+      return;
+    }
+
+    const notifications = Array.isArray(data)
+      ? data.map(normalizeNotification)
+      : [];
+
+    renderNotifications(notifications);
+
+  } catch (error) {
+    console.error(error);
+    list.innerHTML = `<div class="error-box">Connection error with server</div>`;
+    counter.innerText = "0 New";
+  }
+}
+
+function renderNotifications(notifications) {
+  const list = document.getElementById("notificationsList");
+  const counter = document.getElementById("newCounter");
+const sidebarBadge = document.getElementById("sidebarNotificationBadge");
+  if (!notifications || notifications.length === 0) {
+    list.innerHTML = `<div class="empty-box">No notifications yet</div>`;
+    counter.innerText = "0 New";
+    if (sidebarBadge) {
+  sidebarBadge.style.display = "none";
+}
+    return;
+  }
+
+  let readIds = getReadNotifications();
+
+  notifications.forEach(n => {
+    const notificationId = n.id || n.reportId;
+    if (!readIds.includes(notificationId)) {
+      readIds.push(notificationId);
+    }
+  });
+
+  saveReadNotifications(readIds);
+
+  counter.innerText = "0 New";
+
+  list.innerHTML = notifications.map(n => {
+    const status = getNotificationStatus(n);
+    const iconName = getIconName(status);
+
+    return `
+      <div class="notification-card read">
+
+        <div class="${getIconClass(status)}">
+          <i data-lucide="${iconName}"></i>
+        </div>
+
+        <div class="notification-main">
+          <div class="notification-top">
+            <a class="report-link">RPT-${escapeHtml(n.reportId || "-")}</a>
+            <span class="${getStatusClass(status)}">${escapeHtml(status)}</span>
+          </div>
+
+          <div class="notification-message">
+            ${escapeHtml(n.message)}
+          </div>
+
+          <div class="notification-time">
+            ${escapeHtml(formatTime(n.createdAt))}
+          </div>
+        </div>
+
+        <div class="unread-dot"></div>
+      </div>
+    `;
+  }).join("");
+
+  lucide.createIcons();
+}
+
+loadCustomerNotifications();
+lucide.createIcons();
+</script>
+
+</body>
+</html>
