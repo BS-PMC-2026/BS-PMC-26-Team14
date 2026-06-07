@@ -1,6 +1,9 @@
 # BS-PMC-26-Team14
 # CityFix
 Link to the Website: https://cityfix-app.azurewebsites.net/
+Git Hub : https://github.com/BS-PMC-2026/BS-PMC-26-Team14.git
+Jira: https://sce-ac.atlassian.net/jira/software/projects/BSPMT14/boards/2907/backlog?atlOrigin=eyJpIjoiNjk5Y2ZlMzM4YjcxNDNiNjhjMTFlNWE2MGQwMTYyMDkiLCJwIjoiaiJ9
+
 ## Overview
 
 CityFix is a web-based municipal reporting system that enables citizens to report infrastructure and public service issues directly to the municipality. The system provides a centralized platform for reporting, assigning, tracking, and resolving city-related problems.
