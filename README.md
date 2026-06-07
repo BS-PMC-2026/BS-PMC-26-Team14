@@ -110,7 +110,7 @@ Administrators can:
 - SQL Server
 
 ### External Services
-- Google Maps API
+-leaflet OpenStreetMap Maps API
 
 ### Project Management
 - Jira
@@ -129,7 +129,7 @@ Administrators can:
 ### Integration Tests
 - Frontend ↔ Backend
 - Backend ↔ Database
-- Google Maps API integration
+- leaflet OpenStreetMap Maps API integration
 - End-to-end report workflow testing
 
 ---
@@ -230,7 +230,7 @@ using Live Server in Visual Studio Code.
 Alternative:
 
 npx serve .
-Google Maps Configuration
+leaflet OpenStreetMap Maps Configuration
 
 
 Navigate to the test project folder:
