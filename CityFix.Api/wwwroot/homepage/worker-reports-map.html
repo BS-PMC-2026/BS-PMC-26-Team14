@@ -23,7 +23,6 @@ body {
 
 .page { display: flex; min-height: 100vh; }
 
-/* SIDEBAR */
 .sidebar {
   width: 260px;
   background: #ffffff;
@@ -307,6 +306,24 @@ body {
   font-weight: 600;
   margin-bottom: 6px;
 }
+.notification-sidebar-link {
+  position: relative;
+}
+
+.sidebar-badge {
+  margin-left: auto;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #ef4444;
+  color: white;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
 .badge-open { background: #fee2e2; color: #b91c1c; }
 .badge-treatment { background: #ffedd5; color: #c2410c; }
 .popup-row { font-size: 13px; color: #374151; margin-top: 2px; }
@@ -339,21 +356,32 @@ body {
       <span>CityFix</span>
     </div>
 
+
+
     <nav class="sidebar-nav">
       <div class="sidebar-section-title">
         <i data-lucide="hard-hat"></i>
         <span>Worker Area</span>
       </div>
 
+
+
+
       <a href="worker-home.html">
         <i data-lucide="file-text"></i>
         <span>All Reports</span>
       </a>
-
+<a href="worker-notifications.html" class="notification-sidebar-link">
+  <i data-lucide="bell"></i>
+  <span>Notifications</span>
+  <span id="sidebarNotificationBadge" class="sidebar-badge">0</span>
+</a>
       <a href="worker-assigned-reports.html">
         <i data-lucide="clipboard-list"></i>
         <span>Assigned Reports</span>
       </a>
+
+
 
       <a href="worker-reports-map.html" class="active">
         <i data-lucide="map"></i>
@@ -390,7 +418,6 @@ body {
     <div class="content">
       <h1 class="page-title">Reports Map</h1>
 
-      <!-- STATS -->
       <div class="stats-bar">
         <div class="stat-chip">
           <span>Total Active</span>
@@ -408,7 +435,6 @@ body {
         </div>
       </div>
 
-      <!-- FILTER BAR -->
       <div class="filter-bar">
         <label for="filterStatus">Status:</label>
         <select id="filterStatus" onchange="applyFilters()">
@@ -425,7 +451,6 @@ body {
         </div>
       </div>
 
-      <!-- MAP -->
       <div class="map-wrap">
         <div id="loadingOverlay" class="loading-overlay">Loading reports...</div>
         <div id="map"></div>
@@ -510,16 +535,35 @@ function renderMarkers(reports) {
     const badge = badgeClass[r.status] || "";
 
     L.marker([r.latitude, r.longitude], { icon })
-      .bindPopup(`
-        <div>
-          <div class="popup-id">Report #${r.id}</div>
-          <div class="popup-title">${escapeHtml(r.category)}</div>
-          <span class="popup-badge ${badge}">${escapeHtml(r.status)}</span>
-          <div class="popup-row">Priority: ${escapeHtml(r.priority)}</div>
-          <div class="popup-row">ðŸ“… ${formatDate(r.createdAt)}</div>
-          <a href="worker-home.html?reportId=${r.id}" class="popup-link">View Report â†’</a>
-        </div>
-      `, { maxWidth: 240 })
+.bindPopup(`
+<div class="report-popup">
+  <div class="popup-id">Report #${r.id}</div>
+
+  <div class="popup-title">
+      ${escapeHtml(r.category)}
+  </div>
+
+  <span class="popup-badge ${badge}">
+      ${escapeHtml(r.status)}
+  </span>
+
+  <div class="popup-row">
+      <strong>Priority:</strong> ${escapeHtml(r.priority)}
+  </div>
+
+  <div class="popup-row">
+      <strong>Date:</strong> ${formatDate(r.createdAt)}
+  </div>
+
+  <a href="worker-home.html?reportId=${r.id}"
+     class="popup-link">
+      View Report →
+  </a>
+</div>
+`, {
+  maxWidth: 320,
+  minWidth: 260
+})
       .addTo(markerLayer);
   });
 
@@ -562,7 +606,39 @@ async function loadReports() {
   document.getElementById("loadingOverlay").style.display = "none";
   setTimeout(() => map.invalidateSize(), 100);
 }
+async function loadSidebarNotificationBadge() {
+  const badge = document.getElementById("sidebarNotificationBadge");
+  const workerEmail = localStorage.getItem("workerEmail") || "";
 
+  if (!badge || !workerEmail) return;
+
+  try {
+    const response = await fetch(
+      "/api/Auth/worker-notifications?workerEmail=" + encodeURIComponent(workerEmail)
+    );
+
+    if (!response.ok) return;
+
+    const data = await response.json();
+    const readNotifications =
+      JSON.parse(localStorage.getItem("readNotifications") || "[]");
+
+    const unreadCount = Array.isArray(data)
+      ? data.filter(n => !readNotifications.includes(n.id)).length
+      : 0;
+
+    if (unreadCount > 0) {
+      badge.innerText = unreadCount;
+      badge.style.display = "inline-flex";
+    } else {
+      badge.style.display = "none";
+    }
+  } catch {
+    badge.style.display = "none";
+  }
+}
+
+loadSidebarNotificationBadge();
 loadReports();
 </script>
 </body>

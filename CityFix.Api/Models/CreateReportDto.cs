@@ -18,6 +18,8 @@ namespace CityFix.Api.Models
 
         public string Notes { get; set; } = "";
 
+        public string Location { get; set; } = "";
+
         public string ImageBase64 { get; set; } = "";
 
         [Required]
@@ -25,5 +27,7 @@ namespace CityFix.Api.Models
 
         [Required]
         public double Longitude { get; set; }
+        [Required]
+        public string Municipality { get; set; } = "";
     }
 }

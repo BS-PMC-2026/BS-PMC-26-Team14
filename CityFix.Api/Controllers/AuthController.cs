@@ -36,7 +36,8 @@ namespace CityFix.Api.Controllers
                 Phone = dto.Phone,
                 Email = dto.Email,
                 Address = dto.Address,
-                PasswordHash = HashPassword(dto.Password)
+                PasswordHash = HashPassword(dto.Password),
+                IsBlocked = false
             };
 
             if (!ModelState.IsValid)
@@ -63,7 +64,8 @@ namespace CityFix.Api.Controllers
                 Department = dto.Department,
                 Municipality = dto.Municipality,
                 PasswordHash = HashPassword(dto.Password),
-                ApprovalStatus = "Pending"
+                ApprovalStatus = "Pending",
+                IsBlocked = false
             };
 
             if (!ModelState.IsValid)
@@ -88,6 +90,9 @@ namespace CityFix.Api.Controllers
             if (customer == null)
                 return NotFound(new { message = "לא נמצא תושב עם האימייל הזה" });
 
+            if (customer.IsBlocked)
+                return BadRequest(new { message = "Your account has been blocked by the system administrator" });
+
             if (!VerifyPassword(dto.Password, customer.PasswordHash))
                 return Unauthorized(new { message = "סיסמה שגויה" });
 
@@ -110,6 +115,9 @@ namespace CityFix.Api.Controllers
 
             if (worker == null)
                 return NotFound(new { message = "האימייל לא קיים במערכת" });
+
+            if (worker.IsBlocked)
+                return BadRequest(new { message = "Your account has been blocked by the system administrator" });
 
             if (!VerifyPassword(dto.Password, worker.PasswordHash))
                 return Unauthorized(new { message = "הסיסמה שגויה" });
@@ -141,6 +149,9 @@ namespace CityFix.Api.Controllers
             if (admin == null)
                 return NotFound(new { message = "האימייל לא קיים במערכת" });
 
+            if (admin.IsBlocked)
+                return BadRequest(new { message = "Your admin account has been blocked" });
+
             if (!VerifyPassword(dto.Password, admin.PasswordHash))
                 return Unauthorized(new { message = "הסיסמה שגויה" });
 
@@ -160,6 +171,7 @@ namespace CityFix.Api.Controllers
                 return BadRequest(new { message = "האימייל נדרש" });
 
             var normalizedEmail = email.Trim().ToLowerInvariant();
+
             var admin = await _context.Admins
                 .AsNoTracking()
                 .FirstOrDefaultAsync(x => x.Email.ToLower() == normalizedEmail);
@@ -178,6 +190,7 @@ namespace CityFix.Api.Controllers
         public async Task<IActionResult> UpdateAdminProfile([FromBody] UpdateAdminProfileDto dto)
         {
             var currentEmail = dto.CurrentEmail.Trim().ToLowerInvariant();
+
             var admin = await _context.Admins
                 .FirstOrDefaultAsync(x => x.Email.ToLower() == currentEmail);
 
@@ -210,6 +223,7 @@ namespace CityFix.Api.Controllers
         public async Task<IActionResult> ChangeAdminPassword([FromBody] ChangeAdminPasswordDto dto)
         {
             var currentEmail = dto.CurrentEmail.Trim().ToLowerInvariant();
+
             var admin = await _context.Admins
                 .FirstOrDefaultAsync(x => x.Email.ToLower() == currentEmail);
 
@@ -223,6 +237,170 @@ namespace CityFix.Api.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "הסיסמה עודכנה בהצלחה" });
+        }
+
+        [HttpGet("admin/users")]
+        public async Task<IActionResult> GetAdminUsers()
+        {
+            var customers = await _context.Customers
+                .AsNoTracking()
+                .Select(c => new
+                {
+                    id = c.Id,
+                    name = c.FullName,
+                    email = c.Email,
+                    role = "Customer",
+                    status = c.IsBlocked ? "Blocked" : "Active",
+                    joinDate = c.CreatedAt,
+                    reports = _context.Reports.Count(r => r.CustomerEmail == c.Email)
+                })
+                .ToListAsync();
+
+            var workers = await _context.Workers
+                .AsNoTracking()
+                .Select(w => new
+                {
+                    id = w.Id,
+                    name = w.FullName,
+                    email = w.Email,
+                    role = "Worker",
+                    status = w.IsBlocked
+                        ? "Blocked"
+                        : w.ApprovalStatus == "Approved"
+                            ? "Active"
+                            : w.ApprovalStatus,
+                    joinDate = w.CreatedAt,
+                    reports = _context.Reports.Count(r => r.AssignedWorkerEmail == w.Email)
+                })
+                .ToListAsync();
+
+            var admins = await _context.Admins
+                .AsNoTracking()
+                .Select(a => new
+                {
+                    id = a.Id,
+                    name = a.FullName,
+                    email = a.Email,
+                    role = "Admin",
+                    status = a.IsBlocked ? "Blocked" : "Active",
+                    joinDate = a.CreatedAt,
+                    reports = 0
+                })
+                .ToListAsync();
+
+            var users = customers
+                .Concat(workers)
+                .Concat(admins)
+                .OrderByDescending(u => u.joinDate)
+                .ToList();
+
+            return Ok(users);
+        }
+
+        [HttpPut("admin/users/{role}/{id}/block")]
+        public async Task<IActionResult> ToggleUserBlock(string role, int id)
+        {
+            role = role.Trim().ToLowerInvariant();
+
+            if (role == "customer")
+            {
+                var customer = await _context.Customers.FindAsync(id);
+
+                if (customer == null)
+                    return NotFound(new { message = "Customer not found" });
+
+                customer.IsBlocked = !customer.IsBlocked;
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    message = customer.IsBlocked ? "Customer blocked successfully" : "Customer unblocked successfully",
+                    isBlocked = customer.IsBlocked
+                });
+            }
+
+            if (role == "worker")
+            {
+                var worker = await _context.Workers.FindAsync(id);
+
+                if (worker == null)
+                    return NotFound(new { message = "Worker not found" });
+
+                worker.IsBlocked = !worker.IsBlocked;
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    message = worker.IsBlocked ? "Worker blocked successfully" : "Worker unblocked successfully",
+                    isBlocked = worker.IsBlocked
+                });
+            }
+
+            if (role == "admin")
+            {
+                var admin = await _context.Admins.FindAsync(id);
+
+                if (admin == null)
+                    return NotFound(new { message = "Admin not found" });
+
+                admin.IsBlocked = !admin.IsBlocked;
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    message = admin.IsBlocked ? "Admin blocked successfully" : "Admin unblocked successfully",
+                    isBlocked = admin.IsBlocked
+                });
+            }
+
+            return BadRequest(new { message = "Invalid role" });
+        }
+
+        [HttpDelete("admin/users/{role}/{id}")]
+        public async Task<IActionResult> DeleteUser(string role, int id)
+        {
+            role = role.Trim().ToLowerInvariant();
+
+            if (role == "customer")
+            {
+                var customer = await _context.Customers.FindAsync(id);
+
+                if (customer == null)
+                    return NotFound(new { message = "Customer not found" });
+
+                _context.Customers.Remove(customer);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Customer deleted successfully" });
+            }
+
+            if (role == "worker")
+            {
+                var worker = await _context.Workers.FindAsync(id);
+
+                if (worker == null)
+                    return NotFound(new { message = "Worker not found" });
+
+                _context.Workers.Remove(worker);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Worker deleted successfully" });
+            }
+
+            if (role == "admin")
+            {
+                var admin = await _context.Admins.FindAsync(id);
+
+                if (admin == null)
+                    return NotFound(new { message = "Admin not found" });
+
+                _context.Admins.Remove(admin);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { message = "Admin deleted successfully" });
+            }
+
+            return BadRequest(new { message = "Invalid role" });
         }
 
         [HttpGet("pending-workers")]
@@ -341,6 +519,7 @@ namespace CityFix.Api.Controllers
             }
 
             var now = DateTime.UtcNow;
+
             var resetCode = await _context.PasswordResetCodes
                 .Where(x => x.UserType == user.Value.UserType && x.UserId == user.Value.UserId && !x.IsUsed)
                 .OrderByDescending(x => x.CreatedAt)
@@ -362,10 +541,9 @@ namespace CityFix.Api.Controllers
                 case "Customer":
                     {
                         var customer = await _context.Customers.FindAsync(user.Value.UserId);
+
                         if (customer == null)
-                        {
                             return BadRequest(new { message = "המשתמש לא נמצא" });
-                        }
 
                         customer.PasswordHash = HashPassword(dto.NewPassword);
                         break;
@@ -374,10 +552,9 @@ namespace CityFix.Api.Controllers
                 case "Worker":
                     {
                         var worker = await _context.Workers.FindAsync(user.Value.UserId);
+
                         if (worker == null)
-                        {
                             return BadRequest(new { message = "המשתמש לא נמצא" });
-                        }
 
                         worker.PasswordHash = HashPassword(dto.NewPassword);
                         break;
@@ -386,10 +563,9 @@ namespace CityFix.Api.Controllers
                 case "Admin":
                     {
                         var admin = await _context.Admins.FindAsync(user.Value.UserId);
+
                         if (admin == null)
-                        {
                             return BadRequest(new { message = "המשתמש לא נמצא" });
-                        }
 
                         admin.PasswordHash = HashPassword(dto.NewPassword);
                         break;
@@ -497,11 +673,12 @@ namespace CityFix.Api.Controllers
             public string ImageBase64 { get; set; } = "";
             public string Note { get; set; } = "";
         }
+
         public class UpdateReportStatusDto
-{
-    public string WorkerEmail { get; set; } = "";
-    public string NewStatus { get; set; } = "";
-}
+        {
+            public string WorkerEmail { get; set; } = "";
+            public string NewStatus { get; set; } = "";
+        }
 
         [HttpGet("worker-profile")]
         public async Task<IActionResult> GetWorkerProfile([FromQuery] string email)
@@ -605,8 +782,10 @@ namespace CityFix.Api.Controllers
                 Priority = dto.Priority,
                 Description = dto.Description,
                 Notes = dto.Notes,
+                Location = dto.Location,
                 ImageBase64 = dto.ImageBase64,
                 Latitude = dto.Latitude,
+                Municipality = dto.Municipality,
                 Longitude = dto.Longitude,
                 LocationPoint = geometryFactory.CreatePoint(
                     new Coordinate(dto.Longitude, dto.Latitude)
@@ -639,6 +818,9 @@ namespace CityFix.Api.Controllers
             if (worker == null)
                 return NotFound(new { message = "העובד לא נמצא במערכת" });
 
+            if (worker.IsBlocked)
+                return BadRequest(new { message = "Worker account is blocked" });
+
             if (worker.ApprovalStatus != "Approved")
                 return BadRequest(new { message = "העובד עדיין לא מאושר במערכת" });
 
@@ -651,11 +833,30 @@ namespace CityFix.Api.Controllers
             if (report.Status != "Open")
                 return BadRequest(new { message = "הדיווח כבר נלקח לטיפול או שאינו פתוח" });
 
-            report.Status = "In Treatment";
-            report.AssignedWorkerEmail = worker.Email;
-            report.AcceptedAt = DateTime.UtcNow;
+var acceptedTime = DateTime.UtcNow;
 
-            await _context.SaveChangesAsync();
+report.Status = "In Treatment";
+report.AssignedWorkerEmail = worker.Email;
+report.AcceptedAt = acceptedTime;
+
+_context.ReportStatusHistories.Add(new ReportStatusHistory
+{
+    ReportId = report.Id,
+    OldStatus = "Open",
+    NewStatus = "In Treatment",
+    ChangedByWorkerEmail = worker.Email,
+    ChangedAt = acceptedTime
+});
+_context.CustomerNotifications.Add(
+    new CustomerNotification
+    {
+        CustomerEmail = report.CustomerEmail,
+        ReportId = report.Id,
+        Message = $"Your report #{report.Id} is now In Treatment.",
+        CreatedAt = DateTime.UtcNow,
+        IsRead = false
+    });
+await _context.SaveChangesAsync();
 
             return Ok(new
             {
@@ -663,8 +864,7 @@ namespace CityFix.Api.Controllers
                 reportId = report.Id,
                 status = report.Status,
                 assignedWorkerEmail = report.AssignedWorkerEmail,
-                acceptedAt = report.AcceptedAt
-            });
+acceptedAt = acceptedTime            });
         }
 
         [HttpPut("worker-upload-image/{reportId}")]
@@ -708,19 +908,95 @@ namespace CityFix.Api.Controllers
                 workerImageUploadedAt = report.WorkerImageUploadedAt
             });
         }
+[HttpPost("decline-report/{reportId}")]
+public async Task<IActionResult> DeclineReport(int reportId, [FromBody] AcceptReportDto dto)
+{
+    if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
+        return BadRequest(new { message = "Worker email is required" });
 
+    var workerEmail = dto.WorkerEmail.Trim().ToLower();
+
+    var report = await _context.Reports.FirstOrDefaultAsync(r => r.Id == reportId);
+
+    if (report == null)
+        return NotFound(new { message = "Report not found" });
+
+    if (report.AssignedWorkerEmail == null ||
+        report.AssignedWorkerEmail.ToLower() != workerEmail)
+        return BadRequest(new { message = "Only assigned worker can decline this report" });
+
+    var oldStatus = report.Status;
+    var now = DateTime.UtcNow;
+
+    report.Status = "Open";
+    report.AssignedWorkerEmail = null;
+    report.AcceptedAt = null;
+
+    _context.ReportStatusHistories.Add(new ReportStatusHistory
+    {
+        ReportId = report.Id,
+        OldStatus = oldStatus,
+        NewStatus = "Open",
+        ChangedByWorkerEmail = dto.WorkerEmail,
+        ChangedAt = now
+    });
+_context.CustomerNotifications.Add(
+    new CustomerNotification
+    {
+        CustomerEmail = report.CustomerEmail,
+        ReportId = report.Id,
+        Message = $"Your report #{report.Id} has returned to Open status.",
+        CreatedAt = DateTime.UtcNow,
+        IsRead = false
+    });
+    await _context.SaveChangesAsync();
+
+    return Ok(new
+    {
+        message = "Report declined and returned to Open",
+        reportId = report.Id,
+        status = report.Status
+    });
+}
         [HttpGet("reports-map")]
         public async Task<IActionResult> GetReportsMap(
             [FromQuery] string? status,
             [FromQuery] string? fromDate,
-            [FromQuery] string? toDate)
+            [FromQuery] string? toDate,
+            [FromQuery] string? workerEmail)
         {
             var query = _context.Reports.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(workerEmail))
+            {
+                var normalizedWorkerEmail = workerEmail.Trim().ToLowerInvariant();
+
+                var worker = await _context.Workers
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(w => w.Email.ToLower() == normalizedWorkerEmail);
+
+                if (worker == null)
+                    return NotFound(new { message = "Worker not found" });
+
+                if (worker.IsBlocked)
+                    return BadRequest(new { message = "Worker account is blocked" });
+
+                if (worker.ApprovalStatus != "Approved")
+                    return BadRequest(new { message = "Worker account is not approved" });
+
+                query = query.Where(r =>
+                    (
+                        r.Status == "Open" ||
+                        (r.AssignedWorkerEmail != null && r.AssignedWorkerEmail.ToLower() == normalizedWorkerEmail)
+                    )
+                );
+            }
 
             if (!string.IsNullOrWhiteSpace(status))
             {
                 var statuses = status.Split(',', StringSplitOptions.RemoveEmptyEntries)
-                    .Select(s => s.Trim()).ToList();
+                    .Select(s => s.Trim())
+                    .ToList();
 
                 query = query.Where(r => statuses.Contains(r.Status));
             }
@@ -732,37 +1008,7 @@ namespace CityFix.Api.Controllers
                 query = query.Where(r => r.CreatedAt <= to.AddDays(1));
 
             var reports = await query
-                .OrderByDescending(r => r.CreatedAt)
-                .Select(r => new
-                {
-                    id = r.Id,
-                    category = r.Category,
-                    status = r.Status,
-                    createdAt = r.CreatedAt,
-                    latitude = r.Latitude,
-                    longitude = r.Longitude,
-                    location = r.Location,
-                    description = r.Description,
-                    priority = r.Priority
-                })
-                .ToListAsync();
-
-            return Ok(reports);
-        }
-
-        [HttpGet("open-reports")]
-        public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
-        {
-            workerEmail = workerEmail?.Trim().ToLowerInvariant();
-
-            var reports = await _context.Reports
                 .AsNoTracking()
-                .Where(r =>
-                    r.Status == "Open" ||
-                    (!string.IsNullOrEmpty(workerEmail) &&
-                     r.AssignedWorkerEmail != null &&
-                     r.AssignedWorkerEmail.ToLower() == workerEmail)
-                )
                 .OrderByDescending(r => r.CreatedAt)
                 .Select(r => new
                 {
@@ -772,24 +1018,84 @@ namespace CityFix.Api.Controllers
                     priority = r.Priority,
                     description = r.Description,
                     notes = r.Notes,
+                    status = r.Status,
+                    createdAt = r.CreatedAt,
                     latitude = r.Latitude,
                     longitude = r.Longitude,
-                    status = r.Status,
+                    location = r.Location,
                     assignedWorkerEmail = r.AssignedWorkerEmail,
                     acceptedAt = r.AcceptedAt,
-                    createdAt = r.CreatedAt
+                    imageBase64 = r.ImageBase64,
+                    workerImageBase64 = r.WorkerImageBase64,
+                    workerImageNote = r.WorkerImageNote,
+                    workerImageUploadedAt = r.WorkerImageUploadedAt
                 })
                 .ToListAsync();
 
             return Ok(reports);
         }
 
-        [HttpGet("report-details/{reportId}")]
-        public async Task<IActionResult> GetReportDetails(int reportId, [FromQuery] string? workerEmail)
+        [HttpDelete("admin/reports/{id}")]
+        public async Task<IActionResult> DeleteReport(int id)
         {
-            var report = await _context.Reports
+            var report = await _context.Reports.FirstOrDefaultAsync(r => r.Id == id);
+
+            if (report == null)
+            {
+                return NotFound(new { message = "Report not found" });
+            }
+
+            var histories = await _context.ReportStatusHistories
+                .Where(h => h.ReportId == id)
+                .ToListAsync();
+
+            if (histories.Any())
+            {
+                _context.ReportStatusHistories.RemoveRange(histories);
+            }
+
+            _context.Reports.Remove(report);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Report deleted successfully"
+            });
+        }
+
+        [HttpGet("open-reports")]
+        public async Task<IActionResult> GetOpenReports([FromQuery] string? workerEmail)
+        {
+            if (string.IsNullOrWhiteSpace(workerEmail))
+                return BadRequest(new { message = "Worker email is required" });
+
+            var normalizedWorkerEmail = workerEmail.Trim().ToLowerInvariant();
+
+            var worker = await _context.Workers
                 .AsNoTracking()
-                .Where(r => r.Id == reportId)
+                .FirstOrDefaultAsync(w => w.Email.ToLower() == normalizedWorkerEmail);
+
+            if (worker == null)
+                return NotFound(new { message = "Worker not found" });
+
+            if (worker.IsBlocked)
+                return BadRequest(new { message = "Worker account is blocked" });
+
+            if (worker.ApprovalStatus != "Approved")
+                return BadRequest(new { message = "Worker account is not approved" });
+
+            var reports = await _context.Reports
+                .AsNoTracking()
+                .Where(r =>
+                    (
+                        r.Status == "Open" ||
+                        (
+                            r.AssignedWorkerEmail != null &&
+                            r.AssignedWorkerEmail.ToLower() == normalizedWorkerEmail
+                        )
+                    )
+                )
+                .OrderByDescending(r => r.CreatedAt)
                 .Select(r => new
                 {
                     id = r.Id,
@@ -810,12 +1116,122 @@ namespace CityFix.Api.Controllers
                     workerImageNote = r.WorkerImageNote,
                     workerImageUploadedAt = r.WorkerImageUploadedAt
                 })
-                .FirstOrDefaultAsync();
+                .ToListAsync();
 
-            if (report == null)
+            return Ok(reports);
+        }
+[HttpGet("worker-notifications")]
+public async Task<IActionResult> GetWorkerNotifications([FromQuery] string workerEmail)
+{
+    if (string.IsNullOrWhiteSpace(workerEmail))
+        return BadRequest(new { message = "Worker email is required" });
+
+    var normalizedWorkerEmail = workerEmail.Trim().ToLowerInvariant();
+
+    var worker = await _context.Workers
+        .AsNoTracking()
+        .FirstOrDefaultAsync(w => w.Email.ToLower() == normalizedWorkerEmail);
+
+    if (worker == null)
+        return NotFound(new { message = "Worker not found" });
+
+    if (worker.IsBlocked)
+        return BadRequest(new { message = "Worker account is blocked" });
+
+    if (worker.ApprovalStatus != "Approved")
+        return BadRequest(new { message = "Worker account is not approved" });
+
+    var allowedCategories = GetCategoriesForDepartment(worker.Department);
+    var workerMunicipality = worker.Municipality.Trim();
+
+    var reports = await _context.Reports
+        .AsNoTracking()
+        .Where(r =>
+            r.Status == "Open" &&
+            string.IsNullOrWhiteSpace(r.AssignedWorkerEmail) &&
+            allowedCategories.Contains(r.Category) &&
+            (
+                r.Municipality == workerMunicipality ||
+                r.Location.Contains(workerMunicipality)
+            )
+        )
+        .OrderByDescending(r => r.CreatedAt)
+        .Select(r => new
+        {
+            id = r.Id,
+            category = r.Category,
+            priority = r.Priority,
+            description = r.Description,
+            location = r.Location,
+            municipality = r.Municipality,
+            createdAt = r.CreatedAt
+        })
+        .ToListAsync();
+
+    return Ok(reports);
+}
+
+
+        [HttpGet("report-details/{reportId}")]
+        public async Task<IActionResult> GetReportDetails(int reportId, [FromQuery] string? workerEmail)
+        {
+            var reportEntity = await _context.Reports
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.Id == reportId);
+
+            if (reportEntity == null)
             {
                 return NotFound(new { message = "הדיווח לא נמצא" });
             }
+var customer = await _context.Customers
+    .AsNoTracking()
+    .FirstOrDefaultAsync(c => c.Email.ToLower() == reportEntity.CustomerEmail.ToLower());
+            if (!string.IsNullOrWhiteSpace(workerEmail))
+            {
+                var normalizedWorkerEmail = workerEmail.Trim().ToLowerInvariant();
+
+                var worker = await _context.Workers
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(w => w.Email.ToLower() == normalizedWorkerEmail);
+
+                if (worker == null)
+                    return NotFound(new { message = "Worker not found" });
+
+                if (worker.IsBlocked)
+                    return BadRequest(new { message = "Worker account is blocked" });
+
+                if (worker.ApprovalStatus != "Approved")
+                    return BadRequest(new { message = "Worker account is not approved" });
+
+                if (!string.IsNullOrWhiteSpace(reportEntity.AssignedWorkerEmail) &&
+                    reportEntity.AssignedWorkerEmail.ToLower() != normalizedWorkerEmail)
+                {
+                    return Forbid();
+                }
+            }
+
+            var report = new
+            {
+                id = reportEntity.Id,
+                customerEmail = reportEntity.CustomerEmail,
+                category = reportEntity.Category,
+                priority = reportEntity.Priority,
+                description = reportEntity.Description,
+                notes = reportEntity.Notes,
+                location = reportEntity.Location,
+                imageBase64 = reportEntity.ImageBase64,
+                latitude = reportEntity.Latitude,
+                longitude = reportEntity.Longitude,
+                status = reportEntity.Status,
+                assignedWorkerEmail = reportEntity.AssignedWorkerEmail,
+                acceptedAt = reportEntity.AcceptedAt,
+                createdAt = reportEntity.CreatedAt,
+                workerImageBase64 = reportEntity.WorkerImageBase64,
+                workerImageNote = reportEntity.WorkerImageNote,
+                customerName = customer != null ? customer.FullName : "-",
+customerPhone = customer != null ? customer.Phone : "-",
+                workerImageUploadedAt = reportEntity.WorkerImageUploadedAt
+            };
 
             return Ok(report);
         }
@@ -851,11 +1267,238 @@ namespace CityFix.Api.Controllers
                     latitude = r.Latitude,
                     longitude = r.Longitude,
                     assignedWorkerEmail = r.AssignedWorkerEmail,
+                    acceptedAt = r.AcceptedAt,
+                    imageBase64 = r.ImageBase64,
+                    workerImageBase64 = r.WorkerImageBase64,
+                    workerImageNote = r.WorkerImageNote,
+                    workerImageUploadedAt = r.WorkerImageUploadedAt
+                })
+                .ToListAsync();
+
+            return Ok(reports);
+        }
+
+        [HttpPut("update-report-status/{reportId}")]
+        public async Task<IActionResult> UpdateReportStatus(
+            int reportId,
+            [FromBody] UpdateReportStatusDto dto)
+        {
+            if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
+                return Unauthorized(new { message = "יש להתחבר כעובד" });
+
+            var worker = await _context.Workers
+                .FirstOrDefaultAsync(w =>
+                    w.Email.ToLower() == dto.WorkerEmail.ToLower() &&
+                    w.ApprovalStatus == "Approved");
+
+            if (worker == null)
+                return Unauthorized(new { message = "אין הרשאה לעדכן סטטוס" });
+
+            if (worker.IsBlocked)
+                return BadRequest(new { message = "Worker account is blocked" });
+
+  var allowedStatuses = new[]
+{
+    "In Treatment",
+    "Closed"
+};
+
+            if (!allowedStatuses.Contains(dto.NewStatus))
+                return BadRequest(new { message = "סטטוס לא חוקי" });
+
+            var report = await _context.Reports.FindAsync(reportId);
+
+            if (report == null)
+                return NotFound(new { message = "הקריאה לא נמצאה" });
+
+            if (report.AssignedWorkerEmail != null &&
+                report.AssignedWorkerEmail.ToLower() != dto.WorkerEmail.ToLower())
+            {
+                return Forbid();
+            }
+
+            var oldStatus = report.Status;
+
+            report.Status = dto.NewStatus;
+if (dto.NewStatus == "Closed")
+{
+    _context.CustomerNotifications.Add(
+        new CustomerNotification
+        {
+            CustomerEmail = report.CustomerEmail,
+            ReportId = report.Id,
+            Message = $"Your report #{report.Id} has been completed and closed.",
+            CreatedAt = DateTime.UtcNow,
+            IsRead = false
+        });
+}
+            var history = new ReportStatusHistory
+            {
+                ReportId = report.Id,
+                OldStatus = oldStatus,
+                NewStatus = dto.NewStatus,
+                ChangedByWorkerEmail = dto.WorkerEmail,
+                ChangedAt = DateTime.UtcNow
+            };
+
+            _context.ReportStatusHistories.Add(history);
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "סטטוס הקריאה עודכן בהצלחה",
+                reportId = report.Id,
+                oldStatus,
+                newStatus = report.Status,
+                changedBy = dto.WorkerEmail,
+                changedAt = history.ChangedAt
+            });
+        }
+[HttpGet("customer-notifications")]
+public async Task<IActionResult> CustomerNotifications(string email)
+{
+    var notifications = await _context.CustomerNotifications
+        .Where(n => n.CustomerEmail == email)
+        .OrderByDescending(n => n.CreatedAt)
+        .ToListAsync();
+
+    return Ok(notifications);
+}
+        [HttpGet("customer-reports")]
+        public async Task<IActionResult> GetCustomerReports([FromQuery] string email){
+            if (string.IsNullOrWhiteSpace(email))
+                return BadRequest(new { message = "האימייל נדרש" });
+
+            var normalizedEmail = email.Trim().ToLowerInvariant();
+
+            var reports = await _context.Reports
+                .AsNoTracking()
+                .Where(r => r.CustomerEmail.ToLower() == normalizedEmail)
+                .OrderByDescending(r => r.CreatedAt)
+                .Select(r => new
+                {
+                    id = r.Id,
+                    category = r.Category,
+                    priority = r.Priority,
+                    description = r.Description,
+                    notes = r.Notes,
+                    status = r.Status,
+                    createdAt = r.CreatedAt,
+                    location = r.Location,
+                    latitude = r.Latitude,
+                    longitude = r.Longitude,
+                    imageBase64 = r.ImageBase64,
+                    assignedWorkerEmail = r.AssignedWorkerEmail,
                     acceptedAt = r.AcceptedAt
                 })
                 .ToListAsync();
 
             return Ok(reports);
+        }
+
+        [HttpGet("report-status-history/{reportId}")]
+        public async Task<IActionResult> GetReportStatusHistory(int reportId)
+        {
+            var history = await _context.ReportStatusHistories
+                .Where(h => h.ReportId == reportId)
+                .OrderByDescending(h => h.ChangedAt)
+                .ToListAsync();
+
+            return Ok(history);
+        }
+
+        [HttpGet("admin/statistics")]
+        public async Task<IActionResult> GetAdminStatistics()
+        {
+            var reports = await _context.Reports.AsNoTracking().ToListAsync();
+
+            var totalReports = reports.Count;
+            var openReports = reports.Count(r => r.Status == "Open");
+            var inTreatmentReports = reports.Count(r => r.Status == "In Treatment");
+            var resolvedReports = reports.Count(r => r.Status == "Completed" || r.Status == "Closed");
+
+            var resolutionRate = totalReports > 0
+                ? Math.Round((double)resolvedReports / totalReports * 100, 1)
+                : 0;
+
+            var resolvedHistories = await _context.ReportStatusHistories
+                .AsNoTracking()
+                .Where(h => h.NewStatus == "Completed" || h.NewStatus == "Closed")
+                .ToListAsync();
+
+            double averageHandlingDays = 0;
+            var resolvedReportsList = reports.Where(r => r.Status == "Completed" || r.Status == "Closed").ToList();
+            if (resolvedReportsList.Count > 0)
+            {
+                var handlingDays = new List<double>();
+                foreach (var report in resolvedReportsList)
+                {
+                    var completedEntry = resolvedHistories
+                        .Where(h => h.ReportId == report.Id)
+                        .OrderByDescending(h => h.ChangedAt)
+                        .FirstOrDefault();
+
+                    if (completedEntry != null)
+                        handlingDays.Add(Math.Max(0, (completedEntry.ChangedAt - report.CreatedAt).TotalDays));
+                }
+
+                if (handlingDays.Count > 0)
+                    averageHandlingDays = Math.Round(handlingDays.Average(), 1);
+            }
+
+            var approvedWorkersCount = await _context.Workers.CountAsync(w => w.ApprovalStatus == "Approved");
+            var workerPerformance = approvedWorkersCount > 0
+                ? Math.Round((double)resolvedReports / approvedWorkersCount, 1)
+                : 0;
+
+            var reportsByCategory = reports
+                .GroupBy(r => r.Category)
+                .Select(g => new { category = g.Key, count = g.Count() })
+                .OrderByDescending(x => x.count)
+                .ToList<object>();
+
+            var statusDistribution = reports
+                .GroupBy(r => r.Status)
+                .Select(g => new { status = g.Key, count = g.Count() })
+                .ToList<object>();
+
+            var now = DateTime.UtcNow;
+            var monthlyTrends = new List<object>();
+            for (int i = 5; i >= 0; i--)
+            {
+                var month = now.AddMonths(-i);
+                var monthStart = new DateTime(month.Year, month.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+                var monthEnd = monthStart.AddMonths(1);
+
+                monthlyTrends.Add(new
+                {
+                    month = month.ToString("MMM yyyy"),
+                    newReports = reports.Count(r => r.CreatedAt >= monthStart && r.CreatedAt < monthEnd),
+                    resolved = resolvedHistories.Count(h => h.ChangedAt >= monthStart && h.ChangedAt < monthEnd)
+                });
+            }
+
+            var priorityDistribution = reports
+                .GroupBy(r => r.Priority)
+                .Select(g => new { priority = g.Key, count = g.Count() })
+                .ToList<object>();
+
+            return Ok(new
+            {
+                totalReports,
+                openReports,
+                inTreatmentReports,
+                resolvedReports,
+                averageHandlingDays,
+                resolutionRate,
+                workerPerformance,
+                customerSatisfaction = 4.2,
+                reportsByCategory,
+                statusDistribution,
+                monthlyTrends,
+                priorityDistribution
+            });
         }
 
         private async Task<(string UserType, int UserId)?> FindUserByEmailAsync(string email)
@@ -890,6 +1533,52 @@ namespace CityFix.Api.Controllers
             return null;
         }
 
+        private static List<string> GetCategoriesForDepartment(string? department)
+        {
+            var value = NormalizeDepartmentText(department);
+
+            if (string.IsNullOrWhiteSpace(value))
+                return new List<string>();
+
+            if (value.Contains("road") || value.Contains("roads") || value.Contains("street") || value.Contains("כביש") || value.Contains("תשתיות"))
+                return new List<string> { "Road Damage", "נזק בכביש" };
+
+            if (value.Contains("light") || value.Contains("lighting") || value.Contains("electric") || value.Contains("electricity") || value.Contains("תאורה") || value.Contains("חשמל"))
+                return new List<string> { "Street Lighting", "תאורת רחוב" };
+
+            if (value.Contains("garbage") || value.Contains("sanitation") || value.Contains("waste") || value.Contains("clean") || value.Contains("אשפה") || value.Contains("זבל") || value.Contains("ניקיון"))
+                return new List<string> { "Garbage / Sanitation", "אשפה / ניקיון" };
+
+            if (value.Contains("garden") || value.Contains("gardening") || value.Contains("park") || value.Contains("גינון") || value.Contains("גן") || value.Contains("עצים"))
+                return new List<string> { "Gardening", "גינון" };
+
+            if (value.Contains("water") || value.Contains("sewage") || value.Contains("sewer") || value.Contains("מים") || value.Contains("ביוב"))
+                return new List<string> { "Water / Sewage", "מים / ביוב" };
+
+            if (value.Contains("maintenance") || value.Contains("general") || value.Contains("תחזוקה") || value.Contains("כללי"))
+                return new List<string> { "General Maintenance", "תחזוקה כללית" };
+
+            return new List<string>();
+        }
+
+        private static bool CanWorkerHandleCategory(string? department, string? category)
+        {
+            if (string.IsNullOrWhiteSpace(category))
+                return false;
+
+            var allowedCategories = GetCategoriesForDepartment(department);
+            return allowedCategories.Any(c => string.Equals(c, category.Trim(), StringComparison.OrdinalIgnoreCase));
+        }
+
+        private static string NormalizeDepartmentText(string? value)
+        {
+            return (value ?? "")
+                .Trim()
+                .ToLowerInvariant()
+                .Replace("-", " ")
+                .Replace("_", " ");
+        }
+
         private static string HashPassword(string password)
         {
             using var sha256 = SHA256.Create();
@@ -902,81 +1591,6 @@ namespace CityFix.Api.Controllers
             var hashedPassword = HashPassword(password);
             return hashedPassword == savedHash;
         }
-        [HttpPut("update-report-status/{reportId}")]
-public async Task<IActionResult> UpdateReportStatus(
-    int reportId,
-    [FromBody] UpdateReportStatusDto dto)
-{
-    if (string.IsNullOrWhiteSpace(dto.WorkerEmail))
-        return Unauthorized(new { message = "יש להתחבר כעובד" });
-
-    var worker = await _context.Workers
-        .FirstOrDefaultAsync(w =>
-            w.Email.ToLower() == dto.WorkerEmail.ToLower() &&
-            w.ApprovalStatus == "Approved");
-
-    if (worker == null)
-        return Unauthorized(new { message = "אין הרשאה לעדכן סטטוס" });
-
-    var allowedStatuses = new[]
-    {
-        "Open",
-        "In Treatment",
-        "Completed"
-    };
-
-    if (!allowedStatuses.Contains(dto.NewStatus))
-        return BadRequest(new { message = "סטטוס לא חוקי" });
-
-    var report = await _context.Reports.FindAsync(reportId);
-
-    if (report == null)
-        return NotFound(new { message = "הקריאה לא נמצאה" });
-
-    if (report.AssignedWorkerEmail != null &&
-        report.AssignedWorkerEmail.ToLower() != dto.WorkerEmail.ToLower())
-    {
-        return Forbid();
-    }
-
-    var oldStatus = report.Status;
-
-    report.Status = dto.NewStatus;
-    
-
-    var history = new ReportStatusHistory
-    {
-        ReportId = report.Id,
-        OldStatus = oldStatus,
-        NewStatus = dto.NewStatus,
-        ChangedByWorkerEmail = dto.WorkerEmail,
-        ChangedAt = DateTime.UtcNow
-    };
-
-    _context.ReportStatusHistories.Add(history);
-
-    await _context.SaveChangesAsync();
-
-    return Ok(new
-    {
-        message = "סטטוס הקריאה עודכן בהצלחה",
-        reportId = report.Id,
-        oldStatus,
-        newStatus = report.Status,
-        changedBy = dto.WorkerEmail,
-        changedAt = history.ChangedAt
-    });
-}
-
-[HttpGet("report-status-history/{reportId}")]
-public async Task<IActionResult> GetReportStatusHistory(int reportId)
-{
-    var history = await _context.ReportStatusHistories
-        .Where(h => h.ReportId == reportId)
-        .OrderByDescending(h => h.ChangedAt)
-        .ToListAsync();
-
-    return Ok(history);
-}
+        
     }
 }

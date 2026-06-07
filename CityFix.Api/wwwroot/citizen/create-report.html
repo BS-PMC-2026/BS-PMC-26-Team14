@@ -184,9 +184,15 @@ h1{font-size:32px;margin-bottom:30px}
 .btn-primary{background:#0b63e5;color:white}
 .btn-secondary{background:white;border:1px solid #9ca3af;color:#111827}
 .preview{border:1px solid #d7dde5;border-radius:7px;padding:20px;text-align:center}
-.preview-box{height:230px;background:#f3f4f6;border-radius:10px;margin:20px 0;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.preview-box img{width:100%;height:100%;object-fit:cover}
-
+.preview-box{height:360px;background:#f3f4f6;border-radius:10px;margin:20px 0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.preview-box img{
+  max-width:100%;
+  max-height:100%;
+  width:auto;
+  height:auto;
+  object-fit:contain;
+  border-radius:10px;
+}
 #map {
   width: 100%;
   height: 400px;
@@ -394,10 +400,143 @@ textarea{height:110px;resize:none}
   }
 }
 
+/* TOAST MESSAGES */
+.toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.toast {
+  min-width: 300px;
+  max-width: 420px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-left: 5px solid #0b63e5;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.18);
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-family: 'Inter', Arial, sans-serif;
+  animation: toastSlideIn 0.25s ease;
+  pointer-events: auto;
+}
+
+.toast-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #0b63e5;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 3px;
+}
+
+.toast-message {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #475569;
+}
+
+.toast.success {
+  border-left-color: #16a34a;
+}
+
+.toast.success .toast-icon {
+  background: #16a34a;
+}
+
+.toast.error {
+  border-left-color: #dc2626;
+}
+
+.toast.error .toast-icon {
+  background: #dc2626;
+}
+
+.toast.warning {
+  border-left-color: #f59e0b;
+}
+
+.toast.warning .toast-icon {
+  background: #f59e0b;
+}
+
+.toast.info {
+  border-left-color: #0b63e5;
+}
+
+.toast.info .toast-icon {
+  background: #0b63e5;
+}
+.notification-link {
+    position: relative;
+}
+
+.sidebar-badge {
+    margin-left: auto;
+    min-width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: #ef4444;
+    color: white;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0 6px;
+}
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media(max-width: 600px) {
+  .toast-container {
+    left: 16px;
+    right: 16px;
+    top: 16px;
+  }
+
+  .toast {
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
 </style>
 </head>
 
 <body>
+<div id="toastContainer" class="toast-container"></div>
 <div class="layout">
 
 <aside class="sidebar">
@@ -409,7 +548,7 @@ textarea{height:110px;resize:none}
   <nav class="sidebar-nav">
     <div class="sidebar-section-title">
       <i data-lucide="user"></i>
-      <span>Customer Area</span>
+      <span>Citizen Area</span>
     </div>
 
     <a class="active" href="#">
@@ -417,7 +556,7 @@ textarea{height:110px;resize:none}
       <span>Create Report</span>
     </a>
 
-    <a href="#">
+    <a href="customer-my-reports.html">
       <i data-lucide="clipboard-list"></i>
       <span>My Reports</span>
     </a>
@@ -426,7 +565,11 @@ textarea{height:110px;resize:none}
       <i data-lucide="map"></i>
       <span>Reports Map</span>
     </a>
-
+<a href="customer-notifications.html" class="notification-link">
+  <i data-lucide="bell"></i>
+  <span>Notifications</span>
+  <span id="sidebarNotificationBadge" class="sidebar-badge">0</span>
+</a>
     <a href="../profile/customer-profile.html">
       <i data-lucide="user-circle"></i>
       <span>Profile</span>
@@ -629,11 +772,81 @@ textarea{height:110px;resize:none}
 </div>
 
 <script>
+
+function showToast(type, title, message) {
+  let container = document.getElementById("toastContainer");
+
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toastContainer";
+    container.className = "toast-container";
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement("div");
+  toast.className = "toast " + type;
+
+  let icon = "i";
+  if (type === "success") icon = "✓";
+  if (type === "error") icon = "!";
+  if (type === "warning") icon = "!";
+  if (type === "info") icon = "i";
+
+  toast.innerHTML = `
+    <div class="toast-icon">${icon}</div>
+    <div class="toast-content">
+      <div class="toast-title">${title}</div>
+      <div class="toast-message">${message}</div>
+    </div>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(18px)";
+    toast.style.transition = "0.2s ease";
+
+    setTimeout(() => {
+      toast.remove();
+    }, 220);
+  }, 3200);
+}
+
 let selectedImageFile = null;
 let selectedImageBase64 = "";
 let selectedLocation = "";
 let selectedLatitude = null;
 let selectedLongitude = null;
+let selectedMunicipality = "";
+async function reverseGeocode(lat, lng) {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=he`
+    );
+
+    const data = await res.json();
+    const address = data.address || {};
+
+    const municipality =
+      address.city ||
+      address.town ||
+      address.village ||
+      address.municipality ||
+      address.county ||
+      "";
+
+    return {
+      fullAddress: data.display_name || (lat.toFixed(6) + "," + lng.toFixed(6)),
+      municipality: municipality
+    };
+  } catch {
+    return {
+      fullAddress: lat.toFixed(6) + "," + lng.toFixed(6),
+      municipality: ""
+    };
+  }
+}
 function compressImage(file, callback) {
   const img = new Image();
   const reader = new FileReader();
@@ -678,12 +891,12 @@ function handleImageFile(file) {
   if (!file) return;
 
   if (!file.type.startsWith("image/")) {
-    alert("Please select an image file only");
+    showToast("warning", "Invalid File", "Please select an image file only.");
     return;
   }
 
   if (file.size > 10 * 1024 * 1024) {
-    alert("Image is too large. Maximum is 10MB");
+    showToast("warning", "Image Too Large", "Maximum image size is 10MB.");
     return;
   }
 
@@ -721,50 +934,57 @@ uploadBox.addEventListener("drop", function (e) {
   handleImageFile(file);
 });
 function nextStep(step) {
-  if (step === 2 && !selectedLocation) {
-    alert("Please select a location on the map first");
-    return;
-  }
+    if (step === 2 && !selectedLocation) {
+        showToast("warning", "Location Required", "Please select a location on the map first.");
+        return;
+    }
 
-  if (step === 3 && !selectedImageFile) {
-    alert("Please select an image first");
-    return;
-  }
+    if (step === 3 && !selectedImageFile) {
+        showToast("warning", "Image Required", "Please select an image first.");
+        return;
+    }
 
-  document.getElementById("step1").classList.add("hidden");
-  document.getElementById("step2").classList.add("hidden");
-  document.getElementById("step3").classList.add("hidden");
-  document.getElementById("step" + step).classList.remove("hidden");
+    document.getElementById("step1").classList.add("hidden");
+    document.getElementById("step2").classList.add("hidden");
+    document.getElementById("step3").classList.add("hidden");
+    document.getElementById("step" + step).classList.remove("hidden");
 
-  ["s1","s2","s3"].forEach(id => {
-    document.getElementById(id).classList.remove("active","done");
-  });
+    ["s1","s2","s3"].forEach(id => {
+        document.getElementById(id).classList.remove("active","done");
+    });
 
-  if (step === 1) document.getElementById("s1").classList.add("active");
-  if (step === 2) {
-    document.getElementById("s1").classList.add("done");
-    document.querySelector("#s1 .circle").innerText = "✓";
-    document.getElementById("s2").classList.add("active");
-  }
-  if (step === 3) {
-    document.getElementById("s1").classList.add("done");
-    document.getElementById("s2").classList.add("done");
-    document.querySelector("#s1 .circle").innerText = "✓";
-    document.querySelector("#s2 .circle").innerText = "✓";
-    document.getElementById("s3").classList.add("active");
-  }
-if (step === 1) {
-setTimeout(() => {
-  map.invalidateSize();
-}, 300);
-}
+    document.querySelector("#s1 .circle").innerText = "1";
+    document.querySelector("#s2 .circle").innerText = "2";
+    document.querySelector("#s3 .circle").innerText = "3";
+
+    if (step === 1) document.getElementById("s1").classList.add("active");
+
+    if (step === 2) {
+        document.getElementById("s1").classList.add("done");
+        document.querySelector("#s1 .circle").innerText = "✓";
+        document.getElementById("s2").classList.add("active");
+    }
+
+    if (step === 3) {
+        document.getElementById("s1").classList.add("done");
+        document.getElementById("s2").classList.add("done");
+        document.querySelector("#s1 .circle").innerText = "✓";
+        document.querySelector("#s2 .circle").innerText = "✓";
+        document.getElementById("s3").classList.add("active");
+    }
+
+    if (step === 1) {
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 300);
+    }
 }
 
 function detectLocation(event) {
   event.stopPropagation();
 
   if (!navigator.geolocation) {
-    alert("Browser does not support location detection");
+    showToast("error", "Location Not Supported", "Your browser does not support location detection.");
     return;
   }
 
@@ -775,7 +995,7 @@ function detectLocation(event) {
         "✅ Location detected automatically: " + selectedLocation;
       document.getElementById("sumLocation").innerText = selectedLocation;
     },
-    () => alert("Cannot get location. Check browser location permissions.")
+    () => showToast("error", "Location Permission Needed", "Cannot get location. Check browser location permissions.")
   );
 }
 
@@ -813,7 +1033,7 @@ function detectCurrentLocation() {
   const detectedBox = document.getElementById("locationDetectedBox");
 
   if (!navigator.geolocation) {
-    alert("Browser does not support automatic location detection");
+    showToast("error", "Location Not Supported", "Your browser does not support automatic location detection.");
     return;
   }
 
@@ -826,7 +1046,7 @@ function detectCurrentLocation() {
       const accuracy = position.coords.accuracy;
 
       if (!isInsideIsrael(lat, lng)) {
-        alert("Detected location is not within Israel");
+        showToast("warning", "Invalid Location", "Detected location is not within Israel.");
         return;
       }
 
@@ -842,16 +1062,10 @@ function detectCurrentLocation() {
         marker = L.marker([lat, lng]).addTo(map);
       }
 
-      marker.bindPopup(`
-        <b>Your Current Location</b><br>
-        ${selectedLocation}<br>
-        Auto Detected
-      `).openPopup();
-
       document.getElementById("locationText").innerHTML = `
         <div class="location-status-bar">
           <div>
-            📍 <b>Location:</b> ${selectedLocation}<br>
+            📍 <b>Location:</b> Getting address...<br>
             <span>Auto Detected</span>
           </div>
           <div>
@@ -860,17 +1074,39 @@ function detectCurrentLocation() {
           </div>
         </div>
       `;
-
-      document.getElementById("sumLocation").innerText = selectedLocation;
+      document.getElementById("sumLocation").innerText = "Getting address...";
 
       detectedBox.classList.remove("hidden");
+
+  reverseGeocode(lat, lng).then(result => {
+  selectedLocation = result.fullAddress;
+  selectedMunicipality = result.municipality;
+
+  const address = result.fullAddress;
+        marker.bindPopup(`<b>Your Current Location</b><br>${address}`).openPopup();
+        document.getElementById("locationText").innerHTML = `
+          <div class="location-status-bar">
+            <div>
+📍 <b>Location:</b> ${address}<br>
+🏙️ <b>Municipality:</b> ${selectedMunicipality || "Unknown"}<br>
+<span>Auto Detected</span>
+            </div>
+            <div>
+              Accuracy:
+              <span class="accuracy-high">${Math.round(accuracy)} meters</span>
+            </div>
+          </div>
+        `;
+        document.getElementById("sumLocation").innerText =
+  address + " | " + (selectedMunicipality || "Unknown");
+      });
 
       setTimeout(() => {
         map.invalidateSize();
       }, 200);
     },
     function () {
-      alert("Cannot detect location. Location permission needs to be granted in the browser.");
+      showToast("error", "Location Permission Needed", "Cannot detect location. Location permission needs to be granted in the browser.");
     },
     {
       enableHighAccuracy: true,
@@ -881,25 +1117,38 @@ function detectCurrentLocation() {
 }
 
 map.on("click", function (e) {
-  const lat = e.latlng.lat.toFixed(6);
-  const lng = e.latlng.lng.toFixed(6);
-if (!isInsideIsrael(parseFloat(lat), parseFloat(lng))) {
-  alert("Please select a location within Israel only");
-  return;
-}
-  selectedLocation = lat + "," + lng;
-selectedLatitude = e.latlng.lat;
-selectedLongitude = e.latlng.lng; 
+  const lat = e.latlng.lat;
+  const lng = e.latlng.lng;
+  if (!isInsideIsrael(lat, lng)) {
+    showToast("warning", "Invalid Location", "Please select a location within Israel only.");
+    return;
+  }
+  selectedLatitude = lat;
+  selectedLongitude = lng;
+  selectedLocation = lat.toFixed(6) + "," + lng.toFixed(6);
+
   if (marker) {
     marker.setLatLng(e.latlng);
   } else {
     marker = L.marker(e.latlng).addTo(map);
   }
 
-  document.getElementById("locationText").innerText =
-    "✅ Location selected: " + selectedLocation;
+  document.getElementById("locationText").innerText = "📍 Getting address...";
+  document.getElementById("sumLocation").innerText = "Getting address...";
 
-  document.getElementById("sumLocation").innerText = selectedLocation;
+  (async () => {
+const result = await reverseGeocode(lat, lng);
+
+selectedLocation = result.fullAddress;
+selectedMunicipality = result.municipality;
+
+document.getElementById("locationText").innerText =
+  "✅ Location selected: " + selectedLocation +
+  " | Municipality: " + (selectedMunicipality || "Unknown");
+
+document.getElementById("sumLocation").innerText =
+  selectedLocation + " | " + (selectedMunicipality || "Unknown");
+  })();
 });
 
 function updateCount() {
@@ -923,7 +1172,7 @@ async function searchAddress() {
   const street = document.getElementById("streetInput").value.trim();
 
   if (!city && !street) {
-    alert("Please enter a city or street");
+    showToast("warning", "Missing Search Details", "Please enter a city or street.");
     return;
   }
 
@@ -936,7 +1185,7 @@ async function searchAddress() {
     const results = await response.json();
 
     if (!results || results.length === 0) {
-      alert("No matching location found");
+      showToast("warning", "Location Not Found", "No matching location was found.");
       return;
     }
 
@@ -944,13 +1193,17 @@ const lat = parseFloat(results[0].lat);
 const lng = parseFloat(results[0].lon);
 
 if (!isInsideIsrael(lat, lng)) {
-  alert("Found location is not within Israel");
+  showToast("warning", "Invalid Location", "Found location is not within Israel.");
   return;
 }
 
-    selectedLocation = lat.toFixed(6) + "," + lng.toFixed(6);
-selectedLatitude = lat;
-selectedLongitude = lng;
+    selectedLatitude = lat;
+    selectedLongitude = lng;
+const result = await reverseGeocode(lat, lng);
+const address = result.fullAddress;
+
+selectedLocation = address;
+selectedMunicipality = result.municipality;
     map.setView([lat, lng], 17);
 
     if (marker) {
@@ -959,63 +1212,73 @@ selectedLongitude = lng;
       marker = L.marker([lat, lng]).addTo(map);
     }
 
-    document.getElementById("locationText").innerText =
-      "✅ Location selected: " + query + " (" + selectedLocation + ")";
-
-    document.getElementById("sumLocation").innerText = query;
-
+document.getElementById("locationText").innerText =
+  "✅ Location selected: " + address + " | Municipality: " + (selectedMunicipality || "Unknown");
+document.getElementById("sumLocation").innerText =
+  address + " | " + (selectedMunicipality || "Unknown");
   } catch (error) {
-    alert("Error searching for location");
+    showToast("error", "Search Error", "Error searching for location.");
     console.error(error);
   }
 }
 async function submitReport() {
-  const description = document.getElementById("description").value.trim();
+    const description = document.getElementById("description").value.trim();
 
-  if (!description) {
-    alert("Please enter a fault description");
-    return;
-  }
-  if (selectedLatitude === null || selectedLongitude === null) {
-  alert("Please select a location on the map");
-  return;
-  console.log("report sent:", report);
-}
-
-const report = {
-  customerEmail: localStorage.getItem("userEmail"),
-  category: document.getElementById("category").value,
-  priority: document.getElementById("priority").value,
-  description: description,
-  notes: document.getElementById("notes").value.trim(),
-  latitude: selectedLatitude,
-  longitude: selectedLongitude,
-  imageBase64: selectedImageBase64
-};
-
-  try {
-    const response = await fetch("/api/Auth/create-report", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(report)
-    });
-
-    const result = await response.json();
-
-    if (!response.ok) {
-      alert(result.message || "Error saving the report");
-      return;
+    if (!description) {
+        showToast("warning", "Description Required", "Please enter a fault description.");
+        return;
     }
 
-    alert(result.message || "Report saved successfully");
-    window.location.href = "../citizen/create-report.html";
+    if (selectedLatitude === null || selectedLongitude === null) {
+        showToast("warning", "Location Required", "Please select a location on the map.");
+        return;
+    }
+    if (!selectedMunicipality) {
+    showToast("warning", "Municipality Missing", "Could not detect municipality. Please choose the location again.");
+    return;
+}
 
-  } catch (error) {
-    alert("Connection error with server");
-    console.error(error);
-  }
+    const report = {
+        customerEmail: localStorage.getItem("userEmail"),
+        category: document.getElementById("category").value,
+        priority: document.getElementById("priority").value,
+        description: description,
+        notes: document.getElementById("notes").value.trim(),
+        location: selectedLocation,
+        municipality: selectedMunicipality,
+        latitude: selectedLatitude,
+        longitude: selectedLongitude,
+        imageBase64: selectedImageBase64
+    };
+
+    console.log("report sent:", report);
+
+    try {
+        const response = await fetch("/api/Auth/create-report", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(report)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            showToast("error", "Save Failed", result.message || "Error saving the report.");
+            return;
+        }
+
+        showToast("success", "Report Submitted", result.message || "Report saved successfully.");
+
+        setTimeout(() => {
+            window.location.href = "../citizen/create-report.html";
+        }, 900);
+
+    } catch (error) {
+        showToast("error", "Connection Error", "Could not connect to the server.");
+        console.error(error);
+    }
 }
 
 function cancel() {
@@ -1029,6 +1292,60 @@ function logout() {
 </script>
 <script>
   lucide.createIcons();
+
+async function loadNotificationBadge() {
+  const email =
+    localStorage.getItem("customerEmail") ||
+    localStorage.getItem("userEmail") ||
+    localStorage.getItem("email");
+
+  const badge = document.getElementById("sidebarNotificationBadge");
+
+  if (!badge) return;
+
+  if (!email) {
+    badge.style.display = "none";
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "/api/Auth/customer-notifications?email=" + encodeURIComponent(email)
+    );
+
+    if (!response.ok) {
+      badge.style.display = "none";
+      return;
+    }
+
+    const notifications = await response.json();
+
+    const readIds = JSON.parse(
+      localStorage.getItem("customerReadNotifications") || "[]"
+    ).map(String);
+
+    const unreadCount = Array.isArray(notifications)
+      ? notifications.filter(n => {
+          const id = String(n.id || n.reportId);
+          return !readIds.includes(id);
+        }).length
+      : 0;
+
+    if (unreadCount > 0) {
+      badge.innerText = unreadCount;
+      badge.style.display = "inline-flex";
+    } else {
+      badge.style.display = "none";
+    }
+
+  } catch (e) {
+    console.error(e);
+    badge.style.display = "none";
+  }
+}
+
+loadNotificationBadge();
 </script>
+
 </body>
 </html>

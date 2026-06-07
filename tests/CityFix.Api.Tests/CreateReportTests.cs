@@ -95,6 +95,7 @@ namespace CityFix.Api.Tests
                 Description = "יש בור בכביש",
                 Notes = "ליד הכניסה",
                 ImageBase64 = "data:image/png;base64,test",
+                Municipality = "באר שבע",
                 Latitude = 31.251,
                 Longitude = 34.791
             };
@@ -112,6 +113,7 @@ namespace CityFix.Api.Tests
                 Priority = "גבוהה",
                 Description = "בעיה",
                 Latitude = 31.251,
+                Municipality = "באר שבע",
                 Longitude = 34.791
             };
 
@@ -128,6 +130,7 @@ namespace CityFix.Api.Tests
                 Priority = "גבוהה",
                 Description = "בעיה",
                 Latitude = 31.251,
+                Municipality = "באר שבע",
                 Longitude = 34.791
             };
 
@@ -143,6 +146,7 @@ namespace CityFix.Api.Tests
                 Category = "נזק בכביש",
                 Priority = "",
                 Description = "בעיה",
+                Municipality = "באר שבע",
                 Latitude = 31.251,
                 Longitude = 34.791
             };
@@ -159,6 +163,7 @@ namespace CityFix.Api.Tests
                 Category = "נזק בכביש",
                 Priority = "גבוהה",
                 Description = "",
+                Municipality = "באר שבע",
                 Latitude = 31.251,
                 Longitude = 34.791
             };
@@ -176,6 +181,7 @@ namespace CityFix.Api.Tests
                 Priority = "גבוהה",
                 Description = "בעיה",
                 Notes = "",
+                Municipality = "באר שבע",
                 ImageBase64 = "",
                 Latitude = 31.251,
                 Longitude = 34.791
@@ -241,6 +247,7 @@ namespace CityFix.Api.Tests
                 notes = "ליד תחנת אוטובוס",
                 latitude = 31.251,
                 longitude = 34.791,
+                municipality = "באר שבע",
                 imageBase64 = "data:image/png;base64,test"
             };
 
@@ -264,6 +271,7 @@ namespace CityFix.Api.Tests
                 notes = "",
                 latitude = 31.252,
                 longitude = 34.792,
+                municipality = "באר שבע",
                 imageBase64 = ""
             };
 
@@ -288,6 +296,7 @@ namespace CityFix.Api.Tests
                 description = "נזילת מים ברחוב",
                 notes = "דחוף",
                 latitude = 31.253,
+                municipality = "באר שבע",
                 longitude = 34.793,
                 imageBase64 = "data:image/png;base64,test"
             };
@@ -324,6 +333,7 @@ namespace CityFix.Api.Tests
                 notes = "",
                 latitude = 31.254,
                 longitude = 34.794,
+                municipality = "באר שבע",
                 imageBase64 = ""
             };
 
@@ -358,6 +368,7 @@ namespace CityFix.Api.Tests
                 notes = "",
                 latitude = 31.255,
                 longitude = 34.795,
+                municipality = "באר שבע",
                 imageBase64 = ""
             };
 
@@ -390,6 +401,7 @@ namespace CityFix.Api.Tests
                 notes = "",
                 latitude = 31.251,
                 longitude = 34.791,
+                municipality = "באר שבע",
                 imageBase64 = ""
             };
 
@@ -402,6 +414,7 @@ namespace CityFix.Api.Tests
                 notes = "",
                 latitude = 31.252,
                 longitude = 34.792,
+                municipality = "באר שבע",
                 imageBase64 = ""
             };
 
@@ -432,6 +445,7 @@ namespace CityFix.Api.Tests
                 notes = "",
                 latitude = 31.255,
                 longitude = 34.795,
+                municipality = "באר שבע",
                 imageBase64 = ""
             };
 
@@ -452,6 +466,7 @@ namespace CityFix.Api.Tests
                 notes = "",
                 latitude = 31.251,
                 longitude = 34.791,
+                municipality = "באר שבע",
                 imageBase64 = ""
             };
 
@@ -472,6 +487,7 @@ namespace CityFix.Api.Tests
                 notes = "",
                 latitude = 31.251,
                 longitude = 34.791,
+                municipality = "באר שבע",
                 imageBase64 = ""
             };
 
@@ -495,6 +511,7 @@ namespace CityFix.Api.Tests
                 notes = "",
                 latitude = 31.251,
                 longitude = 34.791,
+                municipality = "באר שבע",
                 imageBase64 = ""
             };
 
@@ -518,6 +535,7 @@ namespace CityFix.Api.Tests
                 notes = "",
                 latitude = 31.251,
                 longitude = 34.791,
+                municipality = "באר שבע",
                 imageBase64 = ""
             };
 
@@ -541,6 +559,7 @@ namespace CityFix.Api.Tests
                 notes = "",
                 latitude = 31.251,
                 longitude = 34.791,
+                municipality = "באר שבע",
                 imageBase64 = ""
             };
 
@@ -564,6 +583,7 @@ namespace CityFix.Api.Tests
                 notes = "",
                 latitude = 0,
                 longitude = 0,
+                municipality = "באר שבע",
                 imageBase64 = ""
             };
 
@@ -586,6 +606,7 @@ namespace CityFix.Api.Tests
                 description = "בעיה",
                 notes = "",
                 latitude = 100,
+                municipality = "באר שבע",
                 longitude = 200,
                 imageBase64 = ""
             };
@@ -610,6 +631,7 @@ namespace CityFix.Api.Tests
                 notes = "",
                 latitude = 40.7128,
                 longitude = -74.0060,
+                municipality = "באר שבע",
                 imageBase64 = ""
             };
 

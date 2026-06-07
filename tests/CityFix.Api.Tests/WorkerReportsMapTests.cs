@@ -45,17 +45,19 @@ public class WorkerReportsMapUnitTests : IDisposable
     {
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        db.Reports.Add(new Report
-        {
-            CustomerEmail = $"u_{Guid.NewGuid()}@test.com",
-            Category = category,
-            Priority = priority,
-            Description = "תיאור",
-            Status = status,
-            Latitude = 31.5,
-            Longitude = 34.8,
-            CreatedAt = DateTime.UtcNow
-        });
+db.Reports.Add(new Report
+{
+    CustomerEmail = $"u_{Guid.NewGuid()}@test.com",
+    Category = category,
+    Priority = priority,
+    Description = "תיאור",
+    Status = status,
+    Municipality = "תל אביב",
+    Location = "תל אביב",
+    Latitude = 31.5,
+    Longitude = 34.8,
+    CreatedAt = DateTime.UtcNow
+});
         await db.SaveChangesAsync();
     }
 
@@ -216,6 +218,7 @@ public class WorkerReportsMapIntegrationTests
                 notes = "",
                 latitude = 31.5,
                 longitude = 34.8,
+                municipality = "באר שבע",
                 imageBase64 = ""
             });
             var json = await res.Content.ReadFromJsonAsync<JsonElement>();
@@ -258,6 +261,7 @@ public class WorkerReportsMapIntegrationTests
             notes = "",
             latitude = 31.7,
             longitude = 34.9,
+            municipality = "באר שבע",
             imageBase64 = ""
         });
         var createJson = await createRes.Content.ReadFromJsonAsync<JsonElement>();
@@ -300,6 +304,7 @@ public class WorkerReportsMapIntegrationTests
                 notes = "",
                 latitude = 31.5,
                 longitude = 34.8,
+                municipality = "באר שבע",
                 imageBase64 = ""
             });
             var json = await res.Content.ReadFromJsonAsync<JsonElement>();
@@ -362,6 +367,7 @@ public class WorkerReportsMapIntegrationTests
             notes = "",
             latitude = 32.0,
             longitude = 34.7,
+            municipality = "באר שבע",
             imageBase64 = ""
         });
         var createJson = await createRes.Content.ReadFromJsonAsync<JsonElement>();
