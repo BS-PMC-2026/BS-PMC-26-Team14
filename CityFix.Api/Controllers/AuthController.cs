@@ -1300,7 +1300,7 @@ customerPhone = customer != null ? customer.Phone : "-",
   var allowedStatuses = new[]
 {
     "In Treatment",
-    "Closed"
+    "Completed"
 };
 
             if (!allowedStatuses.Contains(dto.NewStatus))
@@ -1320,7 +1320,7 @@ customerPhone = customer != null ? customer.Phone : "-",
             var oldStatus = report.Status;
 
             report.Status = dto.NewStatus;
-if (dto.NewStatus == "Closed")
+if (dto.NewStatus == "Completed")
 {
     _context.CustomerNotifications.Add(
         new CustomerNotification
