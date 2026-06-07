@@ -180,6 +180,7 @@ dotnet ef migrations add InitialCreate
 dotnet ef database update
 Configure Database Connection
 
+
 Open:
 
 appsettings.json
