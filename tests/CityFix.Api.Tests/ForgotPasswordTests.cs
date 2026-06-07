@@ -5,7 +5,7 @@ namespace CityFix.Api.Tests;
 
 public class ForgotPasswordTests
 {
-    // Helper: runs DataAnnotations validation on an object and returns the errors
+    
     private static IList<ValidationResult> Validate(object obj)
     {
         var results = new List<ValidationResult>();
