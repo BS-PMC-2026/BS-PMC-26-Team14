@@ -79,7 +79,7 @@ Administrators can:
 - Report Tracking
 
 ### Map Integration
-- Google Maps Integration
+- Leaflet with OpenStreetMap ntegration
 - Report Visualization
 - Location Selection
 
@@ -113,7 +113,7 @@ Administrators can:
 - SQL Server
 
 ### External Services
-- Google Maps API
+-Leaflet with OpenStreetMap API
 
 ### Project Management
 - Jira
@@ -132,7 +132,7 @@ Administrators can:
 ### Integration Tests
 - Frontend ↔ Backend
 - Backend ↔ Database
-- Google Maps API integration
+- Leaflet with OpenStreetMap API integration
 - End-to-end report workflow testing
 
 ---
@@ -154,8 +154,7 @@ Clone the Project
 
 Open Command Prompt or Terminal and run:
 
-git clone https://github.com/your-repository/CityFix.git
-
+git clone : https://github.com/BS-PMC-2026/BS-PMC-26-Team14.git
 Move into the project directory:
 
 cd CityFix
@@ -179,6 +178,7 @@ If no migrations exist:
 dotnet ef migrations add InitialCreate
 dotnet ef database update
 Configure Database Connection
+
 
 Open:
 
@@ -233,7 +233,7 @@ using Live Server in Visual Studio Code.
 Alternative:
 
 npx serve .
-Google Maps Configuration
+Leaflet with OpenStreetMap Configuration
 
 
 Navigate to the test project folder:
