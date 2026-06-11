@@ -1,0 +1,107 @@
+=== Build Success Rate (all branches) ===
+{"failure":14,"success":86}
+
+=== Build Success Rate (Develop only) ===
+{"failure":13,"success":41}
+
+=== Build Success Rate (main only) ===
+{"failure":9,"success":69}
+
+=== Deployment Frequency ===
+Successful deploys: 30
+Per sprint: 10.0
+
+=== Lead Time (first commit -> merge, per PR) ===
+(this takes a minute or two...)
+PR #88 | 0.1 days | Develop
+PR #87 | 0 days | BSPMT14-262
+PR #86 | 0 days | BSPMT14-263
+PR #85 | 9.2 days | Bspmt14 261 report text on the map overlapped other elements
+PR #84 | 0 days | BSPMT14-260
+PR #83 | 0 days | BSPMT14-259
+PR #82 | 0 days | BSPMT14-50
+PR #81 | 0 days | BSPMT14-46
+PR #80 | 0 days | BSPMT14-45
+PR #79 | 0 days | fixed tests
+PR #78 | 0 days | BSPMT14-48
+PR #77 | 0 days | BSPMT14-30
+PR #76 | 0 days | BSPMT14-43
+PR #75 | 0 days | BSPMT14-32
+PR #74 | 0 days | BSPMT14-49
+PR #73 | 0 days | BSPMT14-44
+PR #72 | 0 days | BSPMT14-28
+PR #71 | 0 days | BSPMT14-180
+PR #70 | 0 days | BSPMT14-195
+PR #69 | 0 days | Bspmt14 hackathon 2026
+PR #68 | 0 days | BSPMT14-190 / error notifications
+PR #67 | 0 days | Bspmt14 hackathon 2026
+PR #66 | 0 days | Bspmt14 193 improving padding margin and visual consistency
+PR #65 | 0 days | BSPMT14-194
+PR #64 | 0 days | BSPMT14-192
+PR #63 | 0 days | BSPMT14-192
+PR #62 | 0 days | Bspmt14 hackathon 2026
+PR #61 | 0 days | Bspmt14 191 adding show password option
+PR #60 | 0 days | BSPMT14-189
+PR #59 | 0 days | Bspmt14 hackathon 2026
+PR #58 | 0.1 days | Bspmt14 188 admin style changes
+PR #57 | 0 days | Bspmt14 hackathon 2026
+PR #56 | 0.1 days | Bspmt14 187 style change for sign up pages
+PR #55 | 0 days | Bspmt14 hackathon 2026
+PR #54 | 0 days | BSPMT14-184
+PR #53 | 0 days | Bspmt14 hackathon 2026
+PR #52 | 0 days | style changes for log in pages
+PR #51 | 0 days | Bspmt14 hackathon 2026
+PR #50 | 0 days | Bspmt14 186 add filter options to worker all reports assigned reports
+PR #49 | 0 days | Bspmt14 hackathon 2026
+PR #48 | 0 days | Bashar abadi
+PR #47 | 0 days | Bspmt14 hackathon 2026
+PR #46 | 0.1 days | Ahmad akhras
+PR #45 | 0 days | Bspmt14 hackathon 2026
+PR #44 | 0 days | Translated to English
+PR #43 | 0 days | Translated to English
+PR #42 | 0 days | BSPMT14-34
+PR #41 | 0 days | BSPMT14-41
+PR #40 | 2.8 days | BSPMT14-47
+PR #39 | 1.8 days | Bspmt14 47 us 47 worker view reports on map
+PR #38 | 0.1 days | Bspmt14 40 us 40 customer view reports on map
+PR #37 | 1.8 days | BSPMT14-40
+PR #36 | 0 days | BSPMT14-31
+PR #35 | 0 days | BSPMT14-42
+PR #34 | 0 days | BSPMT14-39
+PR #33 | 0 days | BSPMT14-33
+PR #32 | 0 days | BSPMT14-38
+PR #31 | 0 days | BSPMT14-29
+PR #30 | 0 days | BSPMT14-8 Unit Test
+PR #29 | 0 days | BSPMT14-10 Unit Test
+PR #28 | 0 days | BSPMT14-9 Unit Test
+PR #27 | 0 days | BSPMT14-10 Unit Test
+PR #26 | 0 days | BSPMT14-9 Unit Test
+PR #25 | 0 days | BSPMT14-8 Unit Test
+PR #24 | 0 days | BSPMT14-13 Unit Test
+PR #23 | 0 days | BSPMT14-14 Unit Test
+PR #22 | 0.1 days | Bspmt14 12 us 12 worker sign up
+PR #21 | 0 days | BSPMT14-13
+PR #19 | 0 days | BSPMT14-14
+PR #18 | 0 days | BSPMT14-25 Unit Tests
+PR #17 | 0 days | Update CityFix.Api.Tests.csproj
+PR #16 | 0 days | Develop
+PR #15 | 0 days | BSPMT14-11 Unit Tests
+PR #14 | 0 days | Bspmt14 15 us 15 admin profile
+PR #13 | 5 days | Bspmt14 24 us 24 forgot password
+PR #12 | 0.1 days | Update appsettings.json
+PR #11 | 0.1 days | Bspmt14 15 us 15 admin profile
+PR #10 | 0.2 days | Bspmt14 25 us 25 log out
+PR #9 | 0.2 days | Bspmt14 24 us 24 forgot password
+PR #8 | 0.2 days | Develop
+PR #7 | 0.1 days |  .ignore
+PR #6 | 1 days | Bspmt14 8 us 8 customer log in
+PR #5 | 0 days | BSPMT14-9
+PR #4 | 0 days | BSPMT14-10
+PR #3 | 0 days | BSPMT14-12
+PR #2 | 0 days | BSPMT14-11
+PR #1 | 0 days | Bspmt14 11 us 11 customer sign up
+--- Average Lead Time: .2 days (over 87 PRs) ---
+
+=== Change Failure Rate ===
+Fix/revert PRs: 1 out of 87 merged PRs
+CFR: 1.1%
