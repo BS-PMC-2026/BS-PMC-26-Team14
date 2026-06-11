@@ -1,42 +1,4 @@
 Summary
-  Generated on: 11/06/2026 - 11:49:51
-  Coverage date: 11/06/2026 - 11:48:05
-  Parser: Cobertura
-  Assemblies: 1
-  Classes: 20
-  Files: 20
-  Line coverage: 52.3%
-  Covered lines: 702
-  Uncovered lines: 639
-  Coverable lines: 1341
-  Total lines: 2045
-  Branch coverage: 35% (124 of 354)
-  Covered branches: 124
-  Total branches: 354
-  Method coverage: 77.3% (140 of 181)
-  Full method coverage: 69.6% (126 of 181)
   Covered methods: 140
-  Fully covered methods: 126
   Total methods: 181
-
-CityFix.Api                                   52.3%
-  CityFix.Api.Controllers.AuthController      48.6%
-  CityFix.Api.Data.ApplicationDbContext         90%
-  CityFix.Api.Models.Admin                       0%
-  CityFix.Api.Models.ChangeAdminPasswordDto    100%
-  CityFix.Api.Models.CreateReportDto           100%
-  CityFix.Api.Models.Customer                 87.5%
-  CityFix.Api.Models.ForgotPasswordDto         100%
-  CityFix.Api.Models.LoginDto                  100%
-  CityFix.Api.Models.PasswordResetCode           0%
-  CityFix.Api.Models.Report                    100%
-  CityFix.Api.Models.ReportStatusHistory      83.3%
-  CityFix.Api.Models.ResetPasswordDto          100%
-  CityFix.Api.Models.UpdateAdminProfileDto     100%
-  CityFix.Api.Models.Worker                   90.9%
-  CityFix.Api.Services.EmailSettings           100%
-  CityFix.Api.Services.SmtpEmailSender        16.1%
-  CustomerNotification                        83.3%
-  CustomerRegisterDto                          100%
-  Program                                      100%
-  WorkerRegisterDto                            100%
+  Result: 77.35%
