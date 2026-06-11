@@ -69,7 +69,7 @@ public class ReportStatusIntegrationTests
             new
             {
                 workerEmail = email,
-                newStatus = "Completed"
+                newStatus = "Closed"
             });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -80,7 +80,7 @@ public class ReportStatusIntegrationTests
             .AsNoTracking()
             .FirstAsync(r => r.Id == report.Id);
 
-        Assert.Equal("Completed", updatedReport.Status);
+        Assert.Equal("Closed", updatedReport.Status);
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class ReportStatusIntegrationTests
             new
             {
                 workerEmail = email,
-                newStatus = "In Treatment"
+                newStatus = "Closed"
             });
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -148,7 +148,7 @@ public class ReportStatusIntegrationTests
 
         Assert.Equal("Open", history!.OldStatus);
 
-        Assert.Equal("In Treatment", history.NewStatus);
+        Assert.Equal("Closed", history.NewStatus);
 
         Assert.Equal(email, history.ChangedByWorkerEmail);
     }
@@ -203,7 +203,7 @@ public class ReportStatusIntegrationTests
             new
             {
                 workerEmail = email,
-                newStatus = "Closed"
+                newStatus = "In Treatment"
             });
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);

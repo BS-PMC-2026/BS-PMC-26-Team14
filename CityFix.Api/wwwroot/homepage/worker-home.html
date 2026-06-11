@@ -32,7 +32,7 @@ body {
   min-height: 100vh;
 }
 
-/* SIDEBAR */
+
 .sidebar {
   width: 260px;
   background: #ffffff;
@@ -160,7 +160,7 @@ body {
   color: #0526ff;
 }
 
-/* MAIN */
+
 .main {
   margin-left: 260px;
   width: calc(100% - 260px);
@@ -215,7 +215,7 @@ body {
   font-size: 14px;
 }
 
-/* CONTENT */
+
 .content {
   padding: 34px 44px 44px;
 }
@@ -235,7 +235,7 @@ body {
   margin-bottom: 20px;
 }
 
-/* ADDED BUTTON AREA */
+
 .worker-home-actions {
   display: flex;
   flex-wrap: wrap;
@@ -278,7 +278,7 @@ body {
   height: 20px;
 }
 
-/* REPORT HEADER */
+
 .report-header {
   background: white;
   border: 1px solid #e5e7eb;
@@ -299,7 +299,7 @@ body {
   color: #64748b;
 }
 
-/* PILLS */
+
 .pills-row {
   display: flex;
   flex-wrap: wrap;
@@ -326,7 +326,7 @@ body {
 .pill-priority-low    { background: #dcfce7; color: #166534; border-color: #86efac; }
 .pill-info { background: #f1f5f9; color: #475569; border-color: #e2e8f0; }
 
-/* STATUS PANEL BAR */
+
 .status-panel-bar {
   background: white;
   border: 1px solid #e5e7eb;
@@ -345,7 +345,7 @@ body {
   color: #0f172a;
 }
 
-/* DETAIL BODY GRID */
+
 .detail-body-grid {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
@@ -429,7 +429,7 @@ body {
   overflow: hidden;
 }
 
-/* ACTIONS BAR */
+
 .actions-bar {
   display: flex;
   gap: 12px;
@@ -482,7 +482,7 @@ body {
 
 .btn-upload:hover { background: #e2e8f0; }
 
-/* LIST */
+
 .reports-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
@@ -526,7 +526,7 @@ body {
   display: none;
 }
 
-/* STATUS BADGES */
+
 .in-treatment-card {
   border-color: #2563eb;
   background: #eff6ff;
@@ -555,7 +555,6 @@ body {
   cursor: not-allowed;
 }
 
-/* UPLOAD IMAGE PAGE */
 .upload-image-layout {
   display: grid;
   grid-template-columns: 1fr 330px;
@@ -907,7 +906,7 @@ body {
   opacity: 0.85;
 }
 
-/* PAGINATION */
+
 .pagination-bar {
   display: flex;
   align-items: center;
@@ -1599,9 +1598,7 @@ function getStatusBadgeClass(status) {
 
 function getLocationText(report) {
   if (!report) return "-";
-  const lat = report.latitude ?? "-";
-  const lng = report.longitude ?? "-";
-  return `${lat}, ${lng}`;
+  return report.location || "-";
 }
 
 function normalizeImageSrc(src) {

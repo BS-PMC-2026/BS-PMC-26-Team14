@@ -1802,11 +1802,6 @@
 
     function getReportLocation(report) {
       if (report.location) return report.location;
-
-      if (report.latitude && report.longitude) {
-        return `${Number(report.latitude).toFixed(5)}, ${Number(report.longitude).toFixed(5)}`;
-      }
-
       return "-";
     }
 

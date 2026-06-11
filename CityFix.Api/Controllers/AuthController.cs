@@ -1299,7 +1299,7 @@ customerPhone = customer != null ? customer.Phone : "-",
 
   var allowedStatuses = new[]
 {
-   "Open", "In Treatment", "Completed"
+   "Open",  "Closed"
 };
 
             if (!allowedStatuses.Contains(dto.NewStatus))
@@ -1319,18 +1319,18 @@ customerPhone = customer != null ? customer.Phone : "-",
             var oldStatus = report.Status;
 
             report.Status = dto.NewStatus;
-if (dto.NewStatus == "Completed")
-{
-    _context.CustomerNotifications.Add(
-        new CustomerNotification
-        {
-            CustomerEmail = report.CustomerEmail,
-            ReportId = report.Id,
-            Message = $"Your report #{report.Id} has been completed and closed.",
-            CreatedAt = DateTime.UtcNow,
-            IsRead = false
-        });
-}
+            if (dto.NewStatus == "Closed")
+            {
+                _context.CustomerNotifications.Add(
+                    new CustomerNotification
+                    {
+                        CustomerEmail = report.CustomerEmail,
+                        ReportId = report.Id,
+                        Message = $"Your report #{report.Id} has been completed and closed.",
+                        CreatedAt = DateTime.UtcNow,
+                        IsRead = false
+                    });
+            }
             var history = new ReportStatusHistory
             {
                 ReportId = report.Id,
