@@ -5,7 +5,6 @@ namespace CityFix.Api.Tests;
 
 public class AdminProfileTests
 {
-    // Helper: runs DataAnnotations validation on an object and returns the errors
     private static IList<ValidationResult> Validate(object obj)
     {
         var results = new List<ValidationResult>();
@@ -14,7 +13,6 @@ public class AdminProfileTests
         return results;
     }
 
-    // ── UpdateAdminProfileDto ──────────────────────────────────────────────────
 
     [Fact]
     public void UpdateAdminProfileDto_ValidInput_PassesValidation()
@@ -61,7 +59,7 @@ public class AdminProfileTests
         var dto = new UpdateAdminProfileDto
         {
             CurrentEmail = "admin@example.com",
-            Username = "A",   // less than 2 chars
+            Username = "A", 
             Email = "newadmin@example.com"
         };
         var errors = Validate(dto);
@@ -81,7 +79,6 @@ public class AdminProfileTests
         Assert.NotEmpty(errors);
     }
 
-    // ── ChangeAdminPasswordDto ─────────────────────────────────────────────────
 
     [Fact]
     public void ChangeAdminPasswordDto_ValidInput_PassesValidation()
@@ -118,7 +115,7 @@ public class AdminProfileTests
         {
             CurrentEmail = "admin@example.com",
             CurrentPassword = "oldpass",
-            NewPassword = "abc",   // less than 6 chars
+            NewPassword = "abc",   
             ConfirmNewPassword = "abc"
         };
         var errors = Validate(dto);

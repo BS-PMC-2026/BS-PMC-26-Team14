@@ -14,7 +14,6 @@ public class ForgotPasswordTests
         return results;
     }
 
-    // ── ForgotPasswordDto ──────────────────────────────────────────────────────
 
     [Fact]
     public void ForgotPasswordDto_ValidEmail_PassesValidation()
@@ -40,7 +39,6 @@ public class ForgotPasswordTests
         Assert.NotEmpty(errors);
     }
 
-    // ── ResetPasswordDto ───────────────────────────────────────────────────────
 
     [Fact]
     public void ResetPasswordDto_ValidInput_PassesValidation()
@@ -74,7 +72,7 @@ public class ForgotPasswordTests
         var dto = new ResetPasswordDto
         {
             Email = "user@example.com",
-            Code = "123",       // must be exactly 6 digits
+            Code = "123",      
             NewPassword = "secret123"
         };
         var errors = Validate(dto);
@@ -87,7 +85,7 @@ public class ForgotPasswordTests
         var dto = new ResetPasswordDto
         {
             Email = "user@example.com",
-            Code = "12345a",    // letters not allowed
+            Code = "12345a",   
             NewPassword = "secret123"
         };
         var errors = Validate(dto);
@@ -101,7 +99,7 @@ public class ForgotPasswordTests
         {
             Email = "user@example.com",
             Code = "123456",
-            NewPassword = "abc"  // less than 6 chars
+            NewPassword = "abc"  
         };
         var errors = Validate(dto);
         Assert.NotEmpty(errors);

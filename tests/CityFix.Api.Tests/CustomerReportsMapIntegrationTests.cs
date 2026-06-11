@@ -78,7 +78,6 @@ public class CustomerReportsMapIntegrationTests
         await db.SaveChangesAsync();
     }
 
-    // ─── Test 1 ────────────────────────────────────────────────────────────────
 
     [Fact]
     public async Task CreateReport_ThenGetMap_ReportAppearsWithCorrectFields()
@@ -117,7 +116,6 @@ var createRequest = new
         r.GetProperty("priority").GetString().Should().Be("בינונית");
     }
 
-    // ─── Test 2 ────────────────────────────────────────────────────────────────
 
     [Fact]
     public async Task CreateReport_ThenWorkerAccepts_MapShowsInTreatmentStatus()
@@ -160,7 +158,6 @@ var createRequest = new
         reports![0].GetProperty("status").GetString().Should().Be("In Treatment");
     }
 
-    // ─── Test 3 ────────────────────────────────────────────────────────────────
 
     [Fact]
     public async Task MultipleReports_FilterByStatus_ReturnsOnlyMatchingReports()
@@ -208,7 +205,6 @@ var createRequest = new
         inTreatmentReports![0].GetProperty("status").GetString().Should().Be("In Treatment");
     }
 
-    // ─── Test 4 ────────────────────────────────────────────────────────────────
 
     [Fact]
     public async Task ReportsCreatedBeforeFromDate_AreExcludedFromMap()
@@ -253,7 +249,6 @@ var createRequest = new
         reports![0].GetProperty("category").GetString().Should().Be("תאורת רחוב");
     }
 
-    // ─── Test 5 ────────────────────────────────────────────────────────────────
 
     [Fact]
     public async Task FullLifecycle_CreateAcceptUploadImage_AllStatusesVisibleOnMap()
@@ -266,7 +261,6 @@ var createRequest = new
         await SeedCustomerAsync(factory, customerEmail);
         await SeedApprovedWorkerAsync(factory, workerEmail);
 
-        // Step 1: customer creates report → Open on map
         var createRes = await client.PostAsJsonAsync("/api/Auth/create-report", new
         {
             customerEmail,
@@ -288,7 +282,6 @@ var createRequest = new
         mapOpen.Should().HaveCount(1);
         mapOpen![0].GetProperty("status").GetString().Should().Be("Open");
 
-        // Step 2: worker accepts → In Treatment on map
         var acceptRes = await client.PostAsJsonAsync($"/api/Auth/accept-report/{reportId}", new { workerEmail });
         acceptRes.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -296,7 +289,6 @@ var createRequest = new
             .Content.ReadFromJsonAsync<JsonElement[]>();
         mapTreatment![0].GetProperty("status").GetString().Should().Be("In Treatment");
 
-        // Step 3: worker uploads image → still In Treatment on map
         var uploadRes = await client.PutAsJsonAsync($"/api/Auth/worker-upload-image/{reportId}", new
         {
             workerEmail,

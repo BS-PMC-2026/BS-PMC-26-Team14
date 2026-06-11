@@ -52,9 +52,7 @@ namespace CityFix.Api.Tests
             _client = factory.CreateClient();
         }
 
-        // =========================
-        // Helper Methods
-        // =========================
+
 
         private async Task SeedWorkerAsync(
             string email,
@@ -126,9 +124,7 @@ namespace CityFix.Api.Tests
                    && allowedCategories.Contains(report.Category);
         }
 
-        // =========================
-        // Unit Tests
-        // =========================
+
 
         [Fact]
         public void Worker_ShouldStoreMunicipalityAndDepartment()
@@ -278,10 +274,7 @@ namespace CityFix.Api.Tests
             result.Should().BeFalse();
         }
 
-        // =========================
-        // Integration Tests - API
-        // =========================
-
+       
         [Fact]
         public async Task WorkerNotifications_ShouldReturnOk_WhenWorkerExistsAndApproved()
         {

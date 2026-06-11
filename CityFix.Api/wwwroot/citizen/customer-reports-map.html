@@ -237,7 +237,6 @@ h1 { font-size: 28px; margin-bottom: 20px; }
 .dot-treatment { background: #f97316; }
 .dot-completed { background: #22c55e; }
 
-/* MAP */
 #map {
   flex: 1;
   min-height: 520px;
@@ -390,7 +389,6 @@ h1 { font-size: 28px; margin-bottom: 20px; }
   <div class="content">
     <h1>Reports Map</h1>
 
-    <!-- STATS -->
     <div class="stats-bar">
       <div class="stat-chip">
         <span>Total</span>
@@ -413,7 +411,6 @@ h1 { font-size: 28px; margin-bottom: 20px; }
       </div>
     </div>
 
-    <!-- FILTER BAR -->
     <div class="filter-bar">
       <div class="filter-group">
         <label for="filterStatus">Status:</label>
@@ -450,7 +447,6 @@ h1 { font-size: 28px; margin-bottom: 20px; }
       </div>
     </div>
 
-    <!-- MAP -->
     <div class="map-wrap">
       <div id="loadingOverlay" class="loading-overlay">Loading reports...</div>
       <div id="map"></div>
@@ -576,7 +572,7 @@ function applyFilters() {
   }
 
   if (to) {
-    const toTs = new Date(to).getTime() + 86400000; // include end day
+    const toTs = new Date(to).getTime() + 86400000; 
     filtered = filtered.filter(r => new Date(r.createdAt).getTime() <= toTs);
   }
 

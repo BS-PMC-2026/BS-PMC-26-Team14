@@ -13,7 +13,6 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace CityFix.Api.Tests;
 
-// ─── Unit Tests ──────────────────────────────────────────────────────────────
 
 public class WorkerReportsMapUnitTests : IDisposable
 {
@@ -61,7 +60,6 @@ db.Reports.Add(new Report
         await db.SaveChangesAsync();
     }
 
-    // The worker popup needs id, category, status, priority, createdAt, latitude, longitude.
     [Fact]
     public async Task ReportsMap_ReturnsId_RequiredForViewReportRedirect()
     {
@@ -98,7 +96,6 @@ db.Reports.Add(new Report
         var response = await _client.GetAsync("/api/Auth/reports-map");
         var reports = await response.Content.ReadFromJsonAsync<JsonElement[]>();
 
-        // Endpoint returns all statuses — worker map filters to active in the browser.
         reports.Should().HaveCount(3);
         reports!.Select(r => r.GetProperty("status").GetString())
             .Should().Contain(new[] { "Open", "In Treatment", "Completed" });
@@ -111,7 +108,6 @@ db.Reports.Add(new Report
         await SeedReportAsync("In Treatment");
         await SeedReportAsync("Completed");
 
-        // Simulate what the worker map does: pass both active statuses.
         var response = await _client.GetAsync("/api/Auth/reports-map?status=Open,In Treatment");
         var reports = await response.Content.ReadFromJsonAsync<JsonElement[]>();
 
@@ -133,7 +129,6 @@ db.Reports.Add(new Report
     }
 }
 
-// ─── Integration Tests ───────────────────────────────────────────────────────
 
 public class WorkerReportsMapIntegrationTests
 {
@@ -190,9 +185,7 @@ public class WorkerReportsMapIntegrationTests
         await db.SaveChangesAsync();
     }
 
-    // ── Test 1 ─────────────────────────────────────────────────────────────
-    // Two different workers each accept a report. The map must show BOTH
-    // In Treatment reports — not just one worker's assignment.
+
     [Fact]
     public async Task TwoWorkersEachAcceptReport_MapShowsBothInTreatment()
     {
@@ -238,9 +231,7 @@ public class WorkerReportsMapIntegrationTests
         reports!.Should().OnlyContain(r => r.GetProperty("status").GetString() == "In Treatment");
     }
 
-    // ── Test 2 ─────────────────────────────────────────────────────────────
-    // The reportId returned by the map endpoint matches the one in the
-    // open-reports endpoint — confirming the "View Report" redirect will work.
+  
     [Fact]
     public async Task ReportIdFromMap_MatchesReportIdInOpenReports_RedirectWillWork()
     {
@@ -279,9 +270,7 @@ public class WorkerReportsMapIntegrationTests
         openIds.Should().Contain(mapId);
     }
 
-    // ── Test 3 ─────────────────────────────────────────────────────────────
-    // Map with mixed statuses: worker's view should be able to filter to
-    // active only (Open + In Treatment) and exclude Completed.
+    
     [Fact]
     public async Task MixedStatuses_ActiveFilter_ExcludesCompletedFromWorkerView()
     {
@@ -311,7 +300,6 @@ public class WorkerReportsMapIntegrationTests
             return json.GetProperty("reportId").GetInt32();
         }
 
-        // Seed directly as Completed (no endpoint to complete via API currently)
         using (var scope = factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -333,7 +321,6 @@ public class WorkerReportsMapIntegrationTests
         var inTreatmentId = await CreateReport();
         await client.PostAsJsonAsync($"/api/Auth/accept-report/{inTreatmentId}", new { workerEmail });
 
-        // Simulate what the worker map does: request both active statuses.
         var activeRes = await client.GetAsync("/api/Auth/reports-map?status=Open,In Treatment");
         var activeReports = await activeRes.Content.ReadFromJsonAsync<JsonElement[]>();
 
@@ -343,10 +330,7 @@ public class WorkerReportsMapIntegrationTests
             r.GetProperty("status").GetString() == "In Treatment");
     }
 
-    // ── Test 4 ─────────────────────────────────────────────────────────────
-    // After a worker accepts a report, the status change is immediately
-    // reflected in the map endpoint — the worker sees it move from Open
-    // to In Treatment without any delay.
+
     [Fact]
     public async Task AcceptReport_StatusImmediatelyReflectedOnMap()
     {
@@ -373,7 +357,6 @@ public class WorkerReportsMapIntegrationTests
         var createJson = await createRes.Content.ReadFromJsonAsync<JsonElement>();
         var reportId = createJson.GetProperty("reportId").GetInt32();
 
-        // Before accept: map shows Open
         var beforeMap = await (await client.GetAsync("/api/Auth/reports-map"))
             .Content.ReadFromJsonAsync<JsonElement[]>();
         beforeMap!.First(r => r.GetProperty("id").GetInt32() == reportId)
@@ -381,7 +364,6 @@ public class WorkerReportsMapIntegrationTests
 
         await client.PostAsJsonAsync($"/api/Auth/accept-report/{reportId}", new { workerEmail });
 
-        // After accept: map shows In Treatment
         var afterMap = await (await client.GetAsync("/api/Auth/reports-map"))
             .Content.ReadFromJsonAsync<JsonElement[]>();
         afterMap!.First(r => r.GetProperty("id").GetInt32() == reportId)

@@ -19,15 +19,10 @@ namespace CityFix.Api.Tests
         {
             protected override void ConfigureWebHost(Microsoft.AspNetCore.Hosting.IWebHostBuilder builder)
             {
-                // ConfigureTestServices runs after the app's own services are registered,
-                // so our in-memory override wins over the real Postgres registration.
+     
                 builder.ConfigureTestServices(services =>
                 {
-                    // In EF Core 8+, provider configuration is stored in
-                    // IDbContextOptionsConfiguration<TContext> descriptors.
-                    // We must remove ALL of those (plus the context itself) before
-                    // adding the in-memory provider, otherwise both Npgsql and
-                    // InMemory end up registered and EF throws at runtime.
+                   
                     var configType = typeof(IDbContextOptionsConfiguration<ApplicationDbContext>);
                     var toRemove = services
                         .Where(d => d.ServiceType == configType

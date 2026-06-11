@@ -80,10 +80,7 @@ namespace CityFix.Api.Tests
             }
         }
 
-        // =========================
-        // Unit Tests - DTO
-        // =========================
-
+    
         [Fact]
         public void CreateReportDto_ValidInput_PassesValidation()
         {
@@ -190,9 +187,6 @@ namespace CityFix.Api.Tests
             Validate(dto).Should().BeEmpty();
         }
 
-        // =========================
-        // Unit Tests - Report Model
-        // =========================
 
         [Fact]
         public void Report_DefaultStatus_ShouldBeOpen()
@@ -228,10 +222,7 @@ namespace CityFix.Api.Tests
             report.LocationPoint.SRID.Should().Be(4326);
         }
 
-        // =========================
-        // Integration Tests - API
-        // =========================
-
+       
         [Fact]
         public async Task CreateReport_ShouldReturnOk_WhenDataIsValid()
         {

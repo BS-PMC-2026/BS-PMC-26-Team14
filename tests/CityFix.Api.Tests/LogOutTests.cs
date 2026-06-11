@@ -14,12 +14,7 @@ using Xunit;
 
 namespace CityFix.Api.Tests
 {
-    /// <summary>
-    /// Tests for the Log Out feature.
-    /// Logout is a client-side operation (clears localStorage: userRole, userName, userEmail).
-    /// These tests verify the login endpoints return correct session data, and that
-    /// after "logging out" (clearing state), re-login works as expected.
-    /// </summary>
+
     public class LogOutTests : IClassFixture<LogOutTests.InMemoryFactory>
     {
         public class InMemoryFactory : WebApplicationFactory<Program>
@@ -50,7 +45,6 @@ namespace CityFix.Api.Tests
             _client = factory.CreateClient();
         }
 
-        // ── Customer login / logout cycle ────────────────────────────────────
 
         [Fact]
         public async Task CustomerLogin_ShouldReturnOk_WithSessionData()
@@ -84,17 +78,14 @@ namespace CityFix.Api.Tests
         [Fact]
         public async Task CustomerLogin_AfterLogout_ShouldSucceedAgain()
         {
-            // Simulate logout (client clears localStorage) then re-login
             var email = $"relogin_{Guid.NewGuid()}@test.com";
             await RegisterCustomer(email, "Re-Login User", "123456");
 
-            // First login
             var first = await _client.PostAsJsonAsync("/api/auth/login-customer",
                 new { email, password = "123456" });
             first.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            // Simulate logout: client clears state — no server call needed
-            // Re-login should still work
+            
             var second = await _client.PostAsJsonAsync("/api/auth/login-customer",
                 new { email, password = "123456" });
             second.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -121,7 +112,6 @@ namespace CityFix.Api.Tests
             response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         }
 
-        // ── Worker login / logout cycle ──────────────────────────────────────
 
         [Fact]
         public async Task WorkerLogin_ShouldReturnOk_WhenApproved()
@@ -147,7 +137,6 @@ namespace CityFix.Api.Tests
                 new { email, password = "123456" });
             first.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            // Simulate logout then re-login
             var second = await _client.PostAsJsonAsync("/api/auth/login-worker",
                 new { email, password = "123456" });
             second.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -165,7 +154,6 @@ namespace CityFix.Api.Tests
             response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
         }
 
-        // ── Helper methods ───────────────────────────────────────────────────
 
         private async Task RegisterCustomer(string email, string fullName, string password)
         {
@@ -192,7 +180,6 @@ namespace CityFix.Api.Tests
                 password
             });
 
-            // Get worker id from pending workers list
             var pendingResponse = await _client.GetAsync("/api/auth/pending-workers");
             var json = JsonDocument.Parse(await pendingResponse.Content.ReadAsStringAsync());
             var workers = json.RootElement.EnumerateArray();
